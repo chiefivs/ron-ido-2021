@@ -3,7 +3,20 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+    <RootNamespace>RonFde.WebInternal</RootNamespace>
+    <AssemblyName>RonFde.WebInternal</AssemblyName>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="ClientApp\typings\**" />
+    <Content Remove="ClientApp\typings\**" />
+    <EmbeddedResource Remove="ClientApp\typings\**" />
+    <None Remove="ClientApp\typings\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Controllers\WeatherForecastController.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.1" NoWarn="NU1605" />

@@ -3,14 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RonIdo.Web", "RonIdo.Web\RonIdo.Web.csproj", "{B4B4B19D-94A7-4BA1-8B80-5E933464F5F9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebInternal", "WebInternal\WebInternal.csproj", "{B4B4B19D-94A7-4BA1-8B80-5E933464F5F9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6FFF6872-66CB-47B3-8EE9-734580A59237}"
 	ProjectSection(SolutionItems) = preProject
 		readme.txt = readme.txt
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RonIdo.Identity", "RonIdo.Identity\RonIdo.Identity.csproj", "{A33C9FA5-7EF1-491D-9D0C-6FE6DD43B7C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Identity", "Identity\Identity.csproj", "{A33C9FA5-7EF1-491D-9D0C-6FE6DD43B7C7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{E14960EC-1E94-49FD-88FF-19FED53DAA01}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codegen", "Tools\Codegen\Codegen.csproj", "{CF81E8AE-6CEC-440A-97F4-54D1FE761C7E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,9 +30,16 @@ Global
 		{A33C9FA5-7EF1-491D-9D0C-6FE6DD43B7C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A33C9FA5-7EF1-491D-9D0C-6FE6DD43B7C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A33C9FA5-7EF1-491D-9D0C-6FE6DD43B7C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF81E8AE-6CEC-440A-97F4-54D1FE761C7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF81E8AE-6CEC-440A-97F4-54D1FE761C7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF81E8AE-6CEC-440A-97F4-54D1FE761C7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF81E8AE-6CEC-440A-97F4-54D1FE761C7E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CF81E8AE-6CEC-440A-97F4-54D1FE761C7E} = {E14960EC-1E94-49FD-88FF-19FED53DAA01}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46FA69A3-1BE8-4C14-8087-972396E71DD3}
