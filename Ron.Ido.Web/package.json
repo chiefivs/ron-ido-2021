@@ -1,0 +1,58 @@
+{
+  "name": "ron-ido-2021",
+  "version": "1.0.0",
+  "description": "Recognition of foreign education documents",
+  "private": true,
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development webpack -d",
+    "build": "cross-env NODE_ENV=production webpack -p",
+    "watch": "cross-env NODE_ENV=development webpack -w --mode development",
+    "start": "cross-env NODE_ENV=development webpack-dev-server --mode development --open",
+    "codegen": "dotnet run --project ..\\Tools\\Ron.Ido.Codegen\\Ron.Ido.Codegen.csproj",
+    "migrator": "dotnet run --project ..\\Tools\\Ron.Ido.Migrator\\Ron.Ido.Migrator.csproj",
+    "importer": "dotnet run --project ..\\Tools\\Ron.Ido.Importer\\Ron.Ido.Importer.csproj"
+  },
+  "keywords": [
+    "IDO"
+  ],
+  "browserslist": ">0.25%, not dead",
+  "author": "it-task",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.10.3",
+    "@babel/plugin-proposal-class-properties": "^7.10.1",
+    "@babel/polyfill": "^7.10.1",
+    "@babel/preset-env": "^7.10.3",
+    "@babel/preset-typescript": "^7.10.1",
+    "axios": "^0.21.1",
+    "babel-eslint": "^10.1.0",
+    "babel-loader": "^8.1.0",
+    "clean-webpack-plugin": "^3.0.0",
+    "copy-webpack-plugin": "^6.0.2",
+    "cross-env": "^7.0.2",
+    "css-loader": "^3.6.0",
+    "eslint": "^7.3.1",
+    "eslint-loader": "^4.0.2",
+    "file-loader": "^6.0.0",
+    "html-webpack-plugin": "^4.3.0",
+    "less": "^3.11.3",
+    "less-loader": "^6.1.2",
+    "mini-css-extract-plugin": "^0.9.0",
+    "optimize-css-assets-webpack-plugin": "^5.0.3",
+    "raw-loader": "^4.0.1",
+    "style-loader": "^1.2.1",
+    "terser-webpack-plugin": "^3.0.6",
+    "ts-loader": "^7.0.5",
+    "typescript": "^3.9.5",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.1"
+  },
+  "dependencies": {
+    "@types/jquery": "^3.5.0",
+    "bootstrap-less": "^3.3.8",
+    "jquery": "^3.5.1",
+    "knockout": "^3.5.1",
+    "normalize.css": "^8.0.1"
+  }
+}

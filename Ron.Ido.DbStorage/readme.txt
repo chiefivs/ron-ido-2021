@@ -1,0 +1,1 @@
+﻿add-migration Init -Project Ron.Ido.DbStorage.SqlServer  -Context SqlServerAppDbContext
