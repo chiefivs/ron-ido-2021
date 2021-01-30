@@ -1,9 +1,31 @@
 ﻿<div class="wrapper">
-    <header>
-        <h1 class="ido-title">APP <span data-bind="text:title"></span></h1>
-    </header>
+    <div class="header">
+        <i class="img img-gerb"></i>
+        <div class="ido-title">АИС Признание</div>
+        <div class="ido-subtitle">
+            Информационная система обработки заявлений<br>
+            на признание и установление эквивалентности иностранных документов об образовании.
+        </div>
+        <div class="pull-right" data-bind="visible:userName">
+            <span data-bind="text:userName"></span>
+            <a data-bind="click:logout">
+                <!-- http://findicons.com/search -->
+                <i class="img img-exit" style="width: 2em; height: 2em; line-height: 2em; vertical-align: middle;"></i>
+                
+            </a>
+        </div>
+    </div>
 
-    <div>
-        <p>content</p>
+
+    <div class="footer">
+        © Рособрнадзор 2021
+    </div>
+
+    <div class="modal-backdrop in" style="display: none;" data-bind="visible:popups.hasModals, click:popups.close, style:{zIndex:popups.modalZIndex}"></div>
+    
+    <div style="position:absolute; top:0; height: 0;" data-bind="foreach:popups.instances">
+        <div class="modal modal-content"
+            data-bind="style:{width:width() + 'px', height:height() + 'px', left:left() + 'px', top:top() + 'px', zIndex:zIndex}, template:{nodes:templateNodes, data:$data}">
+        </div>
     </div>
 </div>

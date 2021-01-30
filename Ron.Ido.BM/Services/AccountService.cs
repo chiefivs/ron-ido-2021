@@ -19,6 +19,9 @@ namespace Ron.Ido.BM.Services
 
         public Identity Login(string login, string password)
         {
+            login = login ?? "";
+            password = password ?? "";
+
             var user = _appDbContext.Users.SingleOrDefault(u => u.Login == login
             && u.PasswordHash == password.GetHashString()
             && !u.IsBlocked

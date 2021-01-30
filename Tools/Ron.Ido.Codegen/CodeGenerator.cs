@@ -146,7 +146,7 @@ namespace Codegen
                     if (genericTypes != null && genericTypes.Contains(itemType.Name))
                         return $"{itemType.Name}[]";
 
-                    return $"{GenerateModel(itemType)}[]";
+                    return $"{GenerateType(itemType)}[]";
                 }
                 else if (typeDef.FullName.StartsWith("System.Nullable") || typeDef.FullName.StartsWith("System.Threading.Task"))
                 {

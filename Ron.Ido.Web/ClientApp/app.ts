@@ -1,44 +1,35 @@
-﻿import { Template } from './modules/template';
+﻿import { Identity,LoginDialog } from './modules/identity';
+import { Popups } from './modules/content';
+import { Template } from './modules/template';
 import { WebApi } from './modules/webapi';
 import { AccountApi } from './codegen/webapi/accountApi';
-import { Observable, observable } from 'knockout';
-//import * as ko from 'knockout';
+import * as ko from 'knockout';
 
 export default class App {
     templateNodes: Element[];
-    title: Observable<string>;
+    title: ko.Observable<string>;
+    popups: Popups.PopupsCollection;
+    userName = ko.observable('');
     
     constructor() {
         this.templateNodes = Template.getNodes('app.html');
-        console.log('sample template nodes', Template.getNodes('samples/sample.html'));
-        this.title = observable('main app');
+        this.popups = new Popups.PopupsCollection();
 
-        // $.ajax('/api/WeatherForecast')
-        //     .done(res => console.log('done', res))
-        //     .fail(err => console.log('fail', err));
-        //var getperm = AccountApi.getUserPermission('test', 12); //WebApi.get<IWeather>('/api/WeatherForecast');
-        //console.log(getperm);
-        //getperm
-        //    .done(res => console.log('done', res))
-        //    .fail(err => console.log('fail', err));
-        
-        //var getuser = AccountApi.getUserInfo();
-        //console.log(getuser);
-        //let info:AccountApi.IUserInfo;
-        //getuser
-        //   .done(res => console.log('done', res, res.role === AccountApi.UserRole.Admin))
-        //   .fail(err => console.log('fail', err));
+        Identity.user.subscribe(u => {
+            this.userName( u ? u.name : '');
+            this._openLoginDialog();
+        });
+        Identity.restoreIdentity();
 
-        AccountApi.getPage({
-            filter: 'qwerty',
-            position: 4
-        }).done(res => console.log('getPage', res));
+        this._openLoginDialog();
     }
-}
 
-interface IWeather {
-     date:string;
-     summary:string;
-     temperatureC:number;
-     tempetatureF:number;
+    logout() {
+        Identity.setIdentity(null);
+    }
+
+    private _openLoginDialog() {
+        if(!this.userName())
+            LoginDialog.open();
+    }
 }

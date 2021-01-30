@@ -5,6 +5,7 @@ using Ron.Ido.BM.Models.Account;
 using Ron.Ido.Web.Authorization;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 
 namespace ForeignDocsRec2020.Web.Controllers
@@ -26,17 +27,21 @@ namespace ForeignDocsRec2020.Web.Controllers
         public async Task<Identity> Login(string login, string password)
         {
             var identity = await _mediator.Send(new LoginCommand(login, password));
+
+            if (identity == null)
+                throw new AuthenticationException("Неправильный логин или пароль");
+
             identity.Token = AuthOptions.CreateToken(identity);
 
             return identity;
         }
 
-        [HttpGet]
-        [Route("api/account/getPerms/{permissionName}")]
-        public string GetUserPermission(string permissionName, int ts)
-        {
-            return permissionName + ts.ToString();
-        }
+        //[HttpGet]
+        //[Route("api/account/getPerms/{permissionName}")]
+        //public string GetUserPermission(string permissionName, int ts)
+        //{
+        //    return permissionName + ts.ToString();
+        //}
 
         //[HttpGet]
         //[Route("test")]
@@ -46,18 +51,18 @@ namespace ForeignDocsRec2020.Web.Controllers
         //}
 
 
-        [HttpPost]
-        [Route("api/account/getPage")]
-        public ListPage<string, int> GetPage([FromBody]ListPageRequest input)
-        {
-            return new ListPage<string, int>()
-            {
-                Id = 123,
-                Items = new[] { "one", "two" },
-                Position = 4,
-                Total = 200
-            };
-        }
+        //[HttpPost]
+        //[Route("api/account/getPage")]
+        //public ListPage<string, int> GetPage([FromBody]ListPageRequest input)
+        //{
+        //    return new ListPage<string, int>()
+        //    {
+        //        Id = 123,
+        //        Items = new[] { "one", "two" },
+        //        Position = 4,
+        //        Total = 200
+        //    };
+        //}
 
         //[HttpPost]
         //[Route("api/account/getPage1")]

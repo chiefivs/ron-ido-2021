@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 
 namespace ForeignDocsRec2020.Web
@@ -111,24 +112,6 @@ namespace ForeignDocsRec2020.Web
             }
 
             //app.UseResponseCompression();
-            app.UseAuthentication();
-            app.UseRouting();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
-
-            app.Use(async (context, next) =>
-            {
-                if (string.IsNullOrEmpty(context.Request.Path.Value.Trim('/')))
-                {
-                    context.Request.Path = "/index.html";
-                }
-
-                await next();
-            });
-            app.UseStaticFiles();
             app.UseExceptionHandler(conf =>
             {
                 conf.Run(async context => {
@@ -137,6 +120,15 @@ namespace ForeignDocsRec2020.Web
 
                     if (error == null)
                         return;
+
+                    if (error is AuthenticationException)
+                    {
+                        context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                        context.Response.ContentType = "text/html";
+                        await context.Response.WriteAsync(error.Message);
+                        return;
+
+                    }
 
                     if (error is UnauthorizedAccessException)
                     {
@@ -157,8 +149,28 @@ namespace ForeignDocsRec2020.Web
                     context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                     //context.Response.ContentType = "application/json";
                     //await context.Response.WriteAsync($"{{\"LogItemUid\":\"{uid}\"}}");
+                    await context.Response.WriteAsync(error.Message);
                 });
             });
+
+            app.UseAuthentication();
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+
+            app.Use(async (context, next) =>
+            {
+                if (string.IsNullOrEmpty(context.Request.Path.Value.Trim('/')))
+                {
+                    context.Request.Path = "/index.html";
+                }
+
+                await next();
+            });
+            app.UseStaticFiles();
 
             app.Use(async (context, next) =>
             {

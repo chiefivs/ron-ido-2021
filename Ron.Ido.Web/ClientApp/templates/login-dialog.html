@@ -1,0 +1,20 @@
+<div class="panel-heading">Вход в систему</div>
+<div class="panel-body">
+    <table>
+        <tbody><tr>
+            <td><i class="img img-ido-logo" style="width: 448px; height: 289px;"></i></td>
+            <td style="vertical-align: top;">
+                <form class="form-signin" data-bind="submit:logon" autocomplete="off">
+                    <label for="login" class="sr-only">логин</label>
+                    <input type="text" id="login" class="form-control" placeholder="логин" autofocus="" autocomplete="off" data-bind="value:login">
+                    <label for="password" class="sr-only">пароль</label>
+                    <input type="password" id="password" class="form-control" style="margin-bottom: 8px;" placeholder="пароль" autocomplete="off" data-bind="value:password">
+                    
+                    <i class="img img-wait" style="width: 36px; height: 36px;" data-bind="visible:isWait"></i>
+                    <button class="btn btn-primary btn-block" data-bind="visible:!isWait()"><b>В Х О Д</b></button>
+                    <div class="alert alert-danger" style="margin-top:5px;" data-bind="text:error, visible:error"></div>
+                </form>
+            </td>
+        </tr>
+    </tbody></table>
+</div>
