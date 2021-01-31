@@ -1,0 +1,27 @@
+cmp-left-tabs {
+    display: block;
+    //position: relative;
+    
+    .left-tab {
+        background-color: @panel-bg;
+        border-radius: 4px 0 0 4px;
+        overflow: visible;
+        position: absolute;
+        overflow: visible;
+        left:6px;
+        right: 1px;
+        cursor: pointer;
+
+        &.active {
+            left:4px;
+            right: 0;
+            font-weight: bold;
+        }
+
+        &>div {
+            position: absolute;
+            left:auto;
+            right: auto;
+        }
+    }
+}

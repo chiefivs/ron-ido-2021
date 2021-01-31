@@ -28,11 +28,6 @@ body {
             .img-gerb {
                 width: 122px;
                 height: 136px;
-
-                &.small {
-                    width:49px;
-                    height: 54px;
-                }
             }
 
             .ido-title {
@@ -51,6 +46,32 @@ body {
                 top:7em;
                 left:140px;
             }
+
+            .ido-user {
+                display: none;
+            }
+
+            &.authorized {
+
+                .img-gerb {
+                    width:49px;
+                    height: 54px;
+                }
+
+                .ido-title {
+                    line-height: 2.6em;
+                    font-size: 2em;
+                    left:60px;
+                }
+
+                .ido-subtitle {
+                    display: none;
+                }
+
+                .ido-user {
+                    display: block;
+                }
+            }
         }
 
         .footer {
@@ -62,6 +83,14 @@ body {
             padding: 5px;
             text-align: right;
             color: @breadcrumb-color;
+        }
+
+        .content {
+            position: absolute;
+            overflow: hidden;
+            width: 100%;
+            top: 6.1em;
+            bottom: 2em;
         }
 
         .breadcrumb {
@@ -111,11 +140,6 @@ body {
 
 /*==========*/
 #content-zone {
-    position: absolute;
-    overflow: hidden;
-    width: 100%;
-    top: 6.1em;
-    bottom: 2em;
 
     & > div {
         position: absolute;

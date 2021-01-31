@@ -4,24 +4,38 @@ import { Template } from './modules/template';
 import { WebApi } from './modules/webapi';
 import { AccountApi } from './codegen/webapi/accountApi';
 import * as ko from 'knockout';
+import * as cmp from './components/index';
 
 export default class App {
     templateNodes: Element[];
     title: ko.Observable<string>;
     popups: Popups.PopupsCollection;
-    userName = ko.observable('');
+    userName: ko.Computed<string>;
+    isAuthorized: ko.Computed<boolean>;
+
+    leftTabs: ko.Observable<cmp.ILeftTab[]>;
     
     constructor() {
+        //leftTabs.init();
         this.templateNodes = Template.getNodes('app.html');
         this.popups = new Popups.PopupsCollection();
 
-        Identity.user.subscribe(u => {
-            this.userName( u ? u.name : '');
-            this._openLoginDialog();
-        });
+        this.userName = ko.computed(() => {
+            const user = Identity.user();
+            return user ? user.name : '';
+        })
+        this.isAuthorized = ko.computed(() => !!Identity.user());
+
+        Identity.user.subscribe(this._openLoginDialog);
         Identity.restoreIdentity();
 
         this._openLoginDialog();
+
+        this.leftTabs = ko.observable([
+            { title: 'меню' },
+            { title: 'параметры' },
+            { title: 'настройки' },
+        ]);
     }
 
     logout() {
@@ -29,7 +43,7 @@ export default class App {
     }
 
     private _openLoginDialog() {
-        if(!this.userName())
+        if(!Identity.user())
             LoginDialog.open();
     }
 }

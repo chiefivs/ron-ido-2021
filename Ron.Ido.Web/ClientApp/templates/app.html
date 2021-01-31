@@ -1,12 +1,12 @@
 ﻿<div class="wrapper">
-    <div class="header">
+    <div class="header" data-bind="css:{'authorized':isAuthorized}">
         <i class="img img-gerb"></i>
         <div class="ido-title">АИС Признание</div>
         <div class="ido-subtitle">
             Информационная система обработки заявлений<br>
             на признание и установление эквивалентности иностранных документов об образовании.
         </div>
-        <div class="pull-right" data-bind="visible:userName">
+        <div class="ido-user pull-right">
             <span data-bind="text:userName"></span>
             <a data-bind="click:logout">
                 <!-- http://findicons.com/search -->
@@ -16,6 +16,13 @@
         </div>
     </div>
 
+    <div class="content" data-bind="if:isAuthorized">
+        <div class="left-panel-tabs">
+            <cmp-left-tabs params="tabs:leftTabs"></cmp-left-tabs>
+        </div>
+        <div class="left-panel"></div>
+        <div class="main-panel"></div>
+    </div>
 
     <div class="footer">
         © Рособрнадзор 2021
