@@ -20,10 +20,8 @@ using Ron.Ido.Web.Authorization;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Security.Authentication;
-using System.Threading.Tasks;
 
 namespace ForeignDocsRec2020.Web
 {
@@ -31,18 +29,15 @@ namespace ForeignDocsRec2020.Web
     {
         public IConfiguration Configuration { get; }
         private const string DBCONTEXT_CREATED = "AppDbContextCreated";
+        private const string APPSETTINGS = "appsettings.json";
 
         public Startup()
         {
-            //string basepath = Environment.GetEnvironmentVariable(Constants.ConfigFolderPath)
-            //      ?? Environment.GetEnvironmentVariable(Constants.ConfigFolderPath, EnvironmentVariableTarget.Machine);
+            string basepath = Environment.GetEnvironmentVariable(Constants.ConfigFolderPath)
+                  ?? Environment.GetEnvironmentVariable(Constants.ConfigFolderPath, EnvironmentVariableTarget.Machine);
 
             var builder = new ConfigurationBuilder();
-
-            //if (!string.IsNullOrEmpty(basepath))
-            //    builder.AddJsonFile(Path.Combine(basepath, "appsettings.json"), true);
-            //else
-                builder.AddJsonFile("appsettings.json", true);
+            builder.AddJsonFile(!string.IsNullOrEmpty(basepath) ? Path.Combine(basepath, APPSETTINGS) : APPSETTINGS, true, true);
 
             Configuration = builder.Build();
         }
