@@ -40,8 +40,4 @@
     <ProjectReference Include="..\Ron.Ido.DbStorage\Ron.Ido.DbStorage.csproj" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="npm run dev" />
-  </Target>
-
 </Project>

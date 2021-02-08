@@ -17,11 +17,12 @@
     </div>
 
     <div class="content" data-bind="if:isAuthorized">
-        <div class="left-panel-tabs">
-            <cmp-left-tabs params="tabs:leftTabs"></cmp-left-tabs>
+        <div style="left:4px;" data-bind="style:{width:Math.round(leftPanelWidth())+'px'}">
+            <cmp-left-panel params="pages:leftPages, width:leftPanelWidth"></cmp-left-tabs>
         </div>
-        <div class="left-panel"></div>
-        <div class="main-panel"></div>
+        <div style="right:4px;" data-bind="style:{left:(Math.round(leftPanelWidth())+8)+'px'}">
+            <cmp-main-panel params="pages:mainPages"></cmp-left-tabs>
+        </div>
     </div>
 
     <div class="footer">

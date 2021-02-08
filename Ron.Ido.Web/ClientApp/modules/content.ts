@@ -1,11 +1,35 @@
+import { readyException } from 'jquery';
 import * as ko from 'knockout';
-import { Template } from './template';
+import { Utils } from './utils';
 
-abstract class Control {
+interface IControl {
+    templateNodes: Element[];
+}
+
+export interface ILeftPage extends IControl {
+    pageTitle: string | ko.Observable<string>;
+}
+
+export interface IMainPage extends IControl {
+    pageTitle: string | ko.Observable<string>;
+    close?: () => boolean;
+}
+
+export interface IControlParams {
+    templatePath?: string;
+    templateHtml?: string;
+}
+
+export abstract class Control implements IControl {
     public templateNodes: Element[];
 
-    constructor(templatePath: string) {
-        this.templateNodes = Template.getNodes(templatePath);
+    constructor(params: IControlParams) {
+        if(!params.templatePath && params.templateHtml === undefined)
+            throw 'Control должен обязательно получить или templatePath или templateHtml';
+
+        this.templateNodes = params.templatePath
+            ? Utils.getNodesFromFile(params.templatePath)
+            : Utils.getNodesFromHtml(params.templateHtml);
     }
 }
 
@@ -20,10 +44,9 @@ export namespace Popups {
         return document[popupInstancesName];
     }
  
-    export interface IPopupParams {
+    export interface IPopupParams extends IControlParams {
         width: number;
         height: number;
-        templatePath: string;
         left?: number;
         top?: number;
         isModal?: boolean;
@@ -37,7 +60,6 @@ export namespace Popups {
 
         constructor() {
             this.instances = getInstances();
-            this.instances.subscribe(i => console.log(i));
 
             this.modalZIndex = ko.computed(() => {
                 var z: number = 0;
@@ -75,7 +97,7 @@ export namespace Popups {
         protected _instances: ko.ObservableArray<Popup>;
 
         constructor(params: IPopupParams) {
-            super(params.templatePath);
+            super(params);
 
             this._instances = getInstances();
 

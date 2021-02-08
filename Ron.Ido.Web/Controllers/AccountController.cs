@@ -36,6 +36,15 @@ namespace ForeignDocsRec2020.Web.Controllers
             return identity;
         }
 
+        [HttpGet]
+        [Route("api/account/getmenu")]
+        [AuthorizedFor()]
+        public async Task<IEnumerable<MenuItem>> GetMenu()
+        {
+            var permissions = AuthOptions.ExtractPermissions(HttpContext.User);
+            return await _mediator.Send(new GetMenuCommand(MainMenu.Items, permissions));
+        }
+
         //[HttpGet]
         //[Route("api/account/getPerms/{permissionName}")]
         //public string GetUserPermission(string permissionName, int ts)

@@ -87,11 +87,11 @@ namespace Codegen
             if (urlParams.Any())
             {
                 builder.AppendLine($"\t\tconst urlParams = [{string.Join(", ", urlParams)}];");
-                builder.AppendLine($"\t\treturn WebApi.get('/'+segments.join('/')+'?'+urlParams.join('&'));");
+                builder.AppendLine($"\t\treturn WebApi.get(segments.join('/')+'?'+urlParams.join('&'));");
             }
             else
             {
-                builder.AppendLine($"\t\treturn WebApi.get('/'+segments.join('/'));");
+                builder.AppendLine($"\t\treturn WebApi.get(segments.join('/'));");
             }
             builder.AppendLine("\t}");
 
@@ -110,7 +110,7 @@ namespace Codegen
             var builder = new StringBuilder();
             builder.AppendLine($"\texport function {CamelCase(descriptor.MethodName)}({parBody}): JQueryPromise<{returnType}>" + " {");
             builder.AppendLine($"\t\tconst segments = [{string.Join(", ", segments)}];");
-            builder.AppendLine($"\t\treturn WebApi.post('/'+segments.join('/'), {parBodyInfo.Name});");
+            builder.AppendLine($"\t\treturn WebApi.post(segments.join('/'), {parBodyInfo.Name});");
             builder.AppendLine("\t}");
 
             EntryPoints.Add(builder.ToString());
@@ -166,6 +166,11 @@ namespace Codegen
                     return "any";
                 }
 
+                if(type.FullName == "System.Object")
+                {
+                    return "any";
+                }
+
                 if (genericTypes != null && genericTypes.Contains(type.Name))
                     return type.Name;
 
@@ -186,16 +191,19 @@ namespace Codegen
 
             if (!Models.ContainsKey(type))
             {
+                Models.Add(type, "");
                 var builder = new StringBuilder();
                 builder.AppendLine($"\t//  {type.FullName}");
                 builder.AppendLine($"\texport interface {typeName}" + " {");
-                foreach(var pi in type.GetProperties())
+
+                var properties = type.GetProperties();
+                foreach (var pi in properties)
                 {
                     builder.AppendLine($"\t\t{CamelCase(pi.Name)}:{GenerateType(pi.PropertyType)};");
                 }
                 builder.AppendLine("\t}");
 
-                Models.Add(type, builder.ToString());
+                Models[type] = builder.ToString();
             }
 
             return typeName;

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -18,7 +17,6 @@ using Ron.Ido.DbStorage;
 using Ron.Ido.EM;
 using Ron.Ido.Web.Authorization;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Security.Authentication;
@@ -37,7 +35,10 @@ namespace ForeignDocsRec2020.Web
                   ?? Environment.GetEnvironmentVariable(Constants.ConfigFolderPath, EnvironmentVariableTarget.Machine);
 
             var builder = new ConfigurationBuilder();
-            builder.AddJsonFile(!string.IsNullOrEmpty(basepath) ? Path.Combine(basepath, APPSETTINGS) : APPSETTINGS, true, true);
+            if (File.Exists(APPSETTINGS))
+                builder.AddJsonFile(APPSETTINGS, true);
+            else if(!string.IsNullOrEmpty(basepath))
+                builder.AddJsonFile(Path.Combine(basepath, APPSETTINGS), true);
 
             Configuration = builder.Build();
         }
@@ -67,7 +68,7 @@ namespace ForeignDocsRec2020.Web
                 .AddHttpContextAccessor()
                 .AddMediatR(typeof(Ron.Ido.BM.IAssemblyMarker), typeof(Startup))
                 .AddDependencies(typeof(Ron.Ido.BM.IAssemblyMarker), typeof(Startup))
-                                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options => {
                     options.RequireHttpsMetadata = false;
                     options.TokenValidationParameters = new TokenValidationParameters
@@ -93,6 +94,14 @@ namespace ForeignDocsRec2020.Web
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "RonIdo2021.Web", Version = "v1" });
+                c.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Scheme = "bearer"
+                });
+                c.OperationFilter<SwaggerAuthorizationFilter>();
             });
         }
 

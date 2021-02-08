@@ -44,6 +44,10 @@ export class LoginDialog extends Popups.Popup {
                 Identity.setIdentity(identity);
                 LoginDialog._isopened = false;
                 this._remove();
+
+                AccountApi.getMenu()
+                    .done(res => console.log('getmenu done', res))
+                    .fail(error => console.log('getmenu fail', error));
             })
             .fail(error => {
                 if(error.status === 401)
