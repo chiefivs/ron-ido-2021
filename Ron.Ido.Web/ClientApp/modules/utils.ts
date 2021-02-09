@@ -22,11 +22,11 @@
     /**
      * Функция animate вызывается в течение установленного интервала времени 
      * с равным шагом от from до to (анимация)
-     * @param action - функция анимации
      * @param from - начальное значение
      * @param to - конечное значение
+     * @param action - функция анимации
      */
-    export function animate(action:(val:number) => void, from:number, to: number){
+    export function animate(from:number, to: number, action:(val:number) => void, after?: () => void){
         const stepsCnt = 20;
         const duration = 300;
         const step = (to - from) / stepsCnt;
@@ -41,6 +41,8 @@
             } else {
                 action(to);
                 clearInterval(interval);
+                if(after)
+                    after();
             }
         }, duration / stepsCnt);
     }

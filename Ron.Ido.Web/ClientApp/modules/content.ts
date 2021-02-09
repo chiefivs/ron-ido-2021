@@ -33,6 +33,24 @@ export abstract class Control implements IControl {
     }
 }
 
+export namespace Event {
+    export const WINDOW_WIDTH_CHANGED = 'window-width-changed';
+    export const WINDOW_HEIGHT_CHANGED = 'window-height-changed';
+    export const LEFTPANEL_WIDTH_CHANGED = 'leftpanel-width-changed';
+
+    export function trigger(event:string, arg?:any) {
+        $(document).trigger(event, arg);
+    }
+
+    export function on(event: string, callback:(...args:any[]) => void) {
+        $(document).on(event, callback);
+    }
+
+    export function off(event: string, callback:(...args:any[]) => void) {
+        $(document).off(event, callback);
+    }
+}
+
 export namespace Popups {
     const minZIndex: number = 2001
     const popupInstancesName = 'app-popup-instances';

@@ -87,11 +87,11 @@ export class LeftPanelModel {
             this.active(item);
 
         if(this.width() < this.defaultWidth)
-            Utils.animate(v => this._setWidth(v), this.width(), this.defaultWidth);
+            Utils.animate(this.width(), this.defaultWidth, v => this._setWidth(v));
     }
 
     close() {
-        Utils.animate(w => this._setWidth(w), this.width(), 38);
+        Utils.animate(this.width(), 38, w => this._setWidth(w));
     }
 
     isActive(item: ILeftPage): boolean {

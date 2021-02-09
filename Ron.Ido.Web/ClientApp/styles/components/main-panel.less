@@ -11,7 +11,7 @@ cmp-main-panel {
 
         &.main-panel-tabs {
             top:0;
-            height: 30px;
+            height: 32px;
             white-space: nowrap;
             overflow: hidden;
 
@@ -33,8 +33,12 @@ cmp-main-panel {
                 cursor: pointer;
 
                 &.active {
-                    height: 30px;
+                    height: 32px;
                     font-weight: bold;
+                }
+
+                &.dragover {
+                    color:red;
                 }
 
                 .close {
@@ -90,7 +94,7 @@ cmp-main-panel {
 
         &.tail-list {
             top:30px;
-            left:unset;
+            left:auto;
             right:0;
 
             &>div {
@@ -106,7 +110,36 @@ cmp-main-panel {
 
                 &>div {
                     max-height:300px;
-                    overflow: auto;
+                    overflow-x: hidden;
+                    overflow-y: auto;
+
+                    &>div.tail-item {
+                        position:relative;
+                        white-space: nowrap;
+                        padding-right: 24px;
+                        height: 24px;
+                       
+                        &.active {
+                            font-weight: bold;
+                        }
+
+                        &.dragover {
+                            color:red;
+                        }
+
+                        .close {
+                            position:absolute;
+                            top:-2px;
+                            right: 2px;
+                            display: none;
+                        }
+
+                        &:hover {
+                            .close {
+                                display: inherit;
+                            }
+                        }
+                    }
                 }
             }
         }

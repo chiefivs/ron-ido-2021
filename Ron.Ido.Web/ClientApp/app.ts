@@ -1,5 +1,5 @@
 ﻿import { Identity,LoginDialog } from './modules/identity';
-import { ILeftPage, IMainPage, Control, Popups } from './modules/content';
+import { ILeftPage, IMainPage, Control, Event, Popups } from './modules/content';
 import { Utils } from './modules/utils';
 import * as ko from 'knockout';
 
@@ -13,6 +13,9 @@ export default class App {
     leftPanelWidth = ko.observable(330);
     leftPages: ko.Observable<ILeftPage[]>;
     mainPages: ko.Observable<IMainPage[]>;
+
+    private _windowWidth = ko.observable(0);
+    private _windowHeight = ko.observable(0);
     
     constructor() {
         //leftTabs.init();
@@ -70,9 +73,13 @@ export default class App {
             new TestMainPage('страница 20', '<div>страница 20</div>'),
         ]);
 
-        this.leftPanelWidth.subscribe(w => {
-            $(document).trigger('left-panel-resize', w);
+        this.leftPanelWidth.subscribe(w => Event.trigger(Event.LEFTPANEL_WIDTH_CHANGED, w));
+        $(window).on('resize', () => {
+            this._windowWidth($(window).width());
+            this._windowHeight($(window).height());
         });
+        this._windowWidth.subscribe(w => Event.trigger(Event.WINDOW_WIDTH_CHANGED, w));
+        this._windowHeight.subscribe(h => Event.trigger(Event.WINDOW_HEIGHT_CHANGED, h));
     }
 
     logout() {
