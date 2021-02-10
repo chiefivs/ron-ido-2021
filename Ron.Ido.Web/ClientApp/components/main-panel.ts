@@ -1,5 +1,6 @@
 import * as ko from 'knockout';
-import { IMainPage, Event } from '../modules/content';
+import { App } from '../app';
+import { IMainPage } from '../modules/content';
 import { Utils } from '../modules/utils';
 
 export function init(){
@@ -35,7 +36,7 @@ export function init(){
 }
 
 export interface IMainPanelParams {
-    pages: IMainPage[] | ko.ObservableArray<IMainPage>;
+    pages: ko.ObservableArray<IMainPage>;
     active: ko.Observable<IMainPage>;
 }
 
@@ -46,7 +47,7 @@ class MainPanelModel {
           event:{dragover:$parent.tabDragOver.bind($parent), dragleave:$parent.tabDragLeave.bind($parent), dragend:$parent.tabDragEnd.bind($parent)},
           click:function(){$parent.setActive($data);}">
             <div data-bind="text:pageTitle"></div>
-            <a class="close" data-bind="click:function(){$parent.close($data);}"><span>&times;</span></a>
+            <a class="close" data-bind="click:close"><span>&times;</span></a>
             </div>
         <!-- /ko -->`);
 
@@ -63,13 +64,11 @@ class MainPanelModel {
     private _tailVisible = ko.observable(false);
 
     constructor(params: IMainPanelParams){
-        this.pages = ko.isObservable(params.pages)
-            ? params.pages
-            : ko.observableArray(params.pages);
+        this.pages = params.pages;
+        this.pages.subscribe(() => this._reorderTabs());
 
         this.active = params.active || ko.observable(null);
         this.isTailVisible = ko.computed(() => this.tail().length && this.tailWidth() > 0 && this.tailHeight() > 0);
-        
         
         const outsideTailClick = () => this._tailVisible(false);
         this._tailVisible.subscribe(visible => {
@@ -94,8 +93,8 @@ class MainPanelModel {
             }
         });
 
-        Event.on(Event.WINDOW_WIDTH_CHANGED, () => this._reorderTabs());
-        Event.on(Event.LEFTPANEL_WIDTH_CHANGED, () => this._reorderTabs());
+        App.instance().windowWidth.subscribe(() => this._reorderTabs());
+        App.instance().leftPanelWidth.subscribe(() => this._reorderTabs());
     }
 
     afterRender(elements:Element[]) {
@@ -114,23 +113,6 @@ class MainPanelModel {
     setActiveFromTail(item: IMainPage) {
         this.setActive(item);
         this._tailVisible(false);
-    }
-
-    close(item: IMainPage) {
-        if(item.close && !item.close())
-            return;
-
-        const pages = this.pages();
-        let index = ko.utils.arrayIndexOf(pages, item);
-        ko.utils.arrayRemoveItem(pages, item);
-
-        if(this.isActive(item)){
-            index = Math.min(index, pages.length - 1);
-            this.setActive(index >= 0 ? pages[index] : null);
-        }
-
-        this.pages(pages);
-        this._reorderTabs();
     }
 
     isActive(page: IMainPage): boolean {

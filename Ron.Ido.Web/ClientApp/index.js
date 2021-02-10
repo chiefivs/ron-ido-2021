@@ -5,9 +5,9 @@ import * as ko from 'knockout';
 import * as cmp from './components/index';
 
 
-import App from './app';
+import { App } from './app';
 
 $(() => {
     cmp.init();
-    ko.applyBindings(new App());
+    ko.applyBindings(App.instance());
 });

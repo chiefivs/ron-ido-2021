@@ -11,8 +11,12 @@ export interface ILeftPage extends IControl {
 }
 
 export interface IMainPage extends IControl {
+    pageTitle: ko.Observable<string>;
+    close: () => void;
+}
+
+export interface IMainPageParams extends IControlParams {
     pageTitle: string | ko.Observable<string>;
-    close?: () => boolean;
 }
 
 export interface IControlParams {
@@ -33,21 +37,17 @@ export abstract class Control implements IControl {
     }
 }
 
-export namespace Event {
-    export const WINDOW_WIDTH_CHANGED = 'window-width-changed';
-    export const WINDOW_HEIGHT_CHANGED = 'window-height-changed';
-    export const LEFTPANEL_WIDTH_CHANGED = 'leftpanel-width-changed';
+export abstract class MainPageBase extends Control implements IMainPage {
+    pageTitle: ko.Observable<string>;
 
-    export function trigger(event:string, arg?:any) {
-        $(document).trigger(event, arg);
+    constructor(params: IMainPageParams) {
+        super(params);
+
+        this.pageTitle = ko.isObservable(params.pageTitle) ? params.pageTitle : ko.observable(params.pageTitle);
     }
 
-    export function on(event: string, callback:(...args:any[]) => void) {
-        $(document).on(event, callback);
-    }
-
-    export function off(event: string, callback:(...args:any[]) => void) {
-        $(document).off(event, callback);
+    close(): void {
+        
     }
 }
 

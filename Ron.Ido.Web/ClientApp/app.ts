@@ -1,21 +1,23 @@
 ﻿import { Identity,LoginDialog } from './modules/identity';
-import { ILeftPage, IMainPage, Control, Event, Popups } from './modules/content';
+import { ILeftPage, IMainPage, Control, MainPageBase, Popups, IMainPageParams } from './modules/content';
 import { Utils } from './modules/utils';
 import * as ko from 'knockout';
 
-export default class App {
+export class App {
     templateNodes: Element[];
     title: ko.Observable<string>;
     popups: Popups.PopupsCollection;
     userName: ko.Computed<string>;
     isAuthorized: ko.Computed<boolean>;
 
+    windowWidth = ko.observable(0);
+    windowHeight = ko.observable(0);
     leftPanelWidth = ko.observable(330);
     leftPages: ko.Observable<ILeftPage[]>;
     mainPages: ko.Observable<IMainPage[]>;
+    activeMainPage = ko.observable<IMainPageParams>();
 
-    private _windowWidth = ko.observable(0);
-    private _windowHeight = ko.observable(0);
+    private static _instance: App = null;
     
     constructor() {
         //leftTabs.init();
@@ -73,17 +75,39 @@ export default class App {
             new TestMainPage('страница 20', '<div>страница 20</div>'),
         ]);
 
-        this.leftPanelWidth.subscribe(w => Event.trigger(Event.LEFTPANEL_WIDTH_CHANGED, w));
         $(window).on('resize', () => {
-            this._windowWidth($(window).width());
-            this._windowHeight($(window).height());
+            this.windowWidth($(window).width());
+            this.windowHeight($(window).height());
         });
-        this._windowWidth.subscribe(w => Event.trigger(Event.WINDOW_WIDTH_CHANGED, w));
-        this._windowHeight.subscribe(h => Event.trigger(Event.WINDOW_HEIGHT_CHANGED, h));
+    }
+
+    static instance(): App {
+        if(!App._instance)
+            App._instance = new App();
+
+        return App._instance;
     }
 
     logout() {
         Identity.setIdentity(null);
+    }
+
+    closeMainPage(page: IMainPage) {
+        ko.utils.arrayRemoveItem(this.mainPages(), page);
+        this.mainPages.valueHasMutated();
+
+
+
+        const pages = this.mainPages();
+        let index = ko.utils.arrayIndexOf(pages, page);
+        ko.utils.arrayRemoveItem(pages, page);
+
+        if(this.activeMainPage() === page) {
+            index = Math.min(index, pages.length - 1);
+            this.activeMainPage(index >= 0 ? pages[index] : null);
+        }
+
+        this.mainPages(pages);
     }
 
     private _openLoginDialog() {
@@ -104,14 +128,12 @@ class TestLeftPage extends Control implements ILeftPage{
     }
 }
 
-class TestMainPage extends Control implements IMainPage{
-    pageTitle: string;
+class TestMainPage extends MainPageBase{
 
     constructor(title: string, html: string) {
         super({
-            templateHtml: html
+            templateHtml: html,
+            pageTitle: title
         });
-
-        this.pageTitle = title;
     }
 }
