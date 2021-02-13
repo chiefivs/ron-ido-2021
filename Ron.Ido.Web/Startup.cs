@@ -15,6 +15,7 @@ using Ron.Ido.Common.DependencyInjection;
 using Ron.Ido.Common.Extensions;
 using Ron.Ido.DbStorage;
 using Ron.Ido.EM;
+using Ron.Ido.FileStorage;
 using Ron.Ido.Web.Authorization;
 using System;
 using System.IO;
@@ -66,6 +67,7 @@ namespace ForeignDocsRec2020.Web
             services.AddMvcCore();
             services
                 .AddHttpContextAccessor()
+                .AddFileStorage<Ron.Ido.EM.Entities.FileInfo>()
                 .AddMediatR(typeof(Ron.Ido.BM.IAssemblyMarker), typeof(Startup))
                 .AddDependencies(typeof(Ron.Ido.BM.IAssemblyMarker), typeof(Startup))
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

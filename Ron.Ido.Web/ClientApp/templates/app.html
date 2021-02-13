@@ -16,9 +16,9 @@
         </div>
     </div>
 
-    <div class="content" data-bind="if:isAuthorized">
+    <div class="content" data-bind="visible:isAuthorized">
         <div style="left:4px;" data-bind="style:{width:Math.round(leftPanelWidth())+'px'}">
-            <cmp-left-panel params="pages:leftPages, width:leftPanelWidth"></cmp-left-tabs>
+            <cmp-left-panel params="pages:leftPages, active:activeLeftPage, width:leftPanelWidth"></cmp-left-tabs>
         </div>
         <div style="right:4px;" data-bind="style:{left:(Math.round(leftPanelWidth())+8)+'px'}">
             <cmp-main-panel params="pages:mainPages, active:activeMainPage"></cmp-left-tabs>

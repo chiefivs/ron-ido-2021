@@ -22,6 +22,7 @@ namespace Ron.Ido.Migrator
 				Console.WriteLine($"Тип контекста - {context.GetType().Name}");
 				Console.WriteLine("Миграция структуры...");
 
+				context.Database.Migrate();
 				Console.WriteLine("Миграция успешно завершена");
 
 				if (args.Contains("no-data"))

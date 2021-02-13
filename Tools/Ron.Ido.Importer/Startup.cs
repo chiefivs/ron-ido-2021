@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Ron.Ido.Common.Extensions;
 using Ron.Ido.DbStorage;
+using Ron.Ido.FileStorage;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -39,6 +40,7 @@ namespace Ron.Ido.Importer
 
 			services.AddSingleton<IConfiguration>(Configuration);
 			services.AddAppDbContext(settings);
+			services.AddFileStorage<EM.Entities.FileInfo>();
 			services.AddDbContext<NostrificationRONContext>(builder => builder.UseSqlServer(_nostrificationConn));
 		}
 	}

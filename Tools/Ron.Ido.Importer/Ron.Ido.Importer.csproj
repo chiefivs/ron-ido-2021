@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Ron.Ido.DbStorage\Ron.Ido.DbStorage.csproj" />
+    <ProjectReference Include="..\..\Ron.Ido.FileStorage\Ron.Ido.FileStorage.csproj" />
   </ItemGroup>
 
 </Project>

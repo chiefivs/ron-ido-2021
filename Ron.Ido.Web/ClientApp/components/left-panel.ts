@@ -1,4 +1,5 @@
 import * as ko from 'knockout';
+import { App } from '../app';
 import { ILeftPage } from '../modules/content';
 import { Utils } from '../modules/utils';
 
@@ -12,7 +13,7 @@ export function init(){
         template: `
             <div>
                 <div class="left-panel-tabs">
-                    <div data-bind="template:{ nodes: tabsTemplateNodes, data: $data, afterRender: afterRender }"></div>
+                    <div data-bind="template:{ nodes: tabsTemplateNodes, data: $data, afterRender: afterRender.bind($data) }"></div>
                 </div>
                 <div class="left-panel-pages" data-bind="style:{width:widthString}">
                     <div class="left-page-container">
@@ -47,7 +48,8 @@ export class LeftPanelModel {
     widthString: ko.Computed<string>;
 
     private width: ko.Observable<number>;
-    private defaultWidth: number;
+    private tabElements: JQuery<Element> = null;
+    //private defaultWidth: number;
 
     constructor(params: ILeftPanelParams){
         this.pages = ko.isObservable(params.pages)
@@ -59,35 +61,22 @@ export class LeftPanelModel {
         this.active = params.active || ko.observable(null);
 
         this.width = ko.isObservable(params.width) ? params.width : ko.observable(330);
-        this.defaultWidth = this.width();
         this.widthString = ko.computed(() => `${(this.width()-30)}px`);
+
+        App.instance().contentVisible.subscribe(() => this._refresh());
     }
 
     afterRender(elements:Element[]) {
-        let top = 0;
-        $(elements)
-            .filter('div')
-            .each((i, e) => {
-                var divElem = $('div', e);
-                const divRect = divElem[0].getBoundingClientRect();
-                const height = Math.ceil(divRect.width) + 20;
-
-                $(e).height(height).css('top', `${top}px`);
-                top += height + 1;
-
-                divElem
-                    .css('left', `${20 - height/2}px`)
-                    .css('top', `${(height - divRect.height)/2}px`)
-                    .css('transform', 'rotate(-90deg)');
-            });
+        this.tabElements = $(elements);
+        this._refresh();
     }
 
     setActive(item: ILeftPage): void {
         if(!this.isActive(item))
             this.active(item);
 
-        if(this.width() < this.defaultWidth)
-            Utils.animate(this.width(), this.defaultWidth, v => this._setWidth(v));
+        if(this.width() < App.LEFT_PANEL_WIDTH_DEFAULT)
+            Utils.animate(this.width(), App.LEFT_PANEL_WIDTH_DEFAULT, v => this._setWidth(v));
     }
 
     close() {
@@ -100,5 +89,29 @@ export class LeftPanelModel {
 
     private _setWidth(width: number) {
         this.width(width);
+    }
+
+    private _refresh() {
+        if(!App.instance().contentVisible)
+            return;
+            
+        let top = 0;
+        this.tabElements
+            .filter('div')
+            .each((i, e) => {
+                var divElem = $('div', e);
+                divElem.removeAttr('style');
+                const divRect = divElem[0].getBoundingClientRect();
+                const height = Math.ceil(divRect.width) + 20;
+
+                $(e).height(height).css('top', `${top}px`);
+                top += height + 1;
+
+                divElem
+                    .css('left', `${20 - height/2}px`)
+                    .css('top', `${(height - divRect.height)/2}px`)
+                    .css('transform', 'rotate(-90deg)');
+            });
+
     }
 }

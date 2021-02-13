@@ -46,4 +46,14 @@
             }
         }, duration / stepsCnt);
     }
+
+    export function getElementRect(element:JQuery):DOMRect {
+        let rect:DOMRect;
+        const style = element.attr('style');
+        element.css('position', 'absolute').css('visibility', 'hidden').css('display', 'block').css('height', '');
+        rect = element[0].getBoundingClientRect();
+        element.attr('style', style);
+
+        return rect;
+    }
 } 

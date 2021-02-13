@@ -27,7 +27,7 @@ export function init(){
                         <div class="tail-item" draggable="true" data-bind="css:{'active':$parent.isActive($data), 'dragover':$parent.isDragOver($data)},
                           event:{dragover:$parent.tabDragOver.bind($parent), dragleave:$parent.tabDragLeave.bind($parent), dragend:$parent.tabDragEnd.bind($parent)}">
                             <span data-bind="text:pageTitle, click:function(){$parent.setActiveFromTail($data);}"></span>
-                            <a class="close" data-bind="click:function(){$parent.close($data);}"><span>&times;</span></a>
+                            <a class="close" data-bind="click:function(page,evt){$parent.closePage(page,evt);}"><span>&times;</span></a>
                         </div>
                     </div>
                 </div>
@@ -47,7 +47,7 @@ class MainPanelModel {
           event:{dragover:$parent.tabDragOver.bind($parent), dragleave:$parent.tabDragLeave.bind($parent), dragend:$parent.tabDragEnd.bind($parent)},
           click:function(){$parent.setActive($data);}">
             <div data-bind="text:pageTitle"></div>
-            <a class="close" data-bind="click:close"><span>&times;</span></a>
+            <a class="close" data-bind="click:function(page,evt){$parent.closePage(page,evt);}"><span>&times;</span></a>
             </div>
         <!-- /ko -->`);
 
@@ -65,7 +65,7 @@ class MainPanelModel {
 
     constructor(params: IMainPanelParams){
         this.pages = params.pages;
-        this.pages.subscribe(() => this._reorderTabs());
+        this.pages.subscribe(() => setTimeout(() => this._reorderTabs(), 100));
 
         this.active = params.active || ko.observable(null);
         this.isTailVisible = ko.computed(() => this.tail().length && this.tailWidth() > 0 && this.tailHeight() > 0);
@@ -95,6 +95,7 @@ class MainPanelModel {
 
         App.instance().windowWidth.subscribe(() => this._reorderTabs());
         App.instance().leftPanelWidth.subscribe(() => this._reorderTabs());
+        App.instance().contentVisible.subscribe(() => this._reorderTabs());
     }
 
     afterRender(elements:Element[]) {
@@ -117,6 +118,11 @@ class MainPanelModel {
 
     isActive(page: IMainPage): boolean {
         return page === this.active();
+    }
+
+    closePage(page:IMainPage, evt:JQuery.Event) {
+        evt.stopPropagation();
+        page.close();
     }
 
     isDragOver(page: IMainPage): boolean {

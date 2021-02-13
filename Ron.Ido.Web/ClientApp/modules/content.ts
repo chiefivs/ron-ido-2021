@@ -1,5 +1,6 @@
 import { readyException } from 'jquery';
 import * as ko from 'knockout';
+import { App } from '../app';
 import { Utils } from './utils';
 
 interface IControl {
@@ -8,14 +9,17 @@ interface IControl {
 
 export interface ILeftPage extends IControl {
     pageTitle: string | ko.Observable<string>;
+    owner?: IMainPage;
 }
 
 export interface IMainPage extends IControl {
     pageTitle: ko.Observable<string>;
+    pageKey: string;
+    leftPages?: ko.ObservableArray<ILeftPage>;
     close: () => void;
 }
 
-export interface IMainPageParams extends IControlParams {
+export interface IPageParams extends IControlParams {
     pageTitle: string | ko.Observable<string>;
 }
 
@@ -37,17 +41,29 @@ export abstract class Control implements IControl {
     }
 }
 
+export abstract class LeftPageBase extends Control implements ILeftPage {
+    pageTitle: string | ko.Observable<string>;
+    owner?: IMainPage;
+
+    constructor(params: IPageParams) {
+        super(params);
+
+        this.pageTitle = ko.isObservable(params.pageTitle) ? params.pageTitle : ko.observable(params.pageTitle);
+    }
+}
+
 export abstract class MainPageBase extends Control implements IMainPage {
     pageTitle: ko.Observable<string>;
+    pageKey: string;
 
-    constructor(params: IMainPageParams) {
+    constructor(params: IPageParams) {
         super(params);
 
         this.pageTitle = ko.isObservable(params.pageTitle) ? params.pageTitle : ko.observable(params.pageTitle);
     }
 
     close(): void {
-        
+        App.instance().closeMainPage(this);
     }
 }
 

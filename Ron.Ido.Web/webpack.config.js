@@ -105,6 +105,7 @@ const { options } = require('less');
             alias: {
                 '@modules': path.resolve(__dirname, 'ClientApp/modules'),
                 '@templates': path.resolve(__dirname, 'ClientApp/templates'),
+                '@pages': path.resolve(__dirname, 'ClientApp/pages'),
                 '@samples': path.resolve(__dirname, 'ClientApp/templates/samples')
             }
         },

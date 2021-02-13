@@ -26,8 +26,17 @@ namespace Ron.Ido.Importer
             _appContext = serviceProvider.GetService<AppDbContext>();
             _nostrContext = serviceProvider.GetService<NostrificationRONContext>();
 
-            ImportRoles();
-            ImportUsers();
+            //ImportRoles();
+            //ImportUsers();
+            ImportFiles();
+        }
+
+        private static void ImportFiles()
+        {
+            foreach(var file in _nostrContext.UploadedFiles)
+            {
+                Console.WriteLine($"{file.FileName}:{file.UploadTime:yyyy-MM-dd HH:mm} - {file.Id}");
+            }
         }
 
         private static void ImportRoles()
