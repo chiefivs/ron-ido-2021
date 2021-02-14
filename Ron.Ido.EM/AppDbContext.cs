@@ -57,15 +57,16 @@ namespace Ron.Ido.EM
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-            modelBuilder.Entity<RolePermission>().HasKey(rp => new { rp.RoleId, rp.PermissionId });
-            modelBuilder.Entity<UserRole>().HasKey(ur => new { ur.UserId, ur.RoleId });
+            modelBuilder.Entity<FileInfo>().HasIndex(f => f.OldId);
 
+            modelBuilder.Entity<RolePermission>().HasKey(rp => new { rp.RoleId, rp.PermissionId });
             modelBuilder.Entity<RolePermission>()
                 .HasOne(p => p.Role)
                 .WithMany(p => p.RolePermissions)
                 .HasForeignKey(p => p.RoleId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<UserRole>().HasKey(ur => new { ur.UserId, ur.RoleId });
             modelBuilder.Entity<UserRole>()
                 .HasOne(p => p.User)
                 .WithMany(p => p.UserRoles)

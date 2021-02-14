@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Ron.Ido.Common.Extensions;
 using Ron.Ido.DbStorage;
 using Ron.Ido.FileStorage;
+using Ron.Ido.Importer.NDB.Classes;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,6 +18,7 @@ namespace Ron.Ido.Importer
 	{
 		private IConfiguration Configuration { get; }
 		private string _nostrificationConn;
+		private string _nostrificationStorage;
 
 		public Startup()
 		{
@@ -28,7 +30,9 @@ namespace Ron.Ido.Importer
 			if (!string.IsNullOrEmpty(basepath))
 				builder.SetBasePath(basepath);
 
-			_nostrificationConn = File.ReadAllText(Path.Combine(basepath, "nostrification.conf"));
+			var settings = File.ReadAllLines(Path.Combine(basepath, "nostrification.conf"));
+			_nostrificationConn = settings[0];
+			_nostrificationStorage = settings[1];
 			builder.AddJsonFile("appsettings.json", true);
 
 			Configuration = builder.Build();
@@ -42,6 +46,10 @@ namespace Ron.Ido.Importer
 			services.AddAppDbContext(settings);
 			services.AddFileStorage<EM.Entities.FileInfo>();
 			services.AddDbContext<NostrificationRONContext>(builder => builder.UseSqlServer(_nostrificationConn));
+			services.Add(
+				new ServiceDescriptor(typeof(NostrificationStorage),
+				provider => new NostrificationStorage(_nostrificationStorage),
+				ServiceLifetime.Singleton));
 		}
 	}
 }

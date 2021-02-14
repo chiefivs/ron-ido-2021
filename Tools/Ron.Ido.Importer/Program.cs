@@ -2,10 +2,14 @@
 using Microsoft.Extensions.DependencyInjection;
 using Ron.Ido.Common;
 using Ron.Ido.Common.Extensions;
+using Ron.Ido.Common.Interfaces;
 using Ron.Ido.EM;
 using Ron.Ido.EM.Entities;
+using Ron.Ido.FileStorage;
 using Ron.Ido.Importer.NDB.Classes;
 using System;
+using System.Collections;
+using System.IO;
 using System.Linq;
 
 namespace Ron.Ido.Importer
@@ -13,7 +17,9 @@ namespace Ron.Ido.Importer
     class Program
     {
         private static AppDbContext _appContext;
+        private static IFileStorageService _appStorage; 
         private static NostrificationRONContext _nostrContext;
+        private static NostrificationStorage _nostrStorage;
         static void Main(string[] args)
         {
             Console.WriteLine("Importer");
@@ -24,7 +30,9 @@ namespace Ron.Ido.Importer
             IServiceProvider serviceProvider = services.BuildServiceProvider();
 
             _appContext = serviceProvider.GetService<AppDbContext>();
+            _appStorage = serviceProvider.GetService<IFileStorageService>();
             _nostrContext = serviceProvider.GetService<NostrificationRONContext>();
+            _nostrStorage = serviceProvider.GetService<NostrificationStorage>();
 
             //ImportRoles();
             //ImportUsers();
@@ -33,9 +41,38 @@ namespace Ron.Ido.Importer
 
         private static void ImportFiles()
         {
-            foreach(var file in _nostrContext.UploadedFiles)
-            {
-                Console.WriteLine($"{file.FileName}:{file.UploadTime:yyyy-MM-dd HH:mm} - {file.Id}");
+            var maxOldId = _nostrContext.UploadedFiles.Max(f => f.Id);
+            var lastConvertedId = _appContext.FileInfos.Any() ? _appContext.FileInfos.Max(f => f.OldId) : 0;
+
+            UploadedFile nextUploadedFile;
+            while((nextUploadedFile = _nostrContext.UploadedFiles.FirstOrDefault(f => f.Id > lastConvertedId)) != null){
+                var bytes = _nostrStorage.GetFileBytes(nextUploadedFile);
+                Guid uid = Guid.Empty;
+                if (bytes != null)
+                {
+                    uid = _appStorage.SaveFile(bytes);
+                }
+
+                var login = nextUploadedFile?.User?.Login;
+                var userId = login != null ? _appContext.Users.FirstOrDefault(u => u.Login == login)?.Id : null;
+
+                var newFileInfo = new EM.Entities.FileInfo
+                {
+                    Name = Path.GetFileName(nextUploadedFile.FileName),
+                    ContentType = nextUploadedFile.ContentType,
+                    CreateTime = nextUploadedFile.UploadTime ?? DateTime.Now,
+                    Uid = uid,
+                    Size = bytes?.Length ?? 0,
+                    Source = nextUploadedFile.Source,
+                    OldId = nextUploadedFile.Id,
+                    CreatorEmail = nextUploadedFile.CreatorEmail,
+                    CreatedById = userId
+                };
+                _appContext.Add(newFileInfo);
+                _appContext.SaveChanges();
+
+                lastConvertedId = nextUploadedFile.Id;
+                Console.WriteLine($"{nextUploadedFile.FileName}->{lastConvertedId}:{uid}");
             }
         }
 
