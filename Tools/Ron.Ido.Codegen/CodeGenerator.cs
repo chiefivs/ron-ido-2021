@@ -1,23 +1,25 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Ron.Ido.Common.Attributes;
+using Ron.Ido.Common.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Codegen
 {
     internal class CodeGenerator
     {
+        private Dictionary<string, CodeModule> Modules;
         private List<string> EntryPoints = new List<string>();
-        private Dictionary<Type, string> Models = new Dictionary<Type, string>();
         private string ApiName;
+        private string ApiModuleName { get { return $"{ApiName.ToCamel()}Api"; } }
         private string NewLine = Environment.NewLine;
 
-        public CodeGenerator(Type type)
+        public CodeGenerator(Type type, Dictionary<string,  CodeModule> modules)
         {
+            Modules = modules;
             ApiName = type.Name.Replace("Controller", "");
             var descriptors = MethodDescriptor.GetAll(type);
 
@@ -31,6 +33,8 @@ namespace Codegen
             }
         }
 
+        public string FileName { get { return ApiModuleName + ".ts"; } }
+
         public string TypeScript
         {
             get
@@ -38,21 +42,29 @@ namespace Codegen
                 var builder = new StringBuilder();
                 builder.AppendLine("//  Сгенерировано на основе серверного кода. Не изменять!!!");
                 builder.AppendLine("import { WebApi } from '../../modules/webapi';");
+
+                var module = Modules.ContainsKey(ApiModuleName) ? Modules[ApiModuleName] : null;
+
+                if(module != null)
+                {
+                    foreach (var import in module.Imports)
+                    {
+                        builder.AppendLine($"import {{ {import.Value.Join(", ")} }} from './{import.Key}';");
+                    }
+                }
+
                 builder.AppendLine("");
                 builder.AppendLine($"export namespace {ApiName}Api" + " {");
                 builder.AppendLine(string.Join(NewLine, EntryPoints));
-                builder.AppendLine(string.Join(NewLine, Models.Select(p => p.Value)));
+
+                if (module != null)
+                {
+                    builder.AppendLine(string.Join(NewLine, module.Models.Select(p => p.Value)));
+                }
+
                 builder.AppendLine("}");
 
                 return builder.ToString().Replace("\t", "    ");
-            }
-        }
-
-        public string FileName
-        {
-            get
-            {
-                return CamelCase(ApiName) + "Api.ts";
             }
         }
 
@@ -82,7 +94,7 @@ namespace Codegen
             var urlParams = parNames.Select(pn => "`" + pn + "=${" + pn + "}`");
 
             var builder = new StringBuilder();
-            builder.AppendLine($"\texport function {CamelCase(descriptor.MethodName)}({string.Join(", ", parDefs)}): JQueryPromise<{returnType}>" + " {");
+            builder.AppendLine($"\texport function {descriptor.MethodName.ToCamel()}({string.Join(", ", parDefs)}): JQueryPromise<{returnType}>" + " {");
             builder.AppendLine($"\t\tconst segments = [{string.Join(", ", segments)}];");
             if (urlParams.Any())
             {
@@ -108,7 +120,7 @@ namespace Codegen
             var segments = descriptor.Segments.Select(s => $"'{s}'");
 
             var builder = new StringBuilder();
-            builder.AppendLine($"\texport function {CamelCase(descriptor.MethodName)}({parBody}): JQueryPromise<{returnType}>" + " {");
+            builder.AppendLine($"\texport function {descriptor.MethodName.ToCamel()}({parBody}): JQueryPromise<{returnType}>" + " {");
             builder.AppendLine($"\t\tconst segments = [{string.Join(", ", segments)}];");
             builder.AppendLine($"\t\treturn WebApi.post(segments.join('/'), {parBodyInfo.Name});");
             builder.AppendLine("\t}");
@@ -116,7 +128,51 @@ namespace Codegen
             EntryPoints.Add(builder.ToString());
         }
 
-        private string GenerateType(Type type, string[] genericTypes = null)
+        private string GenerateType(Type type)
+        {
+            if (!Modules.ContainsKey(ApiModuleName))
+            {
+                Modules.Add(ApiModuleName, new CodeModule(ApiModuleName, Modules));
+            }
+
+            return Modules[ApiModuleName].GenerateType(type);
+        }
+    }
+
+    internal class CodeModule
+    {
+        public string ModuleName;
+        public Dictionary<string, List<string>> Imports = new Dictionary<string, List<string>>();
+        public Dictionary<Type, string> Models = new Dictionary<Type, string>();
+        
+        private string NewLine = Environment.NewLine;
+        private Dictionary<string, CodeModule> Modules;
+        private static Type[] NumberTypes = new[] { typeof(Int16), typeof(Int32), typeof(Int64), typeof(UInt16), typeof(UInt32), typeof(UInt64), typeof(double) };
+        private static Type[] StringTypes = new[] { typeof(DateTime), typeof(string) };
+
+        public CodeModule(string name, Dictionary<string, CodeModule> modules)
+        {
+            ModuleName = name;
+            Modules = modules;
+        }
+
+        public string TypeScript
+        {
+            get
+            {
+                var builder = new StringBuilder();
+                builder.AppendLine("//  Сгенерировано на основе серверного кода. Не изменять!!!");
+                foreach (var import in Imports)
+                {
+                    builder.AppendLine($"import {{ {import.Value.Join(", ")} }} from './{import.Key}';");
+                }
+
+                builder.AppendLine(string.Join(NewLine, Models.Select(p => p.Value)));
+                return builder.ToString().Replace("\t", "    ");
+            }
+        }
+
+        public string GenerateType(Type type, string[] genericTypes = null)
         {
             if (NumberTypes.Contains(type))
             {
@@ -135,7 +191,7 @@ namespace Codegen
             else if (type.IsArray)
             {
                 var itemType = type.GetElementType();
-                return $"{GenerateModel(itemType)}[]";
+                return $"{GenerateType(itemType)}[]";
             }
             else if (type.IsGenericType)
             {
@@ -166,7 +222,7 @@ namespace Codegen
                     return "any";
                 }
 
-                if(type.FullName == "System.Object")
+                if (type.FullName == "System.Object")
                 {
                     return "any";
                 }
@@ -181,17 +237,17 @@ namespace Codegen
                 return GenerateEnum(type);
             }
 
-
             return "any";
         }
 
         private string GenerateModel(Type type)
         {
             var typeName = $"I{type.Name}";
+            var module = GetModule(type, ModuleName);
 
-            if (!Models.ContainsKey(type))
+            if (!module.Models.ContainsKey(type))
             {
-                Models.Add(type, "");
+                module.Models.Add(type, "");
                 var builder = new StringBuilder();
                 builder.AppendLine($"\t//  {type.FullName}");
                 builder.AppendLine($"\texport interface {typeName}" + " {");
@@ -199,11 +255,12 @@ namespace Codegen
                 var properties = type.GetProperties();
                 foreach (var pi in properties)
                 {
-                    builder.AppendLine($"\t\t{CamelCase(pi.Name)}:{GenerateType(pi.PropertyType)};");
+                    builder.AppendLine($"\t\t{pi.Name.ToCamel()}:{module.GenerateType(pi.PropertyType)};");
                 }
                 builder.AppendLine("\t}");
 
-                Models[type] = builder.ToString();
+                module.Models[type] = builder.ToString();
+                AddImports(typeName, module);
             }
 
             return typeName;
@@ -211,7 +268,9 @@ namespace Codegen
 
         private string GenerateEnum(Type type)
         {
-            if (!Models.ContainsKey(type))
+            var module = GetModule(type, ModuleName);
+
+            if (!module.Models.ContainsKey(type))
             {
                 var values = Enum.GetValues(type);
                 var builder = new StringBuilder();
@@ -225,41 +284,37 @@ namespace Codegen
                 builder.AppendLine(string.Join($",{Environment.NewLine}", options));
                 builder.AppendLine("\t}");
 
-                Models.Add(type, builder.ToString());
+                module.Models.Add(type, builder.ToString());
+                AddImports(type.Name, module);
             }
 
             return type.Name;
         }
 
-        private string GenerateGeneric(Type typeDef)
+        private string GenerateGeneric(Type type)
         {
-            var typeName = $"I{typeDef.Name.Split("`").First()}";
+            var typeName = $"I{type.Name.Split("`").First()}";
+            var module = GetModule(type, ModuleName);
 
-            if (!Models.ContainsKey(typeDef))
+            if (!module.Models.ContainsKey(type))
             {
-                var genPars = typeDef.GetGenericArguments().Select(t => t.Name).ToArray();
+                module.Models.Add(type, "");
+                var genPars = type.GetGenericArguments().Select(t => t.Name).ToArray();
 
                 var builder = new StringBuilder();
-                builder.AppendLine($"\t//  {typeDef.FullName.Split("`").First()}<{string.Join(",", genPars)}>");
+                builder.AppendLine($"\t//  {type.FullName.Split("`").First()}<{string.Join(",", genPars)}>");
                 builder.AppendLine($"\texport interface {typeName}<{string.Join(",", genPars)}>" + " {");
-                foreach (var pi in typeDef.GetProperties())
+                foreach (var pi in type.GetProperties())
                 {
-                    builder.AppendLine($"\t\t{CamelCase(pi.Name)}:{GenerateType(pi.PropertyType, genPars)};");
+                    builder.AppendLine($"\t\t{pi.Name.ToCamel()}:{module.GenerateType(pi.PropertyType, genPars)};");
                 }
                 builder.AppendLine("\t}");
 
-                Models.Add(typeDef, builder.ToString());
+                module.Models[type] = builder.ToString();
+                AddImports(typeName, module);
             }
 
             return typeName;
-        }
-
-        private string CamelCase(string text)
-        {
-            if (string.IsNullOrEmpty(text))
-                return text;
-
-            return text.Substring(0, 1).ToLower() + text.Substring(1);
         }
 
         private static bool IsPrimitive(Type type)
@@ -268,7 +323,34 @@ namespace Codegen
 
         }
 
-        private static Type[] NumberTypes = new[] { typeof(Int16), typeof(Int32), typeof(Int64), typeof(UInt16), typeof(UInt32), typeof(UInt64), typeof(double) };
-        private static Type[] StringTypes = new[] { typeof(DateTime), typeof(string) };
+        private CodeModule GetModule(Type type, string defModuleName)
+        {
+            var moduleAttr = type.GetCustomAttribute<TypeScriptModuleAttribute>();
+            var moduleName = moduleAttr?.Name ?? defModuleName;
+
+            if (!Modules.ContainsKey(moduleName))
+                Modules[moduleName] = new CodeModule(moduleName, Modules);
+
+            var module = Modules[moduleName];
+            //var models = module.Models;
+
+            //if (!Imports.ContainsKey(moduleName))
+            //    Imports.Add(moduleName, new List<string>());
+
+            return module;
+        }
+
+        private void AddImports(string typeName, CodeModule module)
+        {
+            if (module != this)
+            {
+                if (!Imports.ContainsKey(module.ModuleName))
+                {
+                    Imports.Add(module.ModuleName, new List<string>());
+                }
+
+                Imports[module.ModuleName].Add(typeName);
+            }
+        }
     }
 }

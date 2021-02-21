@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Ron.Ido.EM;
+using Ron.Ido.Migrator.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Ron.Ido.Migrator
 {
@@ -33,6 +35,7 @@ namespace Ron.Ido.Migrator
 
 				var taskList = typeof(IUpdateTask).Assembly.GetTypes()
 					.Where(t => t.IsClass && typeof(IUpdateTask).IsAssignableFrom(t))
+					.OrderBy(t => t.GetCustomAttribute<UpdateTaskAttribute>()?.OrderNum ?? 0)
 					.Select(Activator.CreateInstance)
 					.Cast<IUpdateTask>();
 
@@ -40,7 +43,6 @@ namespace Ron.Ido.Migrator
 				var hash = taskList.Select(iut => iut.GetType()).ToHashSet();
 
 				Console.WriteLine("Модификация данных...");
-				int idleSteps = 0;
 				while (tasks.Count > 0)
 				{
 					var task = tasks.Dequeue();
@@ -48,18 +50,11 @@ namespace Ron.Ido.Migrator
 
 					try
 					{
-						if (idleSteps > tasks.Count + 1)
-						{
-							Console.WriteLine("Предположительно циклическая зависимость в очереди");
-							break;
-						}
-
 						context.BeginTransaction();
 						task.Update(context);
 						context.SaveChanges();
 						context.Commit();
 						Console.WriteLine($" успешно выполнена");
-						idleSteps = 0;
 					}
 					catch (Exception ex)
 					{

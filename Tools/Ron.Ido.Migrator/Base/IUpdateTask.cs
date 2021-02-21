@@ -1,6 +1,7 @@
 ﻿using Ron.Ido.EM;
+using System;
 
-namespace Ron.Ido.Migrator
+namespace Ron.Ido.Migrator.Base
 {
     public interface IUpdateTask
     {
