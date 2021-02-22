@@ -46,6 +46,7 @@ namespace Ron.Ido.BM.Services
             
             var query = _appDbContext.Set<TEntity>().AsQueryable();
             query = ApplyFilters(query, request.Filters, customFilters);
+            query = ApplyOrders(query, request.Orders);
             var items = query.Skip(request.Skip).Take(request.Take).ProjectTo<TDto>(mapperConfig);
 
             return new ODataPage<TDto>
@@ -79,7 +80,7 @@ namespace Ron.Ido.BM.Services
             IEnumerable<ODataFilter> filters,
             IEnumerable<Func<IQueryable<TEntity>, IQueryable<TEntity>>> customFilters) where TEntity : class
         {
-            if (filters != null)
+            if (filters != null && filters.Any())
             {
                 var properties = typeof(TEntity).GetProperties();
 
@@ -94,6 +95,65 @@ namespace Ron.Ido.BM.Services
                         case ODataFilterTypeEnum.Equals:
                             query = query.WhereEqual(propInfo.Name, filter.Values.First().Parse(propInfo.PropertyType));
                             break;
+                        case ODataFilterTypeEnum.NotEquals:
+                            query = query.WhereNotEqual(propInfo.Name, filter.Values.First().Parse(propInfo.PropertyType));
+                            break;
+                        case ODataFilterTypeEnum.LessThan:
+                            query = query.WhereLessThan(propInfo.Name, filter.Values.First().Parse(propInfo.PropertyType));
+                            break;
+                        case ODataFilterTypeEnum.GreatThan:
+                            query = query.WhereGreaterThan(propInfo.Name, filter.Values.First().Parse(propInfo.PropertyType));
+                            break;
+                        case ODataFilterTypeEnum.LessThanOrEqual:
+                            query = query.WhereLessThanOrEqual(propInfo.Name, filter.Values.First().Parse(propInfo.PropertyType));
+                            break;
+                        case ODataFilterTypeEnum.GreatThanOrEqual:
+                            query = query.WhereGreaterThanOrEqual(propInfo.Name, filter.Values.First().Parse(propInfo.PropertyType));
+                            break;
+                        case ODataFilterTypeEnum.In:
+                            if(propInfo.PropertyType == typeof(int))
+                            {
+                                query = query.WhereContains(propInfo.Name, filter.Values.Select( v => v.Parse(0)));
+                            }
+                            else if (propInfo.PropertyType == typeof(long))
+                            {
+                                query = query.WhereContains(propInfo.Name, filter.Values.Select(v => v.Parse<long>(0)));
+                            }
+                            break;
+                        case ODataFilterTypeEnum.BetweenNone:
+                            if(filter.Values.Length == 2)
+                            {
+                                query = query
+                                    .WhereGreaterThan(propInfo.Name, filter.Values[0].Parse(propInfo.PropertyType))
+                                    .WhereLessThan(propInfo.Name, filter.Values[1].Parse(propInfo.PropertyType));
+                            }
+                            break;
+                        case ODataFilterTypeEnum.BetweenLeft:
+                            if (filter.Values.Length == 2)
+                            {
+                                query = query
+                                    .WhereGreaterThanOrEqual(propInfo.Name, filter.Values[0].Parse(propInfo.PropertyType))
+                                    .WhereLessThan(propInfo.Name, filter.Values[1].Parse(propInfo.PropertyType));
+                            }
+                            break;
+                        case ODataFilterTypeEnum.BetweenRight:
+                            if (filter.Values.Length == 2)
+                            {
+                                query = query
+                                    .WhereGreaterThan(propInfo.Name, filter.Values[0].Parse(propInfo.PropertyType))
+                                    .WhereLessThanOrEqual(propInfo.Name, filter.Values[1].Parse(propInfo.PropertyType));
+                            }
+                            break;
+                        case ODataFilterTypeEnum.BetweenAll:
+                            if (filter.Values.Length == 2)
+                            {
+                                query = query
+                                    .WhereGreaterThanOrEqual(propInfo.Name, filter.Values[0].Parse(propInfo.PropertyType))
+                                    .WhereLessThanOrEqual(propInfo.Name, filter.Values[1].Parse(propInfo.PropertyType));
+                            }
+                            break;
+                        case ODataFilterTypeEnum.Starts:
+                            break;
                         case ODataFilterTypeEnum.Contains:
                             query = query.WhereContains(propInfo.Name, filter.Values.First());
                             break;
@@ -106,6 +166,34 @@ namespace Ron.Ido.BM.Services
                 foreach(var filter in customFilters)
                 {
                     query = filter(query);
+                }
+            }
+
+            return query;
+        }
+
+        private IQueryable<TEntity> ApplyOrders<TEntity>(
+            IQueryable<TEntity> query,
+            IEnumerable<ODataOrder> orders) where TEntity: class
+        {
+            if(orders != null && orders.Any())
+            {
+                foreach(var order in orders)
+                {
+                    if(order == orders.First())
+                    {
+                        if (order.Direct == ODataOrderTypeEnum.Asc)
+                            query = query.OrderBy(order.Field);
+                        else
+                            query = query.OrderByDescending(order.Field);
+                    }
+                    else
+                    {
+                        if (order.Direct == ODataOrderTypeEnum.Asc)
+                            query = query.ThenBy(order.Field);
+                        else
+                            query = query.ThenByDescending(order.Field);
+                    }
                 }
             }
 

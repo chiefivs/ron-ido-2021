@@ -17,7 +17,6 @@ export interface IMainPage extends IControl {
     pageKey: string;
     leftPages?: ko.ObservableArray<ILeftPage>;
     close: () => void;
-    onActivated?: () => void;
 }
 
 export interface IPageParams extends IControlParams {
@@ -56,17 +55,13 @@ export abstract class LeftPageBase extends Control implements ILeftPage {
 export abstract class MainPageBase extends Control implements IMainPage {
     pageTitle: ko.Observable<string>;
     pageKey: string;
+    isActive: ko.Computed<boolean>;
 
     constructor(params: IPageParams) {
         super(params);
 
         this.pageTitle = ko.isObservable(params.pageTitle) ? params.pageTitle : ko.observable(params.pageTitle);
-        App.instance().activeMainPage.subscribe(activePage => {
-            var thisPage = this as IMainPage;
-            if(thisPage.onActivated && activePage === this) {
-                thisPage.onActivated();
-            }
-        });
+        this.isActive = ko.computed(() => App.instance().activeMainPage() === this);
     }
 
     close(): void {
