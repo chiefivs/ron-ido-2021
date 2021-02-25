@@ -10,6 +10,7 @@ namespace Ron.Ido.Migrator.Tasks
         {
             UpdateApplyAims(context);
             UpdateApplyDocFullPackageTypes(context);
+            UpdateApplyLearnForms(context);
         }
 
         private void UpdateApplyAims(AppDbContext context)
@@ -38,5 +39,21 @@ namespace Ron.Ido.Migrator.Tasks
             foreach(var item in list)
                 context.AddEntityIfNotExists(item, entity => entity.Id == item.Id);
         }
+
+        private void UpdateApplyLearnForms(AppDbContext context)
+        {
+            var list = new[]
+            {
+                new ApplyLearnForm{ Id = 1, OrderNum = 1, Name = "дневная" },
+                new ApplyLearnForm{ Id = 2, OrderNum = 2, Name = "заочная" },
+                new ApplyLearnForm{ Id = 3, OrderNum = 3, Name = "вечерняя" },
+                new ApplyLearnForm{ Id = 4, OrderNum = 4, Name = "экстернат" },
+                new ApplyLearnForm{ Id = 5, OrderNum = 5, Name = "дистанционная" }
+            };
+
+            foreach (var item in list)
+                context.AddEntityIfNotExists(item, entity => entity.Id == item.Id);
+        }
+
     }
 }

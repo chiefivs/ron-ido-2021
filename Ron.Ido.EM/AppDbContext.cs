@@ -8,6 +8,8 @@ namespace Ron.Ido.EM
     {
         public virtual DbSet<ApplyAim> ApplyAims { get; set; }
         public virtual DbSet<ApplyDocFullPackageType> ApplyDocFullPackageTypes { get; set; }
+        public virtual DbSet<ApplyLearnForm> ApplyLearnForms { get; set; }
+
         public virtual DbSet<FileInfo> FileInfos { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<RolePermission> RolesPermissions { get; set; }
@@ -62,6 +64,8 @@ namespace Ron.Ido.EM
             modelBuilder.Entity<ApplyAim>().HasIndex(a => a.Name);
             modelBuilder.Entity<ApplyAim>().HasIndex(a => a.NameEng);
             modelBuilder.Entity<ApplyDocFullPackageType>().HasIndex(a => a.Name);
+            modelBuilder.Entity<ApplyLearnForm>().HasIndex(a => a.Name);
+            modelBuilder.Entity<ApplyLearnForm>().HasIndex(a => a.NameEng);
 
             modelBuilder.Entity<FileInfo>().HasIndex(f => f.OldId);
 
