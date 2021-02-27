@@ -57,6 +57,7 @@ export class App {
 
         this.isAuthorized.subscribe(() => this._updateMainMenu());
         this._updateMainMenu();
+        this._restoreLastPage();
     }
 
     static instance(): App {
@@ -82,6 +83,7 @@ export class App {
         }
 
         this.activeMainPage(page);
+        this._saveLastPage(path, key);
     }
 
     closeMainPage(page: IMainPage) {
@@ -105,6 +107,26 @@ export class App {
     private _updateMainMenu() {
         if(this.isAuthorized())
             AccountApi.getMenu().done(items => this._mainMenu.update(items));
+    }
+
+    private _restoringLastPage: boolean = false;
+    private _saveLastPage(path:string, key:string) {
+        if(this._restoringLastPage)
+            return;
+
+        sessionStorage.setItem('ron2021-last-page', [path, key].join('~'));
+    }
+
+    private _restoreLastPage() {
+        const stored = sessionStorage.getItem('ron2021-last-page');
+        if(stored) {
+            setTimeout(() => {
+                const parts = stored.split('~');
+                this._restoringLastPage = true;
+                this.openMainPage(parts[0], parts[1]);
+                this._restoringLastPage = false;
+            }, 500);
+        }
     }
 }
 
