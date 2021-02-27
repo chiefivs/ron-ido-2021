@@ -10,8 +10,8 @@ using Ron.Ido.DbStorage.SqlServer;
 namespace Ron.Ido.DbStorage.SqlServer.Migrations
 {
     [DbContext(typeof(SqlServerAppDbContext))]
-    [Migration("20210220121850_ApplyDictions")]
-    partial class ApplyDictions
+    [Migration("20210226154112_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -27,10 +27,12 @@ namespace Ron.Ido.DbStorage.SqlServer.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("NameEng")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<int>("OrderNum")
                         .HasColumnType("int");
@@ -44,13 +46,39 @@ namespace Ron.Ido.DbStorage.SqlServer.Migrations
                     b.ToTable("ApplyAims");
                 });
 
+            modelBuilder.Entity("Ron.Ido.EM.Entities.ApplyDeliveryForm", b =>
+                {
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("NameEng")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("OrderNum")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("NameEng");
+
+                    b.ToTable("ApplyDeliveryForms");
+                });
+
             modelBuilder.Entity("Ron.Ido.EM.Entities.ApplyDocFullPackageType", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<int>("OrderNum")
                         .HasColumnType("int");
@@ -60,6 +88,108 @@ namespace Ron.Ido.DbStorage.SqlServer.Migrations
                     b.HasIndex("Name");
 
                     b.ToTable("ApplyDocFullPackageTypes");
+                });
+
+            modelBuilder.Entity("Ron.Ido.EM.Entities.ApplyDocType", b =>
+                {
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("BeginDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("LearnLevelId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("NameEng")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("OrderNum")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LearnLevelId");
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("NameEng");
+
+                    b.ToTable("ApplyDocTypes");
+                });
+
+            modelBuilder.Entity("Ron.Ido.EM.Entities.ApplyEntryForm", b =>
+                {
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("OrderNum")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name");
+
+                    b.ToTable("ApplyEntryForms");
+                });
+
+            modelBuilder.Entity("Ron.Ido.EM.Entities.ApplyLearnForm", b =>
+                {
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("NameEng")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("OrderNum")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("NameEng");
+
+                    b.ToTable("ApplyLearnForms");
+                });
+
+            modelBuilder.Entity("Ron.Ido.EM.Entities.ApplyTemplate", b =>
+                {
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("OrderNum")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name");
+
+                    b.ToTable("ApplyTemplates");
                 });
 
             modelBuilder.Entity("Ron.Ido.EM.Entities.FileInfo", b =>
@@ -103,6 +233,37 @@ namespace Ron.Ido.DbStorage.SqlServer.Migrations
                     b.HasIndex("OldId");
 
                     b.ToTable("FileInfos");
+                });
+
+            modelBuilder.Entity("Ron.Ido.EM.Entities.LearnLevel", b =>
+                {
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("BeginDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FullName")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("OrderNum")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FullName");
+
+                    b.HasIndex("Name");
+
+                    b.ToTable("LearnLevels");
                 });
 
             modelBuilder.Entity("Ron.Ido.EM.Entities.Role", b =>
@@ -210,6 +371,17 @@ namespace Ron.Ido.DbStorage.SqlServer.Migrations
                     b.ToTable("UsersRoles");
                 });
 
+            modelBuilder.Entity("Ron.Ido.EM.Entities.ApplyDocType", b =>
+                {
+                    b.HasOne("Ron.Ido.EM.Entities.LearnLevel", "LearnLevel")
+                        .WithMany("ApplyDocTypes")
+                        .HasForeignKey("LearnLevelId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("LearnLevel");
+                });
+
             modelBuilder.Entity("Ron.Ido.EM.Entities.FileInfo", b =>
                 {
                     b.HasOne("Ron.Ido.EM.Entities.User", "CreatedBy")
@@ -247,6 +419,11 @@ namespace Ron.Ido.DbStorage.SqlServer.Migrations
                     b.Navigation("Role");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Ron.Ido.EM.Entities.LearnLevel", b =>
+                {
+                    b.Navigation("ApplyDocTypes");
                 });
 
             modelBuilder.Entity("Ron.Ido.EM.Entities.Role", b =>

@@ -34,9 +34,9 @@ namespace Ron.Ido.Importer
             _nostrContext = serviceProvider.GetService<NostrificationRONContext>();
             _nostrStorage = serviceProvider.GetService<NostrificationStorage>();
 
-            //ImportRoles();
-            //ImportUsers();
-            ImportFiles();
+            ImportRoles();
+            ImportUsers();
+            //ImportFiles();
         }
 
         private static void ImportFiles()
