@@ -20,6 +20,17 @@
     }
 
     /**
+     * Возвращает шаблон в виде массива html-элементов из тега script по идентификатору.
+     * Пример: <script type="text/html" id="template-id"><div>template nodes</div></script>
+     * const nodes = Template.getNodesFromScriptElement('template-id');
+     * вернет <div>template nodes</div>
+     * @param id - идентификатор тега script
+     */
+    export function getNodesFromScriptElement(id: string): Element[] {
+        return getNodesFromHtml($(`script#${id}`).html());
+    }
+
+    /**
      * Функция animate вызывается в течение установленного интервала времени 
      * с равным шагом от from до to (анимация)
      * @param from - начальное значение

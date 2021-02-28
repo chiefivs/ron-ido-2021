@@ -1,4 +1,8 @@
 cmp-table {
+    display: block;
+    position: relative;
+    height: 100%;
+
     & > cmp-table-column,
     & > cmp-table-block > * {
         display: none;
@@ -136,7 +140,15 @@ cmp-table {
     }
 
     & > .table-pager {
+        position:absolute;
+        overflow: visible;
+        left:0;
+        right: 0;
+        bottom: 0;
+        border-top: 1px solid #d7d7d7;
+
         ul {
+            //margin-top:30px;
             list-style-type: none;
             text-align: center;
             font-size: @font-size-small;
@@ -210,15 +222,12 @@ cmp-table {
         }
 
         .current-page-desc {
-            text-align: center;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #d7d7d7;
-            margin-bottom: 20px;
+            text-align: left;
         }
 
         .max-result-select {
             white-space: nowrap;
-            text-align: right;
+            margin-top: -1.6em;
 
             & > * {
                 display: inline-block;
@@ -229,40 +238,6 @@ cmp-table {
             }
         }
 
-        .myep-select-component {
-            input {
-                padding-left: 12px;
-                padding-top: 10px;
-                padding-bottom: 10px;
-                width: 120px;
-                border: 1px solid #a3a3a3;
-
-                &:focus {
-                    outline: none;
-                }
-            }
-
-            .ico-web-arrow-down {
-                font-size: 7px;
-                top: 10px;
-            }
-
-            .myep-select-component__dropdown-list {
-                text-align: left;
-
-                .selected {
-                    padding-right: 6px;
-                    background-color: #eee;
-                    color: #f00;
-
-                    &:after {
-                        font-size: 16px;
-                        content: '*';
-                        float: right;
-                    }
-                }
-            }
-        }
     }
 
     .table-child-head-default {

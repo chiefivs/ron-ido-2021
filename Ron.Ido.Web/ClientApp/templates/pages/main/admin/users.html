@@ -4,6 +4,10 @@
     <cmp-table-column params="title:'Фамилия', data:'surName', orderable:true"></cmp-table-column>   
     <cmp-table-column params="title:'Имя', data:'firstName', orderable:true"></cmp-table-column>   
     <cmp-table-column params="title:'Роли'">
-        <span data-bind="text:$parent.roles.length"></span>
+        <div data-bind="text:$parent.roles.join('; ')" style="height:14px; margin-bottom:-1px; white-space: nowrap; overflow:hidden; text-overflow: ellipsis;"></div>
     </cmp-table-column>   
 </cmp-table>
+
+<script type="text/html" id="users-search-leftpage">
+    <h2>Поиск</h2>
+</script>

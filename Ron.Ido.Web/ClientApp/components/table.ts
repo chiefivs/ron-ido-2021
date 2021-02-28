@@ -3,18 +3,13 @@ import { App } from '../app';
 import { Utils } from '../modules/utils';
 
 const myepTable = 'cmp-table';
-const myepTableBlock = 'cmp-table-block';
 const myepTableColumn = 'cmp-table-column';
 const myepTableTitle = 'cmp-table-title';
 const myepTableData = 'cmp-table-data';
 const myepTableChildTitle = 'cmp-table-child-title';
 const myepTableChildData = 'cmp-table-child-data';
-const myepTableSmallParent = 'cmp-table-small-parent';
-const myepTableSmallTitle = 'cmp-table-small-title';
-const myepTableSmallData = 'cmp-table-small-data';
 const myepTableFooter = 'cmp-table-footer';
 const myepTablePager = 'cmp-table-pager';
-//const templatesRootFolderPath = 'Templates/';
 const templatesTablesFolderPath = 'components/table/';
 
 export function init(){
@@ -28,10 +23,8 @@ export function init(){
             },
             template: `
                 <!-- ko template:{nodes:[], afterRender:function(){setParentContext.bind($data)($parent);}} --><!-- /ko -->
-                <div class="js-small-view-marker visible-xs hidden-sm"></div>
     
-                <!-- ko if:visibleMode() === 'large' -->
-                <table class="table large-view">
+                <table class="table large-view js-table">
                     <thead>
                         <tr>
                             <th class="control" data-bind="visible:hasChildColumns()"></th>
@@ -94,59 +87,11 @@ export function init(){
                         <!-- /ko -->
                     </tbody>
                 </table>
-                <!-- /ko -->
-    
-                <!-- ko if:visibleMode() === 'small' -->
-                <table class="table small-view">
-                    <tbody data-bind="foreach:rows">
-                        <!-- ko foreach:smallCells -->
-                        <tr>
-                            <!-- ko ifnot:title -->
-                            <td colspan="2" class="parent">
-                                <!-- ko with:content -->
-                                <!-- ko with:parent -->
-                                <div class="child-data" data-bind="template:{nodes:$parent.nodes, data:$parent.data}"></div>
-                                <!-- /ko -->
-                                <!-- /ko -->
-                            </td>
-                            <!-- /ko -->
-                            <!-- ko if:title -->
-                            <td>
-                                <!-- ko with:title -->
-                                <!-- ko with:parent -->
-                                <div class="child-title" data-bind="template:{nodes:$parent.nodes, data:$parent.data}"></div>
-                                <!-- /ko -->
-                                <!-- /ko -->
-                            </td>
-                            <td>
-                                <!-- ko with:content -->
-                                <!-- ko with:parent -->
-                                <div class="child-data" data-bind="template:{nodes:$parent.nodes, data:$parent.data}"></div>
-                                <!-- /ko -->
-                                <!-- /ko -->
-                            </td>
-                            <!-- /ko -->
-                        </tr>
-                        <!-- /ko -->
-                    </tbody>
-                </table>
-                <!-- /ko -->
-    
-                <div class=js-table-blocks-placeholder></div>
-    
-                <div class="table-pager" data-bind="with:pager">
-                    <div class="current-page-desc">
-                        <span data-bind="text:skipCount() + 1"></span>
-                        <span>-</span>
-                        <span data-bind="text:Math.min(skipCount() + maxResultCountValue().value, totalCount())"></span>
-                        <span>&nbsp;of&nbsp;</span>
-                        <span data-bind="text:totalCount()"></span>
-                    </div>
-    
+       
+                <div class="table-pager js-pager" data-bind="with:pager">
                     <ul>
                         <li class="page-nav first" data-bind="click:first, css:{disabled:!firstEnabled()}"></li>
                         <li class="page-nav prev" data-bind="click:prev, css:{disabled:!firstEnabled()}"></li>
-                        <!-- ko if:$parent.visibleMode() === 'large' -->
                         <!-- ko foreach:buttons -->
                         <!-- ko if:action -->
                         <li data-bind="css:{'active':isActive}, text:title, click:action"></li>
@@ -155,32 +100,23 @@ export function init(){
                         <li class="space disabled"></li>
                         <!-- /ko -->
                         <!-- /ko -->
-                        <!-- /ko -->
-                        <!-- ko if:$parent.visibleMode() === 'small' -->
-                        <li class="pagenum-small"><span>стр.&nbsp;</span><span data-bind="text:currentPage"></span></li>
-                        <!-- /ko -->
                         <li class="page-nav next" data-bind="click:next, css:{disabled:!lastEnabled()}"></li>
                         <li class="page-nav last" data-bind="click:last, css:{disabled:!lastEnabled()}"></li>
                     </ul>
-    
-                    <div class="max-result-select">
+
+                    <div class="current-page-desc">
+                        <span data-bind="text:skipCount() + 1"></span>
+                        <span>-</span>
+                        <span data-bind="text:Math.min(skipCount() + maxResultCountValue().value, totalCount())"></span>
+                        <span>&nbsp;из&nbsp;</span>
+                        <span data-bind="text:totalCount()"></span>
+                    </div>
+
+                    <div class="max-result-select pull-right">
                         <span class="title">строк на странице</span>
                         <cmp-select params="value:maxResultCountValue, options:maxResultCountOptions"></cmp-select>
                     </div>
                 </div>
-            `
-        });
-    
-    ko.components.register(myepTableBlock,
-        {
-            viewModel: {
-                createViewModel(params: ITableBlockParams, componentInfo: any) {
-    
-                    return new TableBlockModel(params, componentInfo);
-                }
-            },
-            template: `
-                <div data-bind="template:{nodes:$componentTemplateNodes, data:$parents[1]}, class:visibleClass" />
             `
         });
     
@@ -207,36 +143,21 @@ export interface ITableParams {
     totalCount: ko.Observable<number>;
 }
 
-export interface ITableBlockParams {
-    visible: string | ko.Observable<string> | ko.Computed<string>;
-}
-
 export interface ITableColumnParams {
     title?: string | ko.Observable<string>;
     data?: string;
-    visible?: string;
     orderable?: boolean;
     priority?: number;
-    smallParent?: boolean;
     titleTemplate?: string;
     cellTemplate?: string;
     childTitleTemplate?: string;
     childCellTemplate?: string;
-    smallParentTemplate?: string;
-    smallTitleTemplate?: string;
-    smallDataTemplate?: string;
 }
 
 export interface ITablePagerState {
     maxResultCount: number;
     skipCount: number;
     sorting: string;
-}
-
-export const TableBlockVisibleOptions = {
-    Always: 'always',
-    Small: 'small',
-    Large: 'large'
 }
 
 export const TableColumnOrderDirection = {
@@ -287,8 +208,6 @@ class TableModel {
     allColumns = ko.observableArray<TableColumnModel>([]);
     parentColumns = ko.observableArray<TableColumnModel>([]);
     childColumns = ko.observableArray<TableColumnModel>([]);
-    smallColumns = ko.observableArray<TableColumnModel>([]);
-    visibleMode = ko.observable<string>('');
     pager: TablePager;
     parentContext: any;
     columnsTemplatesCount = 0;
@@ -348,19 +267,16 @@ class TableModel {
         this.pager = new TablePager(this, params.pagerState, params.totalCount);
         this.currentOrder.subscribe(order => this.pager.setSorting(order));
 
-        const tableBlocks = $(componentInfo.templateNodes).filter((i, e) => e.localName === myepTableBlock).toArray();
-        //const tableBlocks = $(myepTableBlock, $(componentInfo.templateNodes));
-        const blocksPlaceholder = $('.js-table-blocks-placeholder', this.componentElement);
-        blocksPlaceholder.append(tableBlocks);
-
         this.componentWidth.subscribe(() => this.recalcColumns());
         App.instance().windowWidth.subscribe(() => this._startUpdateComponentWidth());
         App.instance().leftPanelWidth.subscribe(() => this._startUpdateComponentWidth());
+        App.instance().windowHeight.subscribe(() => this._updateBodyHeight());
     }
 
     setParentContext(context: any) {
         this.parentContext = context;
         this._updateComponentWidth();
+        this._updateBodyHeight();
         this.allColumns.valueHasMutated();
     }
 
@@ -382,7 +298,6 @@ class TableModel {
         }
 
         this.columnsTemplatesCount = 0;
-        this.smallColumns(ko.utils.arrayFilter(this.allColumns(), col => col.visible !== TableBlockVisibleOptions.Large));
     }
 
     getSortingForField(fieldname: string): string {
@@ -397,9 +312,6 @@ class TableModel {
     }
 
     private _updateComponentWidth() {
-        var marker = $('.js-small-view-marker', this.componentElement);
-        this.visibleMode(marker.is(':visible') ? TableBlockVisibleOptions.Small : TableBlockVisibleOptions.Large);
-
         const displayMode = this.componentElement.css('display');
         this.componentElement.css('display', 'block');
         const width = this.componentElement.width();
@@ -420,6 +332,23 @@ class TableModel {
         }, 100);
     }
 
+    private _updateBodyHeightTimeout = null;
+    private _updateBodyHeight() {
+        if(this._updateBodyHeightTimeout) {
+            clearTimeout(this._updateBodyHeightTimeout);
+        }
+
+        this._updateBodyHeightTimeout = setTimeout(() => {
+            const componentRect = this.componentElement[0].getBoundingClientRect();
+            const theadRect = $('.js-table > thead', this.componentElement)[0].getBoundingClientRect();
+            const pagerRect = $('.js-pager', this.componentElement)[0].getBoundingClientRect();
+
+            const tbodyElement = $('.js-table > tbody', this.componentElement);
+            tbodyElement.height(Math.trunc(componentRect.height - theadRect.height - pagerRect.height));
+            this._updateBodyHeightTimeout = null;
+        }, 100);
+    }
+
     private _mapColumns(columns: ITableColumnParams[] | ko.ObservableArray<ITableColumnParams>):
         TableColumnModel[] {
         var colsArr = ko.utils.unwrapObservable(columns);
@@ -433,7 +362,7 @@ class TableModel {
     private _recalcColumnsByMaxColumsWidth() {
         const maxColsCount = Math.floor((this.componentWidth() - 54) / 150);
         ko.utils.arrayForEach(this.allColumns(), col => col.isChild = false);
-        const largeCols = ko.utils.arrayFilter(this.allColumns(), col => col.visible !== TableBlockVisibleOptions.Small);
+        const largeCols = this.allColumns();
         for (let notChildrenCols = ko.utils.arrayFilter(largeCols, col => !col.isChild);
             notChildrenCols.length > maxColsCount;
             notChildrenCols = ko.utils.arrayFilter(largeCols, col => !col.isChild)) {
@@ -455,9 +384,8 @@ class TableModel {
         const $table = $('table.large-view', this.componentElement);
         $table.css('visibility', 'hidden').css('position', 'absolute');
         ko.utils.arrayForEach(this.allColumns(), col => col.isChild = false);
-        let largeCols = ko.utils.arrayFilter(this.allColumns(), col => col.visible !== TableBlockVisibleOptions.Small);
+        let largeCols = this.allColumns();
         this.parentColumns(largeCols);
-        //this.childColumns([]);
         while ($table.width() > this.componentWidth()) {
             const notChildCols = ko.utils.arrayFilter(largeCols, col => !col.isChild);
             const minPriority = Math.min(...ko.utils.arrayMap(notChildCols, col => col.priority));
@@ -485,7 +413,6 @@ enum RecalcColumnsMode {
 class TableRow {
     cells: ko.Computed<IDataDescriptor[]>;
     children: ko.Computed<IChildCellDescriptor[]>;
-    smallCells: ko.Computed<IChildCellDescriptor[]>;
     hasChildColumns: ko.Computed<boolean>;
     isExpanded = ko.observable(false);
 
@@ -516,45 +443,6 @@ class TableRow {
                 }
             });
         });
-
-        this.smallCells = ko.computed(() => {
-            const parentCol = ko.utils.arrayFirst(table.smallColumns(), col => col.smallParent)
-                || ko.utils.arrayFirst(table.smallColumns(), () => true);
-
-            const cells = ko.utils.arrayMap(table.smallColumns(), col => {
-                if (col === parentCol) {
-                    return <IChildCellDescriptor>{
-                        title: null,
-                        content: {
-                            parent: row,
-                            data: row[col.fieldName],
-                            nodes: col.smallDataTemplateNodes
-                        }
-                    };
-                } else {
-                    return <IChildCellDescriptor>{
-                        title: {
-                            data: ko.utils.unwrapObservable(col.title),
-                            parent: table.parentContext,
-                            nodes: col.smallTitleTemplateNodes
-                        },
-                        content: {
-                            parent: row,
-                            data: row[col.fieldName],
-                            nodes: col.smallDataTemplateNodes
-                        }
-                    };
-                }
-            });
-
-            const parentCell = ko.utils.arrayFirst(cells, cell => !cell.title);
-            if (parentCell && cells.indexOf(parentCell) !== 0) {
-                ko.utils.arrayRemoveItem(cells, parentCell);
-                cells.unshift(parentCell);
-            }
-
-            return cells;
-        });
     }
 
     toggle() {
@@ -564,7 +452,6 @@ class TableRow {
 
 class TablePager {
     skipCount = ko.observable(0);
-    //maxResultCount: ko.Observable<number>;
     maxResultCountValue: ko.Observable<ITablePagerOption>;
     maxResultCountOptions: ko.ObservableArray<ITablePagerOption>;
     totalCount = ko.observable(0);
@@ -604,11 +491,19 @@ class TablePager {
         this.updateState();
 
         this.skipCount.subscribe(val => {
+            if (this.isUpdating) {
+                return;
+            }
+
             state().skipCount = val;
             state.valueHasMutated();
         });
 
         this.maxResultCountValue.subscribe(val => {
+            if (this.isUpdating) {
+                return;
+            }
+
             state().maxResultCount = val.value;
             state.valueHasMutated();
         });
@@ -734,39 +629,14 @@ class TablePager {
     }
 }
 
-class TableBlockModel {
-    visible: ko.Observable<string> | ko.Computed<string>;
-    visibleClass: ko.Computed<string>;
-
-    constructor(params: ITableBlockParams, componentInfo: any) {
-        this.visible = ko.isObservable(params.visible) || ko.isComputed(params.visible)
-            ? <ko.Observable|ko.Computed>params.visible
-            : ko.observable(params.visible || TableBlockVisibleOptions.Always);
-
-        this.visibleClass = ko.computed(() => {
-            switch(this.visible())
-            {
-                case TableBlockVisibleOptions.Small: return <string>'visible-xs hidden-sm';
-                case TableBlockVisibleOptions.Large: return <string>'hidden-xs visible-sm visible-md visible-lg';
-                default: return <string>'';
-            }
-        });
-    }
-}
-
 class TableColumnModel {
     titleTemplateNodes: Node[];
     dataTemplateNodes: Node[];
     childTitleTemplateNodes: Node[];
     childDataTemplateNodes: Node[];
-    smallParentTemplateNodes: Node[];
-    smallTitleTemplateNodes: Node[];
-    smallDataTemplateNodes: Node[];
     title: string | ko.Observable<string>;
     orderable: boolean;
-    visible: string;
     priority: number;
-    smallParent: boolean;
     fieldName: string;
     isChild = false;
     table: TableModel;
@@ -785,6 +655,7 @@ class TableColumnModel {
             params.cellTemplate,
             'table-parent-data-default.html',
             myepTableData,
+            null,
             true);
         this.childTitleTemplateNodes = this.getTemplateNodes(
             componentInfo ? componentInfo.templateNodes : [],
@@ -795,28 +666,12 @@ class TableColumnModel {
             componentInfo ? componentInfo.templateNodes : [],
             params.childCellTemplate,
             'table-child-data-default.html',
-            myepTableChildData);
-        this.smallParentTemplateNodes = this.getTemplateNodes(
-            componentInfo ? componentInfo.templateNodes : [],
-            params.smallParentTemplate,
-            'table-small-parent-default.html',
-            myepTableSmallParent);
-        this.smallTitleTemplateNodes = this.getTemplateNodes(
-            componentInfo ? componentInfo.templateNodes : [],
-            params.smallTitleTemplate,
-            'table-small-title-default.html',
-            myepTableSmallTitle);
-        this.smallDataTemplateNodes = this.getTemplateNodes(
-            componentInfo ? componentInfo.templateNodes : [],
-            params.smallDataTemplate,
-            'table-small-data-default.html',
-            myepTableSmallData);
+            myepTableChildData,
+            this.dataTemplateNodes);
 
         this.title = params.title || null;
         this.priority = params.priority || 0;
-        this.smallParent = params.smallParent || false;
         this.fieldName = params.data || null;
-        this.visible = params.visible || TableBlockVisibleOptions.Always;
         this.orderable = params.orderable || false;
 
         if (this.table) {
@@ -854,7 +709,13 @@ class TableColumnModel {
         });
     }
 
-    private getTemplateNodes(nodes: Node[], template: string, defaultTemplate: string, templateTagName: string, rootNodesByDefault?:boolean): Node[] {
+    private getTemplateNodes(
+        nodes: Node[],
+        template: string,
+        defaultTemplate: string,
+        templateTagName: string,
+        inheritedNodes?: Node[],
+        rootNodesByDefault?:boolean): Node[] {
         if (ko.utils.arrayFirst(nodes, n => n.nodeName !== '#text')) {
             let result = ko.utils.arrayFilter(nodes, n => (<Element>n).localName === templateTagName);
             if (result.length) {
@@ -870,6 +731,10 @@ class TableColumnModel {
             return getTemplateNodesByUrlOrId(template);
         }
 
+        if(inheritedNodes) {
+            return inheritedNodes;
+        }
+
         return getTemplateNodesByUrlOrId(templatesTablesFolderPath + defaultTemplate);
     }
 }
@@ -878,7 +743,7 @@ function getTemplateNodesByUrlOrId(template: string): Node[] {
     if (template.indexOf('.html') > -1) {
         return Utils.getNodesFromFile(template);
     } else {
-        return Utils.getNodesFromHtml($(`script#${template}`).html());
+        return Utils.getNodesFromScriptElement(template);
     }
 }
 

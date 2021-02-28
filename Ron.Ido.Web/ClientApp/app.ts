@@ -19,12 +19,13 @@ export class App {
     contentVisible: ko.Computed<boolean>;
     static LEFT_PANEL_WIDTH_DEFAULT = 330;
 
-    leftPages: ko.Observable<ILeftPage[]>;
+    leftPages: ko.Computed<ILeftPage[]>;
     mainPages: ko.Observable<IMainPage[]>;
     activeLeftPage = ko.observable<ILeftPage>();
     activeMainPage = ko.observable<IMainPage>();
 
     private static _instance: App = null;
+    private _leftPages = ko.observableArray<ILeftPage>([]);
     private _mainMenu: MainMenuLeftPage = null
     
     constructor() {
@@ -37,7 +38,23 @@ export class App {
         })
         this.isAuthorized = 
         this.contentVisible = ko.computed(() => !!Identity.user());
+        this.activeMainPage.subscribe(activeMainPage => {
+            if(activeMainPage && activeMainPage.activeLeftPage && activeMainPage.activeLeftPage()) {
+                this.activeLeftPage(activeMainPage.activeLeftPage());
+            } else {
+                const firstLeftPage = ko.utils.arrayFirst(this._leftPages(), lp => !lp.owner);
+                this.activeLeftPage(firstLeftPage);
+            }
+        });
+        this.activeLeftPage.subscribe(leftPage => {
+            if(this.activeMainPage() && leftPage.owner !== this.activeMainPage() && this.activeMainPage().activeLeftPage){
+                this.activeMainPage().activeLeftPage(null);
+            }
 
+            if(leftPage.owner && leftPage.owner.activeLeftPage) {
+                leftPage.owner.activeLeftPage(leftPage);
+            }
+        });
 
         Identity.user.subscribe(this._openLoginDialog);
         Identity.restoreIdentity();
@@ -45,7 +62,8 @@ export class App {
         this._openLoginDialog();
 
         this._mainMenu = new MainMenuLeftPage();
-        this.leftPages = ko.observable([this._mainMenu]);
+        this.leftPages = ko.computed(() => ko.utils.arrayFilter(this._leftPages(), page => page.visible()));
+        this._leftPages.push(this._mainMenu);
         this.activeLeftPage(this._mainMenu);
 
         this.mainPages = ko.observable([]);
@@ -83,6 +101,21 @@ export class App {
         }
 
         this.activeMainPage(page);
+        if(page.leftPages) {
+            page.leftPages.subscribe((newLeftPages) => {
+                const existLeftPages = ko.utils.arrayFilter(this._leftPages(), lp => lp.owner === page);
+                const differences = ko.utils.compareArrays(existLeftPages, newLeftPages);
+                ko.utils.arrayForEach(differences, diff => {
+                    switch(diff.status) {
+                        case 'added': this._leftPages.push(diff.value); break;
+                        case 'deleted' : this._leftPages.remove(diff.value); break;
+                    }
+                });
+            });
+
+            this._leftPages.push(...page.leftPages());
+        }
+
         this._saveLastPage(path, key);
     }
 
@@ -91,6 +124,10 @@ export class App {
         let index = ko.utils.arrayIndexOf(pages, page);
         ko.utils.arrayRemoveItem(pages, page);
         this.mainPages(pages);
+
+        if(page.leftPages) {
+            this._leftPages.removeAll(page.leftPages());
+        }
 
         if(this.activeMainPage() === page) {
             index = Math.min(index, pages.length - 1);

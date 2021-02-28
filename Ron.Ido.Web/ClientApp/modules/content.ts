@@ -9,13 +9,15 @@ interface IControl {
 
 export interface ILeftPage extends IControl {
     pageTitle: string | ko.Observable<string>;
+    visible: ko.Computed<boolean>;
     owner?: IMainPage;
 }
 
 export interface IMainPage extends IControl {
     pageTitle: ko.Observable<string>;
     pageKey: string;
-    leftPages?: ko.ObservableArray<ILeftPage>;
+    leftPages: ko.ObservableArray<ILeftPage>;
+    activeLeftPage: ko.Observable<ILeftPage>;
     close: () => void;
 }
 
@@ -33,7 +35,7 @@ export abstract class Control implements IControl {
 
     constructor(params: IControlParams) {
         if(!params.templatePath && params.templateHtml === undefined)
-            throw 'Control должен обязательно получить или templatePath или templateHtml';
+            throw 'Control должен обязательно получить templatePath, templateId или templateHtml';
 
         this.templateNodes = params.templatePath
             ? Utils.getNodesFromFile(params.templatePath)
@@ -43,12 +45,15 @@ export abstract class Control implements IControl {
 
 export abstract class LeftPageBase extends Control implements ILeftPage {
     pageTitle: string | ko.Observable<string>;
+    visible: ko.Computed<boolean>;
     owner?: IMainPage;
 
     constructor(params: IPageParams) {
         super(params);
 
         this.pageTitle = ko.isObservable(params.pageTitle) ? params.pageTitle : ko.observable(params.pageTitle);
+
+        this.visible = ko.computed(() => !this.owner || App.instance().activeMainPage() === this.owner);
     }
 }
 
@@ -56,6 +61,8 @@ export abstract class MainPageBase extends Control implements IMainPage {
     pageTitle: ko.Observable<string>;
     pageKey: string;
     isActive: ko.Computed<boolean>;
+    leftPages: ko.ObservableArray<ILeftPage> = null;
+    activeLeftPage: ko.Observable<ILeftPage> = null;
 
     constructor(params: IPageParams) {
         super(params);

@@ -1,9 +1,10 @@
 import * as ko from 'knockout';
-import { MainPageBase } from '../../../modules/content';
+import { LeftPageBase, MainPageBase } from '../../../modules/content';
 import { ODataOrderTypeEnum } from '../../../codegen/webapi/odata';
-import { ITablePagerState, TableColumnOrderDirection } from '../../../components/index';
+import { ITablePagerState, TableColumnOrderDirection, IFilterParams, FilterType, FilterValueType } from '../../../components/index';
 import { AdminAccessApi } from '../../../codegen/webapi/adminAccessApi';
 import { IODataOrder } from '../../../codegen/webapi/odata';
+import { Utils } from '../../../modules/utils';
 
 export default class UsersMainPage extends MainPageBase {
     users = ko.observableArray<AdminAccessApi.IUserDto>([]);
@@ -13,6 +14,11 @@ export default class UsersMainPage extends MainPageBase {
         sorting: '',
         maxResultCount: 10,
     });
+    filters: IFilterParams[] = [
+        { field:'surName', values: ko.observableArray([]), filterType:'cn', valueType:'string'}
+    ];
+
+    private _searchPage: UsersSearchLeftPage;
 
     constructor() {
         super({
@@ -20,6 +26,9 @@ export default class UsersMainPage extends MainPageBase {
             templatePath: 'pages/main/admin/users.html'
         });
 
+        this._searchPage = new UsersSearchLeftPage(this);
+        this.leftPages = ko.observableArray([this._searchPage]);
+        this.activeLeftPage = ko.observable(this._searchPage);
         this.isActive.subscribe(active => {if(active) this.onActivated();});
         this.pagerState.subscribe(() => this._update());
     }
@@ -38,7 +47,6 @@ export default class UsersMainPage extends MainPageBase {
                 direct: sortingParts[1] === TableColumnOrderDirection.Asc ? ODataOrderTypeEnum.Asc : ODataOrderTypeEnum.Desc})
         }
 
-        console.log(state);
         AdminAccessApi.getUsers({
             skip: state.skipCount,
             take: state.maxResultCount,
@@ -48,5 +56,16 @@ export default class UsersMainPage extends MainPageBase {
             this.users(page.items);
             this.tableTotalCount(page.total);
         });
+    }
+}
+
+class UsersSearchLeftPage extends LeftPageBase {
+    constructor(owner: UsersMainPage) {
+        super({
+            pageTitle: 'поиск',
+            templatePath: 'pages/left/admin/users-search.html'
+        });
+
+        this.owner = owner;
     }
 }

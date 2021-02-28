@@ -1,10 +1,10 @@
-import * as ko from 'knockout';
+import * as MainPanelComponent from 'knockout';
 import { App } from '../app';
 import { IMainPage } from '../modules/content';
 import { Utils } from '../modules/utils';
 
 export function init(){
-    ko.components.register('cmp-main-panel', {
+    MainPanelComponent.components.register('cmp-main-panel', {
         viewModel: {
             createViewModel: function(params, componentInfo) {
                 return new MainPanelModel(params);
@@ -36,8 +36,8 @@ export function init(){
 }
 
 export interface IMainPanelParams {
-    pages: ko.ObservableArray<IMainPage>;
-    active: ko.Observable<IMainPage>;
+    pages: MainPanelComponent.ObservableArray<IMainPage>;
+    active: MainPanelComponent.Observable<IMainPage>;
 }
 
 class MainPanelModel {
@@ -51,24 +51,24 @@ class MainPanelModel {
             </div>
         <!-- /ko -->`);
 
-    pages: ko.ObservableArray<IMainPage>;
-    pageDragOver = ko.observable<IMainPage>(null);
-    tail: ko.ObservableArray<IMainPage> = ko.observableArray([]);
-    active: ko.Observable<IMainPage>;
-    isTailVisible: ko.Computed<boolean>;
-    tailWidth = ko.observable(0);
-    tailHeight = ko.observable(0);
+    pages: MainPanelComponent.ObservableArray<IMainPage>;
+    pageDragOver = MainPanelComponent.observable<IMainPage>(null);
+    tail: MainPanelComponent.ObservableArray<IMainPage> = MainPanelComponent.observableArray([]);
+    active: MainPanelComponent.Observable<IMainPage>;
+    isTailVisible: MainPanelComponent.Computed<boolean>;
+    tailWidth = MainPanelComponent.observable(0);
+    tailHeight = MainPanelComponent.observable(0);
 
     private _tabsPanelElement: JQuery<Element>;
     private _tailListElement: JQuery<Element>;
-    private _tailVisible = ko.observable(false);
+    private _tailVisible = MainPanelComponent.observable(false);
 
     constructor(params: IMainPanelParams){
         this.pages = params.pages;
         this.pages.subscribe(() => setTimeout(() => this._reorderTabs(), 100));
 
-        this.active = params.active || ko.observable(null);
-        this.isTailVisible = ko.computed(() => this.tail().length && this.tailWidth() > 0 && this.tailHeight() > 0);
+        this.active = params.active || MainPanelComponent.observable(null);
+        this.isTailVisible = MainPanelComponent.computed(() => this.tail().length && this.tailWidth() > 0 && this.tailHeight() > 0);
         
         const outsideTailClick = () => this._tailVisible(false);
         this._tailVisible.subscribe(visible => {
@@ -149,8 +149,8 @@ class MainPanelModel {
     tabDragEnd(page:IMainPage) {
         if(this.pageDragOver() && page !== this.pageDragOver()) {
             const pages = this.pages();
-            const index = ko.utils.arrayIndexOf(pages, this.pageDragOver());
-            ko.utils.arrayRemoveItem(pages, page);
+            const index = MainPanelComponent.utils.arrayIndexOf(pages, this.pageDragOver());
+            MainPanelComponent.utils.arrayRemoveItem(pages, page);
             pages.splice(index, 0, page);
             this.pages(pages);
             this._reorderTabs();

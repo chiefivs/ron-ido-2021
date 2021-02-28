@@ -1,10 +1,10 @@
-import * as ko from 'knockout';
+import * as LeftPanelComponent from 'knockout';
 import { App } from '../app';
 import { ILeftPage } from '../modules/content';
 import { Utils } from '../modules/utils';
 
 export function init(){
-    ko.components.register('cmp-left-panel', {
+    LeftPanelComponent.components.register('cmp-left-panel', {
         viewModel: {
             createViewModel: function(params, componentInfo) {
                 return new LeftPanelModel(params);
@@ -13,7 +13,7 @@ export function init(){
         template: `
             <div>
                 <div class="left-panel-tabs">
-                    <div data-bind="template:{ nodes: tabsTemplateNodes, data: $data, afterRender: afterRender.bind($data) }"></div>
+                    <div data-bind="template:{ nodes: tabsTemplateNodes(), data: $data, afterRender: afterRender.bind($data) }"></div>
                 </div>
                 <div class="left-panel-pages" data-bind="style:{width:widthString}">
                     <div class="left-page-container">
@@ -30,40 +30,40 @@ export function init(){
 }
 
 export interface ILeftPanelParams {
-    pages: ILeftPage[] | ko.ObservableArray<ILeftPage> | ko.Computed<ILeftPage>;
-    active: ko.Observable<ILeftPage>;
-    width: number | ko.Observable<number>;
+    pages: ILeftPage[] | LeftPanelComponent.ObservableArray<ILeftPage> | LeftPanelComponent.Computed<ILeftPage[]>;
+    active: LeftPanelComponent.Observable<ILeftPage>;
+    width: number | LeftPanelComponent.Observable<number>;
 }
 
 export class LeftPanelModel {
-    tabsTemplateNodes = Utils.getNodesFromHtml(`
+    tabsTemplateNodes = LeftPanelComponent.observable(Utils.getNodesFromHtml(`
         <!-- ko foreach:pages -->
         <div class="left-tab" data-bind="css:{'active':$parent.isActive($data)}, click:function(){$parent.setActive($data);}">
             <div data-bind="text:pageTitle"></div>
         </div>
-        <!-- /ko -->`);
+        <!-- /ko -->`));
 
-    pages: ko.ObservableArray<ILeftPage> | ko.Computed<ILeftPage>;
-    active: ko.Observable<ILeftPage>;
-    widthString: ko.Computed<string>;
+    pages: LeftPanelComponent.ObservableArray<ILeftPage> | LeftPanelComponent.Computed<ILeftPage[]>;
+    active: LeftPanelComponent.Observable<ILeftPage>;
+    widthString: LeftPanelComponent.Computed<string>;
 
-    private width: ko.Observable<number>;
+    private width: LeftPanelComponent.Observable<number>;
     private tabElements: JQuery<Element> = null;
-    //private defaultWidth: number;
 
     constructor(params: ILeftPanelParams){
-        this.pages = ko.isObservable(params.pages)
+        this.pages = LeftPanelComponent.isObservable(params.pages)
             ? params.pages
-            : ko.isComputed(params.pages)
+            : LeftPanelComponent.isComputed(params.pages)
                 ? params.pages
-                : ko.observableArray(params.pages);
+                : LeftPanelComponent.observableArray(params.pages);
 
-        this.active = params.active || ko.observable(null);
+        this.active = params.active || LeftPanelComponent.observable(null);
 
-        this.width = ko.isObservable(params.width) ? params.width : ko.observable(330);
-        this.widthString = ko.computed(() => `${(this.width()-30)}px`);
+        this.width = LeftPanelComponent.isObservable(params.width) ? params.width : LeftPanelComponent.observable(330);
+        this.widthString = LeftPanelComponent.computed(() => `${(this.width()-30)}px`);
 
         App.instance().contentVisible.subscribe(() => this._refresh());
+        this.pages.subscribe(() => this.tabsTemplateNodes.valueHasMutated());
     }
 
     afterRender(elements:Element[]) {
@@ -96,8 +96,9 @@ export class LeftPanelModel {
             return;
             
         let top = 0;
-        this.tabElements
-            .filter('div')
+
+        const tabElements = this.tabElements.filter('div');
+        tabElements
             .each((i, e) => {
                 var divElem = $('div', e);
                 divElem.removeAttr('style');
