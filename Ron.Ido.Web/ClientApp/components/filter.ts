@@ -11,6 +11,7 @@ export function init(){
         },
         template: `
             <!-- ko if:templateNodes && templateNodes.length -->
+            <div class="filter-title" data-bind="text:title"></div>
             <div data-bind="template:{nodes:templateNodes, data:$data}"></div>
             <!-- /ko -->`
     });
@@ -19,6 +20,7 @@ export function init(){
 export type FilterValueType = 'string'|'number'|'date';
 
 export interface IFilterParams{
+    title: string | ko.Observable<string>;
     field: string;
     state: ko.Observable<IODataFilter>;
     valueType: FilterValueType;
@@ -34,14 +36,18 @@ class FilterModel {
     values = ko.observableArray([]);
     value1 = ko.observable(null);
     value2 = ko.observable(null);
+    title: ko.Observable<string>;
     state: ko.Observable<IODataFilter>;
 
     private _templates:object = {};
 
     constructor(params:IFilterParams) {
+        console.log(params);
         this._defineAllTemplates();
         this.templateNodes = this._getTemplate(params.filterType, params.valueType);
         this.state = params.state;
+
+        this.title = ko.isObservable(params.title) ? params.title : ko.observable(params.title || '');
 
         this.values.subscribe(values => this.state(values.length 
             ? { field:params.field, type: params.filterType, values: values }
@@ -91,7 +97,6 @@ class FilterModel {
     }
 
     _updateValues() {
-        console.log(this.value1(), this.value2());
         const values = [];
         if(this.value1() || this.value2())
             values.push(this.value1());

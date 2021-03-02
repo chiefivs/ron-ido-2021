@@ -9,5 +9,12 @@
 </cmp-table>
 
 <script type="text/html" id="users-search-leftpage">
-    <h2>Поиск</h2>
+    <form data-bind="submit:search">
+        <div data-bind="foreach:filters">
+            <div><cmp-filter params="title:title, field:field, state:state, filterType:filterType, valueType:valueType"></cmp-filter></div>
+        </div>
+        <div>
+            <button class="btn btn-primary pull-right">ПОИСК</div>
+        </div>
+    </form>
 </script>

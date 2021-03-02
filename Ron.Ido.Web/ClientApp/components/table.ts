@@ -556,7 +556,7 @@ class TablePager {
     }
 
     updateMaxResultOptions() {
-        const options = [];
+        const options:ITablePagerOption[] = [];
         options.push(this.options[0])
         if (this.totalCount() > 25) {
             options.push(this.options[1]);
@@ -566,6 +566,11 @@ class TablePager {
         }
         if (this.totalCount() > 100) {
             options.push(this.options[3]);
+        }
+
+        const optionVals = ko.utils.arrayMap(options, opt => opt.value);
+        if(!this.maxResultCountValue() || this.maxResultCountValue().value > Math.max(...optionVals)) {
+            this.maxResultCountValue(options[0]);
         }
 
         this.maxResultCountOptions(options);

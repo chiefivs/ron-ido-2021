@@ -5,6 +5,7 @@ import { ITablePagerState, TableColumnOrderDirection, IFilterParams, FilterValue
 import { AdminAccessApi } from '../../../codegen/webapi/adminAccessApi';
 import { IODataOrder } from '../../../codegen/webapi/odata';
 import { Utils } from '../../../modules/utils';
+import { App } from '../../../app';
 
 export default class UsersMainPage extends MainPageBase {
     users = ko.observableArray<AdminAccessApi.IUserDto>([]);
@@ -14,6 +15,11 @@ export default class UsersMainPage extends MainPageBase {
         sorting: '',
         maxResultCount: 10,
     });
+    filters: IFilterParams[] = [
+        { title: 'фамилия', field:'surName', valueType:'string', filterType: ODataFilterTypeEnum.Contains, state: ko.observable()},
+        { title: 'дата рожд.', field:'birthDate', valueType:'date', filterType: ODataFilterTypeEnum.BetweenNone, state: ko.observable()},
+    ];
+
 
     private _searchPage: UsersSearchLeftPage;
     private _isLeftPagesCreated = false;
@@ -27,13 +33,15 @@ export default class UsersMainPage extends MainPageBase {
         this.leftPages = ko.observableArray([]);
         this.activeLeftPage = ko.observable();
 
+        const filterStateChanged = (state:IODataFilter) => {};
+        ko.utils.arrayForEach(this.filters, filter => filter.state.subscribe(filterStateChanged));
         
         this.isActive.subscribe(active => {if(active) this.onActivated();});
-        this.pagerState.subscribe(() => this._update());
+        this.pagerState.subscribe(() => this.update());
     }
 
     onActivated() {
-        this._update();
+        this.update();
     }
 
     afterRender() {
@@ -41,11 +49,12 @@ export default class UsersMainPage extends MainPageBase {
             this._searchPage = new UsersSearchLeftPage(this);
             this.leftPages([<ILeftPage>this._searchPage]);
             this.activeLeftPage(this._searchPage);
+            App.instance().activeMainPage.valueHasMutated();
             this._isLeftPagesCreated = true;
         }
     }
 
-    private _update() {
+    update() {
         const state = this.pagerState();
         const orders:IODataOrder[] = [];
         if(state.sorting){
@@ -55,10 +64,12 @@ export default class UsersMainPage extends MainPageBase {
                 direct: sortingParts[1] === TableColumnOrderDirection.Asc ? ODataOrderTypeEnum.Asc : ODataOrderTypeEnum.Desc})
         }
 
+        const filters = ko.utils.arrayFilter(this.filters, filter => !!filter.state())
+
         AdminAccessApi.getUsers({
             skip: state.skipCount,
             take: state.maxResultCount,
-            filters:[],
+            filters:ko.utils.arrayMap(filters, f => f.state()),
             orders:orders
         }).done(page => {
             this.users(page.items);
@@ -73,16 +84,18 @@ class UsersSearchLeftPage extends LeftPageBase{
     constructor(owner: UsersMainPage) {
         super({
             pageTitle: 'поиск',
-            templatePath: 'pages/left/admin/users-search.html'
+            templateId: 'users-search-leftpage'
         });
 
         this.owner = owner;
-        this.filters = [
-            { field:'surName', valueType:'string', filterType: ODataFilterTypeEnum.Contains, state: ko.observable()},
-            { field:'birthDate', valueType:'date', filterType: ODataFilterTypeEnum.BetweenNone, state: ko.observable()},
-        ];
-
-        const filterStateChanged = (state:IODataFilter) => console.log(state);
-        ko.utils.arrayForEach(this.filters, filter => filter.state.subscribe(filterStateChanged));
+        this.filters = owner.filters;
     }
+
+    
+    search() {
+        const usersPage = <UsersMainPage>this.owner;
+        usersPage.pagerState().skipCount = 0;
+        usersPage.update();
+    }
+
 }
