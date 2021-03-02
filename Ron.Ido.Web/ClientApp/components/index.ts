@@ -1,10 +1,12 @@
 import * as FilterComponent from './filter';
+import * as DatepickerComponent from './datepicker';
 import * as LeftPanelComponent from './left-panel';
 import * as MainPanelComponent from './main-panel';
 import * as SelectComponent from './select';
 import * as TableComponent from './table';
 
 export function init() {
+    DatepickerComponent.init();
     FilterComponent.init();
     LeftPanelComponent.init();
     MainPanelComponent.init();
@@ -12,7 +14,8 @@ export function init() {
     TableComponent.init();
 }
 
-export { IFilterParams, FilterType, FilterValueType } from './filter';
+export { IDatepickerParams } from './datepicker';
+export { IFilterParams, FilterValueType } from './filter';
 export { ILeftPanelParams } from './left-panel';
 export { IMainPanelParams } from './main-panel';
 export { ISelectParams } from './select';

@@ -1,7 +1,7 @@
 import * as ko from 'knockout';
-import { LeftPageBase, MainPageBase } from '../../../modules/content';
-import { ODataOrderTypeEnum } from '../../../codegen/webapi/odata';
-import { ITablePagerState, TableColumnOrderDirection, IFilterParams, FilterType, FilterValueType } from '../../../components/index';
+import { ILeftPage, LeftPageBase, MainPageBase } from '../../../modules/content';
+import { IODataFilter, ODataFilterTypeEnum, ODataOrderTypeEnum } from '../../../codegen/webapi/odata';
+import { ITablePagerState, TableColumnOrderDirection, IFilterParams, FilterValueType } from '../../../components/index';
 import { AdminAccessApi } from '../../../codegen/webapi/adminAccessApi';
 import { IODataOrder } from '../../../codegen/webapi/odata';
 import { Utils } from '../../../modules/utils';
@@ -14,9 +14,6 @@ export default class UsersMainPage extends MainPageBase {
         sorting: '',
         maxResultCount: 10,
     });
-    filters: IFilterParams[] = [
-        { field:'surName', values: ko.observableArray([]), filterType:'cn', valueType:'string'}
-    ];
 
     private _searchPage: UsersSearchLeftPage;
 
@@ -27,7 +24,7 @@ export default class UsersMainPage extends MainPageBase {
         });
 
         this._searchPage = new UsersSearchLeftPage(this);
-        this.leftPages = ko.observableArray([this._searchPage]);
+        this.leftPages = ko.observableArray([<ILeftPage>this._searchPage]);
         this.activeLeftPage = ko.observable(this._searchPage);
         this.isActive.subscribe(active => {if(active) this.onActivated();});
         this.pagerState.subscribe(() => this._update());
@@ -59,7 +56,9 @@ export default class UsersMainPage extends MainPageBase {
     }
 }
 
-class UsersSearchLeftPage extends LeftPageBase {
+class UsersSearchLeftPage extends LeftPageBase{
+    filters: IFilterParams[];
+
     constructor(owner: UsersMainPage) {
         super({
             pageTitle: 'поиск',
@@ -67,5 +66,12 @@ class UsersSearchLeftPage extends LeftPageBase {
         });
 
         this.owner = owner;
+        this.filters = [
+            { field:'surName', valueType:'string', filterType: ODataFilterTypeEnum.Contains, state: ko.observable()},
+            { field:'birthDate', valueType:'date', filterType: ODataFilterTypeEnum.BetweenNone, state: ko.observable()},
+        ];
+
+        const filterStateChanged = (state:IODataFilter) => console.log(state);
+        ko.utils.arrayForEach(this.filters, filter => filter.state.subscribe(filterStateChanged));
     }
 }

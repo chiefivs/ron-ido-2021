@@ -1,1 +1,4 @@
-<h2>Поиск</h2>
+<div data-bind="foreach:filters">
+    <div data-bind="text:field"></div>
+    <div><cmp-filter params="field:field, state:state, filterType:filterType, valueType:valueType"></cmp-filter></div>
+</div>
