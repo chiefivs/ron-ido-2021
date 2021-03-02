@@ -17,7 +17,7 @@ export function init(){
             </div>
             <div class="main-panel-pages" data-bind="css:{'no-active':!active(), 'no-pages':!pages().length}">
                 <div class="main-page-container" data-bind="with:active">
-                    <!-- ko template: {nodes: $data ? templateNodes : [], data:$data} -->
+                    <!-- ko template: {nodes: $data ? templateNodes : [], data:$data, afterRender:afterRender.bind($data)} -->
                     <!-- /ko -->
                  </div>
             </div>

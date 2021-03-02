@@ -16,6 +16,7 @@ export default class UsersMainPage extends MainPageBase {
     });
 
     private _searchPage: UsersSearchLeftPage;
+    private _isLeftPagesCreated = false;
 
     constructor() {
         super({
@@ -23,15 +24,25 @@ export default class UsersMainPage extends MainPageBase {
             templatePath: 'pages/main/admin/users.html'
         });
 
-        this._searchPage = new UsersSearchLeftPage(this);
-        this.leftPages = ko.observableArray([<ILeftPage>this._searchPage]);
-        this.activeLeftPage = ko.observable(this._searchPage);
+        this.leftPages = ko.observableArray([]);
+        this.activeLeftPage = ko.observable();
+
+        
         this.isActive.subscribe(active => {if(active) this.onActivated();});
         this.pagerState.subscribe(() => this._update());
     }
 
     onActivated() {
         this._update();
+    }
+
+    afterRender() {
+        if(!this._isLeftPagesCreated) {
+            this._searchPage = new UsersSearchLeftPage(this);
+            this.leftPages([<ILeftPage>this._searchPage]);
+            this.activeLeftPage(this._searchPage);
+            this._isLeftPagesCreated = true;
+        }
     }
 
     private _update() {

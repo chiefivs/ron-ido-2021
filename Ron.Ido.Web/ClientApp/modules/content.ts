@@ -19,6 +19,7 @@ export interface IMainPage extends IControl {
     leftPages: ko.ObservableArray<ILeftPage>;
     activeLeftPage: ko.Observable<ILeftPage>;
     close: () => void;
+    afterRender: (nodes:Node[]) => void;
 }
 
 export interface IPageParams extends IControlParams {
@@ -74,6 +75,8 @@ export abstract class MainPageBase extends Control implements IMainPage {
     close(): void {
         App.instance().closeMainPage(this);
     }
+
+    afterRender(nodes:Node[]) {}
 }
 
 export namespace Popups {
