@@ -22,6 +22,7 @@ export type FilterValueType = 'string'|'number'|'date';
 export interface IFilterParams{
     title: string | ko.Observable<string>;
     field: string;
+    aliases?: string[];
     state: ko.Observable<IODataFilter>;
     valueType: FilterValueType;
     filterType: ODataFilterTypeEnum;
@@ -50,13 +51,13 @@ class FilterModel {
         this.title = ko.isObservable(params.title) ? params.title : ko.observable(params.title || '');
 
         this.values.subscribe(values => this.state(values.length 
-            ? { field:params.field, type: params.filterType, values: values }
+            ? { field:params.field, aliases:params.aliases || null, type: params.filterType, values: values }
             : null));
     }
 
     private _defineAllTemplates() {
         this._setTemplate(ODataFilterTypeEnum.Contains, 'string',
-            '<input type="text" data-bind="textInput:value1" />');
+            '<cmp-textbox params="value:value1"></cmp-textbox>');
         this._setTemplate(ODataFilterTypeEnum.In, 'number', '');
         this._setTemplate(ODataFilterTypeEnum.BetweenNone, 'date',
             `<div class="date-between">

@@ -8,16 +8,16 @@ import { Utils } from '../../../modules/utils';
 import { App } from '../../../app';
 
 export default class UsersMainPage extends MainPageBase {
-    users = ko.observableArray<AdminAccessApi.IUserDto>([]);
+    users = ko.observableArray<AdminAccessApi.IUsersPageItemDto>([]);
     tableTotalCount = ko.observable(0);
     pagerState = ko.observable<ITablePagerState>({
         skipCount: 0,
-        sorting: '',
+        sorting: 'fullName asc',
         maxResultCount: 10,
     });
     filters: IFilterParams[] = [
-        { title: 'фамилия', field:'surName', valueType:'string', filterType: ODataFilterTypeEnum.Contains, state: ko.observable()},
-        { title: 'дата рожд.', field:'birthDate', valueType:'date', filterType: ODataFilterTypeEnum.BetweenNone, state: ko.observable()},
+        { title: 'фамилия', field:'surName', aliases:['firstName', 'lastName'], valueType:'string', filterType: ODataFilterTypeEnum.Contains, state: ko.observable()},
+        //{ title: 'дата рожд.', field:'birthDate', valueType:'date', filterType: ODataFilterTypeEnum.BetweenNone, state: ko.observable()},
     ];
 
 
@@ -38,20 +38,14 @@ export default class UsersMainPage extends MainPageBase {
         
         this.isActive.subscribe(active => {if(active) this.onActivated();});
         this.pagerState.subscribe(() => this.update());
+
+        this._searchPage = new UsersSearchLeftPage(this);
+        this.leftPages([<ILeftPage>this._searchPage]);
+        this.activeLeftPage(this._searchPage);
     }
 
     onActivated() {
         this.update();
-    }
-
-    afterRender() {
-        if(!this._isLeftPagesCreated) {
-            this._searchPage = new UsersSearchLeftPage(this);
-            this.leftPages([<ILeftPage>this._searchPage]);
-            this.activeLeftPage(this._searchPage);
-            App.instance().activeMainPage.valueHasMutated();
-            this._isLeftPagesCreated = true;
-        }
     }
 
     update() {
@@ -84,7 +78,7 @@ class UsersSearchLeftPage extends LeftPageBase{
     constructor(owner: UsersMainPage) {
         super({
             pageTitle: 'поиск',
-            templateId: 'users-search-leftpage'
+            templatePath: 'pages/main/admin/users-search.html'
         });
 
         this.owner = owner;

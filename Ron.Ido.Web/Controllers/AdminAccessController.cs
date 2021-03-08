@@ -20,7 +20,7 @@ namespace Ron.Ido.Web.Controllers
 
         [HttpPost]
         [Route("api/admin/access/users/get")]
-        public async Task<ODataPage<UserDto>> GetUsers([FromBody]GetUsersPageCommand request)
+        public async Task<ODataPage<UsersPageItemDto>> GetUsers([FromBody]GetUsersPageCommand request)
         {
             return await _mediator.Send(request);
         }

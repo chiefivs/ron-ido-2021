@@ -4,6 +4,7 @@ import * as LeftPanelComponent from './left-panel';
 import * as MainPanelComponent from './main-panel';
 import * as SelectComponent from './select';
 import * as TableComponent from './table';
+import * as TextBoxComponent from './textbox';
 
 export function init() {
     DatepickerComponent.init();
@@ -12,6 +13,7 @@ export function init() {
     MainPanelComponent.init();
     SelectComponent.init();
     TableComponent.init();
+    TextBoxComponent.init();
 }
 
 export { IDatepickerParams } from './datepicker';
@@ -20,3 +22,4 @@ export { ILeftPanelParams } from './left-panel';
 export { IMainPanelParams } from './main-panel';
 export { ISelectParams } from './select';
 export { ITableParams, ITableColumnParams, ITablePagerState, TableColumnOrderDirection } from './table';
+export { ITextBoxParams } from './textbox';

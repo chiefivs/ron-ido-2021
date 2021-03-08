@@ -10,6 +10,7 @@
     //  Ron.Ido.BM.Models.OData.ODataFilter
     export interface IODataFilter {
         field:string;
+        aliases:string[];
         type:ODataFilterTypeEnum;
         values:string[];
     }

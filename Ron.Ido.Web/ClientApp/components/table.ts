@@ -36,10 +36,10 @@ export function init(){
                                 <div>
                                     <div class="sorting-title" data-bind="template:{nodes:$parent.nodes, data:$parent.data}"></div>
                                     <div class="sorting-arrows" data-bind="with:$parent.order, css:{red:$parent.order.current()}">
-                                        <span class="ico-web-arrow-up" data-bind="click:descAction, visible:current()==='asc'">^</span>
-                                        <span class="ico-web-arrow-down" data-bind="click:ascAction, visible:current()==='desc'">v</span>
-                                        <span class="ico-web-arrow-up" data-bind="click:ascAction, visible:!current()">^</span>
-                                        <span class="ico-web-arrow-down" data-bind="click:descAction, visible:!current()">v</span>
+                                        <span class="glyphicon glyphicon-arrow-up" data-bind="click:descAction, visible:current()==='asc'"></span>
+                                        <span class="glyphicon glyphicon-arrow-down" data-bind="click:ascAction, visible:current()==='desc'"></span>
+                                        <span class="glyphicon glyphicon-arrow-up" data-bind="click:ascAction, visible:!current()"></span>
+                                        <span class="glyphicon glyphicon-arrow-down" data-bind="click:descAction, visible:!current()"></span>
                                     </div>
                                 </div>
                             </th>
@@ -90,8 +90,13 @@ export function init(){
        
                 <div class="table-pager js-pager" data-bind="with:pager">
                     <ul>
-                        <li class="page-nav first" data-bind="click:first, css:{disabled:!firstEnabled()}"></li>
-                        <li class="page-nav prev" data-bind="click:prev, css:{disabled:!firstEnabled()}"></li>
+                        <li class="page-nav first" data-bind="click:first, css:{disabled:!firstEnabled()}">
+                            <i class="glyphicon glyphicon-chevron-left"></i>
+                            <i class="glyphicon glyphicon-chevron-left"></i>
+                        </li>
+                        <li class="page-nav prev" data-bind="click:prev, css:{disabled:!firstEnabled()}">
+                            <i class="glyphicon glyphicon-chevron-left"></i>
+                        </li>
                         <!-- ko foreach:buttons -->
                         <!-- ko if:action -->
                         <li data-bind="css:{'active':isActive}, text:title, click:action"></li>
@@ -100,8 +105,13 @@ export function init(){
                         <li class="space disabled"></li>
                         <!-- /ko -->
                         <!-- /ko -->
-                        <li class="page-nav next" data-bind="click:next, css:{disabled:!lastEnabled()}"></li>
-                        <li class="page-nav last" data-bind="click:last, css:{disabled:!lastEnabled()}"></li>
+                        <li class="page-nav next" data-bind="click:next, css:{disabled:!lastEnabled()}">
+                            <i class="glyphicon glyphicon-chevron-right"></i>
+                        </li>
+                        <li class="page-nav last" data-bind="click:last, css:{disabled:!lastEnabled()}">
+                            <i class="glyphicon glyphicon-chevron-right"></i>
+                            <i class="glyphicon glyphicon-chevron-right"></i>
+                        </li>
                     </ul>
 
                     <div class="current-page-desc">
@@ -703,15 +713,18 @@ class TableColumnModel {
     }
 
     private subscribeToCurrentOrder() {
-        this.table.currentOrder.subscribe(order => {
-            const currentOrderParts =order.split(' ');
+        this.table.currentOrder.subscribe(order => this.updateCurrentOrder(order));
+        this.updateCurrentOrder(this.table.currentOrder());
+    }
 
-            if (currentOrderParts[0] !== this.fieldName) {
-                this.currentOrder('');
-            } else {
-                this.currentOrder(currentOrderParts.length > 1 && currentOrderParts[1] === 'desc' ? 'desc' : 'asc');
-            }
-        });
+    private updateCurrentOrder(order: string) {
+        const currentOrderParts =order.split(' ');
+
+        if (currentOrderParts[0] !== this.fieldName) {
+            this.currentOrder('');
+        } else {
+            this.currentOrder(currentOrderParts.length > 1 && currentOrderParts[1] === 'desc' ? 'desc' : 'asc');
+        }
     }
 
     private getTemplateNodes(

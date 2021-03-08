@@ -98,24 +98,24 @@ export class App {
             page.pageKey = pageKey;
             this.mainPages().unshift(page);
             this.mainPages.valueHasMutated();
+
+            if(page.leftPages) {
+                page.leftPages.subscribe((newLeftPages) => {
+                    const existLeftPages = ko.utils.arrayFilter(this._leftPages(), lp => lp.owner === page);
+                    const differences = ko.utils.compareArrays(existLeftPages, newLeftPages);
+                    ko.utils.arrayForEach(differences, diff => {
+                        switch(diff.status) {
+                            case 'added': this._leftPages.push(diff.value); break;
+                            case 'deleted' : this._leftPages.remove(diff.value); break;
+                        }
+                    });
+                });
+
+                this._leftPages.push(...page.leftPages());
+            }
         }
 
         this.activeMainPage(page);
-        if(page.leftPages) {
-            page.leftPages.subscribe((newLeftPages) => {
-                const existLeftPages = ko.utils.arrayFilter(this._leftPages(), lp => lp.owner === page);
-                const differences = ko.utils.compareArrays(existLeftPages, newLeftPages);
-                ko.utils.arrayForEach(differences, diff => {
-                    switch(diff.status) {
-                        case 'added': this._leftPages.push(diff.value); break;
-                        case 'deleted' : this._leftPages.remove(diff.value); break;
-                    }
-                });
-            });
-
-            this._leftPages.push(...page.leftPages());
-        }
-
         this._saveLastPage(path, key);
     }
 

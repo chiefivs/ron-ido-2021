@@ -27,7 +27,6 @@ export interface IPageParams extends IControlParams {
 
 export interface IControlParams {
     templatePath?: string;
-    templateId?: string;
     templateHtml?: string;
 }
 
@@ -35,14 +34,12 @@ export abstract class Control implements IControl {
     public templateNodes: Element[];
 
     constructor(params: IControlParams) {
-        if(!params.templatePath && !params.templateId && params.templateHtml === undefined)
-            throw 'Control должен обязательно получить templatePath, templateId или templateHtml';
+        if(!params.templatePath && params.templateHtml === undefined)
+            throw 'Control должен обязательно получить templatePath или templateHtml';
 
         this.templateNodes = params.templatePath
             ? Utils.getNodesFromFile(params.templatePath)
-            : params.templateId
-                ? Utils.getNodesFromScriptElement(params.templateId)
-                : Utils.getNodesFromHtml(params.templateHtml);
+            : Utils.getNodesFromHtml(params.templateHtml);
     }
 }
 

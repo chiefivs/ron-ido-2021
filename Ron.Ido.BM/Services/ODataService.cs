@@ -155,7 +155,7 @@ namespace Ron.Ido.BM.Services
                         case ODataFilterTypeEnum.Starts:
                             break;
                         case ODataFilterTypeEnum.Contains:
-                            query = query.WhereContains(propInfo.Name, filter.Values.First());
+                            query = query.WhereContains(propInfo.Name, filter.Values.First(), filter.Aliases);
                             break;
                     }
                 }
@@ -178,21 +178,24 @@ namespace Ron.Ido.BM.Services
         {
             if(orders != null && orders.Any())
             {
+                var isOrdered = false;
                 foreach(var order in orders)
                 {
-                    if(order == orders.First())
+                    if(!isOrdered)
                     {
                         if (order.Direct == ODataOrderTypeEnum.Asc)
-                            query = query.OrderBy(order.Field);
+                            query = query.OrderBy(order.Field.FromCamel());
                         else
-                            query = query.OrderByDescending(order.Field);
+                            query = query.OrderByDescending(order.Field.FromCamel());
+
+                        isOrdered = true;
                     }
                     else
                     {
                         if (order.Direct == ODataOrderTypeEnum.Asc)
-                            query = query.ThenBy(order.Field);
+                            query = query.ThenBy(order.Field.FromCamel());
                         else
-                            query = query.ThenByDescending(order.Field);
+                            query = query.ThenByDescending(order.Field.FromCamel());
                     }
                 }
             }

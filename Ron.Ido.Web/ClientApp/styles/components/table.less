@@ -186,32 +186,12 @@ cmp-table {
                     position: relative;
                     font-size: 8px;
                     color: @link-color;
+                    white-space: nowrap;
 
-                    &:before {
-                        display: block;
-                        position: absolute;
-                        top: 2px;
+                    & > .glyphicon {
+                        margin-right: -6px;
+                        top:-1px;
                     }
-                }
-
-                &.first:before {
-                    content: '<<';
-                    left: 6px;
-                }
-
-                &.prev:before {
-                    content: '<';
-                    left: 7px;
-                }
-
-                &.next:before {
-                    content: '>';
-                    left: 7px;
-                }
-
-                &.last:before {
-                    content: '>>';
-                    left: 6px;
                 }
 
                 &.pagenum-small {

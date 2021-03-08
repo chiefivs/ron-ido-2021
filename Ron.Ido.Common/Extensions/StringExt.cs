@@ -18,6 +18,14 @@
             return $"{source.Substring(0,1).ToLower()}{source.Substring(1)}";
         }
 
+        public static string FromCamel(this string source)
+        {
+            if (string.IsNullOrEmpty(source))
+                return source;
+
+            return $"{source.Substring(0, 1).ToUpper()}{source.Substring(1)}";
+        }
+
         public static T Parse<T>(this string source, T defValue)
         {
             try
