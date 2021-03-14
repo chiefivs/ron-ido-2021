@@ -29,7 +29,7 @@
         © Рособрнадзор 2021
     </div>
 
-    <div class="modal-backdrop in" style="display: none;" data-bind="visible:popups.hasModals, click:popups.close, style:{zIndex:popups.modalZIndex}"></div>
+    <div class="modal-backdrop in" style="display: none;" data-bind="visible:popups.hasModals, click:popups.close.bind(popups), style:{zIndex:popups.modalZIndex}"></div>
     
     <div style="position:absolute; top:0; height: 0;" data-bind="foreach:popups.instances">
         <div class="modal modal-content"

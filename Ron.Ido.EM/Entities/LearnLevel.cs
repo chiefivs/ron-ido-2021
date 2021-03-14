@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Ron.Ido.EM.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Ron.Ido.EM.Entities
 {
-    public class LearnLevel
+    public class LearnLevel : IOrdered, IDateDependent
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]

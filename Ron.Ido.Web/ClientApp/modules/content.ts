@@ -93,9 +93,20 @@ export namespace Popups {
         top?: number;
         isModal?: boolean;
         isDraggable?: boolean;
-     }
+    }
 
-     export class PopupsCollection {
+    export interface IDialogButton {
+        title: string;
+        action: () => void;
+        disabled: () => boolean;
+    }
+
+    export interface IDialogParams extends IPopupParams {
+        title: string;
+        image?: string;
+    }
+
+    export class PopupsCollection {
         modalZIndex: ko.Computed<number>;
         hasModals: ko.Computed<boolean>;
         instances: ko.ObservableArray<Popup>;
@@ -174,9 +185,73 @@ export namespace Popups {
     }
 
     export class Dialog extends Popup {
+        title = ko.observable('');
+        image = ko.observable('');
+        buttons = ko.observableArray<IDialogButton>([]);
+        contentTemplateNodes: Node[];
+
+        constructor(params: IDialogParams) {
+            super({
+                height: params.height,
+                width: params.width,
+                isDraggable: params.isDraggable,
+                isModal: params.isModal,
+                left: params.left,
+                top: params.top,
+                templateHtml: `
+                    <div class="modal-header">
+                        <button type="button" class="close" data-bind="click:close">×</button>
+                        <h5>
+                            <i class="img img-size-20" data-bind="class:image, visible:image"></i>
+                            <span data-bind="text:title, style:{'padding-left':image() ? '2.5em' : ''}"></span>
+                        </h5>
+                    </div>
+                    <div class="modal-body" data-bind="template:{nodes:contentTemplateNodes, data:$data}, style:{'bottom':buttons && buttons().length ? '' : '0'}"></div>
+                    <!-- ko if:buttons && buttons().length -->
+                    <div class="modal-footer">
+                        <!-- ko foreach:buttons -->
+                        <button class="btn btn-primary" data-bind="text:title, click:action, disable:disabled()"></button>
+                        <!-- /ko -->
+                    </div>
+                    <!-- /ko -->`
+            });
+
+            this.title(params.title || '');
+            this.image(params.image || '');
+
+            this.contentTemplateNodes = params.templatePath
+                ? Utils.getNodesFromFile(params.templatePath)
+                : Utils.getNodesFromHtml(params.templateHtml);
+        }
+
+        show() {
+            this._instances.push(this);
+        }
 
         close(): void {
+            this._remove();
+        }
+    }
 
+    export class Alert extends Dialog {
+        private constructor(title: string, message: string, isModal: boolean) {
+            super({
+                title: title,
+                image: 'img-error',
+                width:500,
+                height:300,
+                isModal: isModal,
+                templateHtml: `<div>${message}</div>`
+            });
+
+            this.buttons([
+                {title:'ЗАКРЫТЬ', action:() => this.close(), disabled:() => false}
+            ]);
+        }
+
+        static open(title: string, message: string, isModal: boolean = false) {
+            const alert = new Alert(title, message, isModal);
+            alert.show();
         }
     }
 }

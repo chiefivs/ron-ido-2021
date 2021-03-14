@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Ron.Ido.EM.Interfaces;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ron.Ido.EM.Entities
 {
-    public class ApplyEntryForm
+    public class ApplyEntryForm : IOrdered
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]

@@ -52,3 +52,10 @@
         size:number;
     }
 
+    //  Ron.Ido.BM.Models.OData.ODataOption
+    export interface IODataOption {
+        value:any;
+        text:string;
+        parent:any;
+    }
+

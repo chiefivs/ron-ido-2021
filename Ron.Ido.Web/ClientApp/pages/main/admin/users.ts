@@ -1,7 +1,7 @@
 import * as ko from 'knockout';
-import { ILeftPage, LeftPageBase, MainPageBase } from '../../../modules/content';
+import { ILeftPage, LeftPageBase, MainPageBase, Popups } from '../../../modules/content';
 import { IODataFilter, ODataFilterTypeEnum, ODataOrderTypeEnum } from '../../../codegen/webapi/odata';
-import { ITablePagerState, TableColumnOrderDirection, IFilterParams, FilterValueType } from '../../../components/index';
+import { ITablePagerState, TableColumnOrderDirection, IFilterParams, IFilterOption, FilterValueType } from '../../../components/index';
 import { AdminAccessApi } from '../../../codegen/webapi/adminAccessApi';
 import { IODataOrder } from '../../../codegen/webapi/odata';
 import { Utils } from '../../../modules/utils';
@@ -15,14 +15,10 @@ export default class UsersMainPage extends MainPageBase {
         sorting: 'fullName asc',
         maxResultCount: 10,
     });
-    filters: IFilterParams[] = [
-        { title: 'фамилия', field:'surName', aliases:['firstName', 'lastName'], valueType:'string', filterType: ODataFilterTypeEnum.Contains, state: ko.observable()},
-        //{ title: 'дата рожд.', field:'birthDate', valueType:'date', filterType: ODataFilterTypeEnum.BetweenNone, state: ko.observable()},
-    ];
+    //filters: IFilterParams[];
 
 
     private _searchPage: UsersSearchLeftPage;
-    private _isLeftPagesCreated = false;
 
     constructor() {
         super({
@@ -34,7 +30,7 @@ export default class UsersMainPage extends MainPageBase {
         this.activeLeftPage = ko.observable();
 
         const filterStateChanged = (state:IODataFilter) => {};
-        ko.utils.arrayForEach(this.filters, filter => filter.state.subscribe(filterStateChanged));
+        //ko.utils.arrayForEach(this.filters, filter => filter.state.subscribe(filterStateChanged));
         
         this.isActive.subscribe(active => {if(active) this.onActivated();});
         this.pagerState.subscribe(() => this.update());
@@ -58,9 +54,10 @@ export default class UsersMainPage extends MainPageBase {
                 direct: sortingParts[1] === TableColumnOrderDirection.Asc ? ODataOrderTypeEnum.Asc : ODataOrderTypeEnum.Desc})
         }
 
-        const filters = ko.utils.arrayFilter(this.filters, filter => !!filter.state())
+        const filters = ko.utils.arrayFilter(this._searchPage.filters, filter => !!filter.state())
+        console.log(filters, ko.utils.arrayMap(filters, f => f.state()));
 
-        AdminAccessApi.getUsers({
+        AdminAccessApi.getUsersPage({
             skip: state.skipCount,
             take: state.maxResultCount,
             filters:ko.utils.arrayMap(filters, f => f.state()),
@@ -75,6 +72,11 @@ export default class UsersMainPage extends MainPageBase {
 class UsersSearchLeftPage extends LeftPageBase{
     filters: IFilterParams[];
 
+    rolesOptions = ko.observableArray<IFilterOption>([]);
+
+    private _fullNameFilter: IFilterParams = { title: 'ФИО', field:'surName', aliases:['firstName', 'lastName'], valueType:'string', filterType: ODataFilterTypeEnum.Contains, options:[], state: ko.observable()};
+    private _rolesFilter: IFilterParams = {title: 'Роли', field: 'roles', aliases:[], valueType:'number', filterType: ODataFilterTypeEnum.In, options:this.rolesOptions, state: ko.observable()};
+
     constructor(owner: UsersMainPage) {
         super({
             pageTitle: 'поиск',
@@ -82,7 +84,13 @@ class UsersSearchLeftPage extends LeftPageBase{
         });
 
         this.owner = owner;
-        this.filters = owner.filters;
+        this.filters = [this._fullNameFilter, this._rolesFilter];
+
+        AdminAccessApi.getUsersDictions().done(dictions => {
+            const roleOptionValues: IFilterOption[] = ko.utils.arrayMap(dictions.roles, role => 
+                <IFilterOption>{value: role.value, text: role.text});
+            this.rolesOptions(roleOptionValues);
+        });
     }
 
     
@@ -92,4 +100,7 @@ class UsersSearchLeftPage extends LeftPageBase{
         usersPage.update();
     }
 
+    alert() {
+        Popups.Alert.open('тестовое предупреждение', 'описание <b>тестового предупреждения</b>', true)
+    }
 }

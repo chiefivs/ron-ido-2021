@@ -1,9 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Ron.Ido.EM.Interfaces;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Ron.Ido.EM.Entities
 {
-    public class ApplyDocFullPackageType
+    public class ApplyDocFullPackageType : IOrdered
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]

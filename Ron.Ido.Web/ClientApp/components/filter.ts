@@ -19,10 +19,16 @@ export function init(){
 
 export type FilterValueType = 'string'|'number'|'date';
 
+export interface IFilterOption {
+    value: any;
+    text: string;
+}
+
 export interface IFilterParams{
     title: string | ko.Observable<string>;
     field: string;
     aliases?: string[];
+    options?: IFilterOption[]|ko.ObservableArray<IFilterOption>;
     state: ko.Observable<IODataFilter>;
     valueType: FilterValueType;
     filterType: ODataFilterTypeEnum;
@@ -38,27 +44,36 @@ class FilterModel {
     value1 = ko.observable(null);
     value2 = ko.observable(null);
     title: ko.Observable<string>;
+    options: ko.ObservableArray<IFilterOption>;
     state: ko.Observable<IODataFilter>;
 
     private _templates:object = {};
 
     constructor(params:IFilterParams) {
-        console.log(params);
         this._defineAllTemplates();
         this.templateNodes = this._getTemplate(params.filterType, params.valueType);
         this.state = params.state;
 
         this.title = ko.isObservable(params.title) ? params.title : ko.observable(params.title || '');
+        this.options = ko.isObservable(params.options) ? params.options : ko.observableArray(params.options || []);
 
-        this.values.subscribe(values => this.state(values.length 
-            ? { field:params.field, aliases:params.aliases || null, type: params.filterType, values: values }
-            : null));
+        this.values.subscribe(values => {
+            if(!values.length) {
+                this.state(null);
+            } else {
+                if(this.options && this.options().length)
+                    values = ko.utils.arrayMap(values, (opt:IFilterOption) => opt.value);
+
+                this.state({ field:params.field, aliases:params.aliases || [], type: params.filterType, values: values });
+            }
+        });
     }
 
     private _defineAllTemplates() {
         this._setTemplate(ODataFilterTypeEnum.Contains, 'string',
             '<cmp-textbox params="value:value1"></cmp-textbox>');
-        this._setTemplate(ODataFilterTypeEnum.In, 'number', '');
+        this._setTemplate(ODataFilterTypeEnum.In, 'number',
+            '<cmp-multiselect params="values:values, options:options, title:title"></cmp-multiselect>');
         this._setTemplate(ODataFilterTypeEnum.BetweenNone, 'date',
             `<div class="date-between">
                 <div>

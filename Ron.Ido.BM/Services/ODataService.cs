@@ -4,6 +4,7 @@ using Ron.Ido.BM.Models.OData;
 using Ron.Ido.Common.DependencyInjection;
 using Ron.Ido.Common.Extensions;
 using Ron.Ido.EM;
+using Ron.Ido.EM.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,6 +74,39 @@ namespace Ron.Ido.BM.Services
                 Skip = request.Skip,
                 Total = query.Count()
             };
+        }
+
+        public IEnumerable<ODataOption> GetOptions<TEntity>(string textPropName, string valuePropName, Func<IQueryable<TEntity>, IQueryable<TEntity>> optionsFilter = null) where TEntity : class
+        {
+            return GetOptions(textPropName, valuePropName, null, optionsFilter);
+        }
+
+        public IEnumerable<ODataOption> GetOptions<TEntity>(string textPropName, string valuePropName, string parentPropName, Func<IQueryable<TEntity>, IQueryable<TEntity>> optionsFilter = null) where TEntity : class
+        {
+            var query = _appDbContext.Set<TEntity>().AsQueryable();
+            if (typeof(IDateDependent).IsAssignableFrom(typeof(TEntity)))
+                query = query.Where(i => (
+               (DateTime.Now >= ((IDateDependent)i).BeginDate) || ((IDateDependent)i).BeginDate == null)
+               && ((DateTime.Now <= ((IDateDependent)i).EndDate) || ((IDateDependent)i).EndDate == null));
+
+            if (optionsFilter != null)
+                query = optionsFilter(query);
+
+            if (typeof(IOrdered).IsAssignableFrom(typeof(TEntity)))
+                query = query.OrderBy(i => ((IOrdered)i).OrderNum);
+
+            string valPropName = string.IsNullOrEmpty(valuePropName)
+                ? textPropName
+                : valuePropName;
+
+            var arr = query.ToArray();
+
+            return arr.Select(i => new ODataOption
+            {
+                Text = i.GetPropertyValue(textPropName).ToString(),
+                Value = i.GetPropertyValue(valPropName),
+                Parent = string.IsNullOrEmpty(parentPropName) ? null : i.GetPropertyValue(parentPropName)
+            });
         }
 
         private IQueryable<TEntity> ApplyFilters<TEntity>(

@@ -1,8 +1,9 @@
 <form class="filters-panel" data-bind="submit:search">
     <div data-bind="foreach:filters">
-        <div><cmp-filter params="title:title, field:field, aliases:aliases, state:state, filterType:filterType, valueType:valueType"></cmp-filter></div>
+        <div><cmp-filter params="title:title, field:field, aliases:aliases, options:options, state:state, filterType:filterType, valueType:valueType"></cmp-filter></div>
     </div>
     <div>
+        <a class="btn btn-secondary" data-bind="click:alert">alert</a>
         <button class="btn btn-primary pull-right">ПОИСК</div>
     </div>
 </form>

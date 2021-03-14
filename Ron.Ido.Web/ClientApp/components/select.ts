@@ -8,7 +8,7 @@ export function init(){
             }
         },
         template: `
-            <select data-bind="options: options, optionsText: optionsText, value: value, optionsCaption: optionsCaption"></select>`
+            <select data-bind="options: options, optionsText: optionsText, value: value, optionsCaption: optionsCaption, optionsAfterRender: afterRender"></select>`
     });
 }
 
@@ -30,5 +30,11 @@ class SelectModel {
         this.options = ko.isObservable(params.options) ? params.options : ko.observableArray(params.options || []);
         this.optionsText = params.optionsText || 'text';
         this.optionsCaption = params.optionsCaption || '';
+    }
+
+    afterRender(option:Element, item:any) {
+        if(!item) {
+            $(option).hide();
+        }
     }
 }
