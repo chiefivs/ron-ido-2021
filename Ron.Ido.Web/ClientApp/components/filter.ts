@@ -20,7 +20,7 @@ export function init(){
 export type FilterValueType = 'string'|'number'|'date';
 
 export interface IFilterOption {
-    value: any;
+    value: string;
     text: string;
 }
 
@@ -61,10 +61,21 @@ class FilterModel {
             if(!values.length) {
                 this.state(null);
             } else {
-                if(this.options && this.options().length)
-                    values = ko.utils.arrayMap(values, (opt:IFilterOption) => opt.value);
-
-                this.state({ field:params.field, aliases:params.aliases || [], type: params.filterType, values: values });
+                if(params.filterType === ODataFilterTypeEnum.In) {
+                    this.state({
+                        field:params.field,
+                        aliases:params.aliases || [],
+                        type: params.filterType,
+                        values: ko.utils.arrayMap(values, (opt:IFilterOption) => opt.value)
+                    });
+                } else {
+                    this.state({
+                        field:params.field,
+                        aliases:params.aliases || [],
+                        type: params.filterType,
+                        values: values
+                    });
+                }
             }
         });
     }

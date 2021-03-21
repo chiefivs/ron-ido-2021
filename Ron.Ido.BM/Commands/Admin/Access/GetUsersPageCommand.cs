@@ -2,6 +2,8 @@
 using Ron.Ido.BM.Models.Admin.Access;
 using Ron.Ido.BM.Models.OData;
 using Ron.Ido.BM.Services;
+using Ron.Ido.Common.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -28,6 +30,22 @@ namespace Ron.Ido.BM.Commands.Admin.Access
             {
                 request.ReplaceOrder("FullName", "SurName", "FirstName");
                 var result = _odataService.GetPage(request,
+                    new[]
+                    {
+                        //request.CreateMultiselectFilter<EM.Entities.User>("roles", user => user.UserRoles.Select(ur => ur.RoleId))
+                        request.CreateCustomFilter<EM.Entities.User>(query => {
+                            foreach(var filter in request.Filters)
+                            {
+                                if(filter.Field.ToCamel() == "roles" && filter.Values.Any())
+                                {
+                                    var roleids = filter.Values.Select(v => v.Parse<long>(0)).ToArray();
+                                    query = query.Where(i => i.UserRoles.Select(ur => ur.RoleId).Any(rid => roleids.Contains(rid)));
+                                }
+                            }
+
+                            return query;
+                        })
+                    },
                     new[] {
                         //new ODataMapMemberConfig<EM.Entities.User, UsersPageItemDto>(
                         //    userDto => userDto.Roles,

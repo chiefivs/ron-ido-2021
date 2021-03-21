@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Microsoft.EntityFrameworkCore;
 using Ron.Ido.BM.Models.OData;
 using Ron.Ido.Common.DependencyInjection;
 using Ron.Ido.Common.Extensions;
@@ -7,6 +8,7 @@ using Ron.Ido.EM;
 using Ron.Ido.EM.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace Ron.Ido.BM.Services
@@ -153,6 +155,12 @@ namespace Ron.Ido.BM.Services
                             {
                                 query = query.WhereContains(propInfo.Name, filter.Values.Select(v => v.Parse<long>(0)));
                             }
+                            //else if (propInfo.PropertyType.IsGenericType && propInfo.PropertyType.GetGenericTypeDefinition() == typeof(List<>))
+                            //{
+                            //    var idProp = _getMtMOtherKeyName(typeof(TEntity), propInfo.Name);
+                            //    var ids = filter.Values.Select(v => v.Parse<long>(0));
+                            //    query = query.WhereContains($"{propInfo.Name}.{idProp}", ids);
+                            //}
                             break;
                         case ODataFilterTypeEnum.BetweenNone:
                             if(filter.Values.Length == 2)
@@ -236,5 +244,38 @@ namespace Ron.Ido.BM.Services
 
             return query;
         }
+
+        private IEnumerable<string> _getKeyNames(Type entityType)
+        {
+            if (entityType.IsInterface)
+            {
+                var keyProp = entityType.GetProperties().First(p => p.GetCustomAttributes(typeof(KeyAttribute), false).Any());
+                return new[] { keyProp.Name };
+            }
+
+            return _appDbContext.Model.FindEntityType(entityType.FullName).FindPrimaryKey().Properties.Select(p => p.Name);
+        }
+
+        protected string _getMtMOtherKeyName(Type entityType, string propName)
+        {
+            var entityDbType = _appDbContext.Model.FindEntityType(entityType.FullName);
+            var propDbType = entityDbType.FindNavigation(propName);
+            var relDbType = propDbType.ForeignKey.DeclaringEntityType;
+            var keys = relDbType.GetForeignKeys().Where(k => k.PrincipalEntityType != entityDbType);
+
+            if (keys.Any())
+                return keys.First().Properties.First().Name;
+
+            //  вторая сторона отношения не является foreign key, пытаемся найти ее по первичному ключу
+            var mtmPrimaryKey = relDbType.GetForeignKeys().First(k => k.PrincipalEntityType == entityDbType);
+            string mtmPrimaryKeyName = mtmPrimaryKey.Properties.First().Name;
+            var propType = entityType.GetPropertyType(propName).GetGenericArguments().First();
+            var primaryKeyNames = _getKeyNames(propType).Where(k => k != mtmPrimaryKeyName);
+            if (primaryKeyNames.Any())
+                return primaryKeyNames.First();
+
+            throw new Exception($"Тип {entityType.FullName} является отношением many-to many, но не имеет ни внешнего ключа, ни первичного индекса по полям");
+        }
+
     }
 }

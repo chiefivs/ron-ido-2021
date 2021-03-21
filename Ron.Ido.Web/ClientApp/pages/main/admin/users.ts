@@ -88,7 +88,7 @@ class UsersSearchLeftPage extends LeftPageBase{
 
         AdminAccessApi.getUsersDictions().done(dictions => {
             const roleOptionValues: IFilterOption[] = ko.utils.arrayMap(dictions.roles, role => 
-                <IFilterOption>{value: role.value, text: role.text});
+                <IFilterOption>{value: role.value.toString(), text: role.text});
             this.rolesOptions(roleOptionValues);
         });
     }
