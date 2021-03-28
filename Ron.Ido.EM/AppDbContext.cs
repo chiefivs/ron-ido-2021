@@ -12,6 +12,8 @@ namespace Ron.Ido.EM
         public virtual DbSet<ApplyDocType> ApplyDocTypes { get; set; }
         public virtual DbSet<ApplyEntryForm> ApplyEntryForms { get; set; }
         public virtual DbSet<ApplyLearnForm> ApplyLearnForms { get; set; }
+        public virtual DbSet<ApplyPassportType> ApplyPassportTypes { get; set; }
+
         public virtual DbSet<ApplyTemplate> ApplyTemplates { get; set; }
 
 
@@ -87,6 +89,8 @@ namespace Ron.Ido.EM
 
             modelBuilder.Entity<ApplyLearnForm>().HasIndex(a => a.Name);
             modelBuilder.Entity<ApplyLearnForm>().HasIndex(a => a.NameEng);
+
+            modelBuilder.Entity<ApplyPassportType>().HasIndex(a => a.Name);
 
             modelBuilder.Entity<ApplyTemplate>().HasIndex(a => a.Name);
 

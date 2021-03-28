@@ -17,6 +17,8 @@ namespace Ron.Ido.Migrator.Tasks
 
             UpdateApplyEntryForms(context);
             UpdateApplyLearnForms(context);
+            UpdateApplyPassportTypes(context);
+
             UpdateApplyTemplates(context);
 
         }
@@ -114,6 +116,47 @@ namespace Ron.Ido.Migrator.Tasks
             foreach (var item in list)
                 context.AddEntityIfNotExists(item, entity => entity.Id == item.Id);
         }
+
+        private void UpdateApplyPassportTypes(AppDbContext context)
+        {
+            var list = new[]
+            {
+                new ApplyPassportType{ Id = 1, Code = "01" ,Name = "Паспорт гражданина СССР",  OrderNum = 1 },
+                new ApplyPassportType{ Id = 2, Code = "02",Name = "Загранпаспорт гражданина СССР",  OrderNum = 2 },
+                new ApplyPassportType{ Id = 3, Code = "03",Name = "Свидетельство о рождении", OrderNum = 3  },
+                new ApplyPassportType{ Id = 4, Code = "04" ,Name = "Удостоверение личности офицера", OrderNum = 4 },
+                new ApplyPassportType{ Id = 5, Code = "05",Name = "Справка об освобождении из места лишения свободы", OrderNum = 5 },
+                new ApplyPassportType{ Id = 6, Code = "06",Name = "Паспорт Минморфлота", OrderNum = 6 },
+                new ApplyPassportType{ Id = 7, Code = "07",Name = "Военный билет", OrderNum = 7 },
+                new ApplyPassportType{ Id = 8, Code = "08",Name = "Временное удостоверение, выданное взамен военного билета", OrderNum = 8 },
+                new ApplyPassportType{ Id = 9, Code = "09",Name = "Дипломатический паспорт", OrderNum = 9 },
+                new ApplyPassportType{ Id = 10, Code = "10",Name = "Паспорт иностранного гражданина", OrderNum = 10 },
+                new ApplyPassportType{ Id = 11, Code = "11",Name = "Свидетельство о рассмотрении ходатайства о признании лица беженцем на территории Российской Федерации по существу", OrderNum = 11 },
+                new ApplyPassportType{ Id = 12, Code = "12",Name = "Вид на жительство в Российской Федерации", OrderNum = 12 },
+                new ApplyPassportType{ Id = 13, Code = "13",Name = "Удостоверение беженца", OrderNum = 13 },
+                new ApplyPassportType{ Id = 14, Code = "14",Name = "Временное удостоверение личности гражданина Российской Федерации", OrderNum = 14 },
+                new ApplyPassportType{ Id = 15, Code = "15",Name = "Разрешение на временное проживание в Российской Федерации", OrderNum = 15 },
+                new ApplyPassportType{ Id = 16, Code = "18",Name = "Свидетельство о предоставлении временного убежища на территории Российской Федерации (до 01.01.2013)", OrderNum = 16 },
+                new ApplyPassportType{ Id = 17, Code = "21",Name = "Паспорт гражданина Российской Федерации", OrderNum = 17 },
+                new ApplyPassportType{ Id = 18, Code = "22",Name = "Загранпаспорт гражданина Российской Федерации", OrderNum = 18 },
+                new ApplyPassportType{ Id = 19, Code = "23",Name = "Свидетельство о рождении, выданное уполномоченным органом иностранного государства", OrderNum = 19 },
+                new ApplyPassportType{ Id = 20, Code = "24",Name = "Удостоверение личности военнослужащего Российской Федерации", OrderNum = 20 },
+                new ApplyPassportType{ Id = 21, Code = "26",Name = "Паспорт моряка", OrderNum = 21 },
+                new ApplyPassportType{ Id = 22, Code = "27",Name = "Военный билет офицера запаса", OrderNum = 22 },
+                new ApplyPassportType{ Id = 23, Code = "60",Name = "Документы, подтверждающие факт регистрации по месту жительства (пребывания)", OrderNum = 23 },
+                new ApplyPassportType{ Id = 24, Code = "61",Name = "Свидетельство о регистрации по месту жительства", OrderNum = 24 },
+                new ApplyPassportType{ Id = 25, Code = "62",Name = "Вид на жительство иностранного гражданина", OrderNum = 25 },
+                new ApplyPassportType{ Id = 26, Code = "81",Name = "Свидетельство о смерти", OrderNum = 26 },
+                new ApplyPassportType{ Id = 27, Code = "91",Name = "Иные документы", OrderNum = 27 },
+                new ApplyPassportType{ Id = 28, Code = "63",Name = "Свидетельство о регистрации по месту пребывания", OrderNum = 28 },
+                new ApplyPassportType{ Id = 29, Code = "19",Name = "Свидетельство о предоставлении временного убежища на территории Российской Федерации", OrderNum = 29 },
+                new ApplyPassportType{ Id = 30, Code = "28",Name = "Служебный паспорт гражданина Российской Федерации", OrderNum = 30 }
+            };
+            foreach (var item in list)
+                context.AddEntityIfNotExists(item, entity => entity.Id == item.Id);
+
+        }
+
         private void UpdateLearnLevels(AppDbContext context)
         {
             var list = new[]
