@@ -32,7 +32,6 @@ namespace Ron.Ido.BM.Commands.Admin.Access
                 var result = _odataService.GetPage(request,
                     new[]
                     {
-                        //request.CreateMultiselectFilter<EM.Entities.User>("roles", user => user.UserRoles.Select(ur => ur.RoleId))
                         request.CreateCustomFilter<EM.Entities.User>(query => {
                             foreach(var filter in request.Filters)
                             {
