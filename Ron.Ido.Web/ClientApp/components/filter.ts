@@ -57,6 +57,16 @@ class FilterModel {
         this.title = ko.isObservable(params.title) ? params.title : ko.observable(params.title || '');
         this.options = ko.isObservable(params.options) ? params.options : ko.observableArray(params.options || []);
 
+        let values:any[] = this.state() ? this.state().values : [];
+        if(params.filterType === ODataFilterTypeEnum.In) {
+            values = ko.utils.arrayMap(values, v => ko.utils.arrayFirst(this.options(), opt => opt.value === v));
+            this.values(values);
+        } else {
+            this.values(values);
+            this.value1(this.values().length ? this.values()[0] : null);
+            this.value2(this.values().length > 1 ? this.values()[1] : null);
+        }
+
         this.values.subscribe(values => {
             if(!values.length) {
                 this.state(null);
