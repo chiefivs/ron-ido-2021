@@ -1,1 +1,14 @@
-<h1>Роли</h1>
+<div style="position: absolute; top:0; bottom: 0; width:320px; overflow: auto;">
+    <cmp-table params="rows:roles, pagerState:pagerState, totalCount:tableTotalCount">
+        <cmp-table-column params="title:'Название', data:'name', orderable:true""></cmp-table-column>
+    </cmp-table>
+</div>
+
+<div style="position:absolute; top:0; bottom: 0; left: 320px; right: 0;">
+    <div style="position: absolute; top:0; bottom:0; left:0; right: 50%; overflow:auto;">
+        <h2>разрешения</h2>
+    </div>
+    <div style="position: absolute; top:0; bottom:0; left:50%; right: 0; overflow:auto;">
+        <h2>статусы</h2>
+    </div>
+</div>

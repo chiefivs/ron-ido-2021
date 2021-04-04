@@ -59,3 +59,11 @@
         parent:any;
     }
 
+    //  Ron.Ido.BM.Commands.Admin.Access.GetRolesPageCommand
+    export interface IGetRolesPageCommand {
+        skip:number;
+        take:number;
+        filters:IODataFilter[];
+        orders:IODataOrder[];
+    }
+

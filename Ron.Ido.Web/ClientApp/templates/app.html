@@ -33,7 +33,7 @@
     
     <div style="position:absolute; top:0; height: 0;" data-bind="foreach:popups.instances">
         <div class="modal modal-content"
-            data-bind="style:{width:width() + 'px', height:height() + 'px', left:left() + 'px', top:top() + 'px', zIndex:zIndex}, template:{nodes:templateNodes, data:$data}">
+            data-bind="style:{left:left() + 'px', top:top() + 'px', zIndex:zIndex}, template:{nodes:templateNodes, data:$data}">
         </div>
     </div>
 </div>

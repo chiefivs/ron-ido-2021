@@ -3,21 +3,10 @@
 @import "main-panel.less";
 @import "table.less";
 
-cmp-select {
-    display: inline-block;
-
-    & > select {
-        padding: 5px;
-        width: 100%;
+cmp-filters-panel {
+    .filters-panel {
+        cmp-filter {
+            width:100%;
+        }
     }
-}
-
-cmp-textbox {
-    display: inline-block;
-
-    & > input {
-        padding: 5px;
-        width: 100%;
-    }
-
 }

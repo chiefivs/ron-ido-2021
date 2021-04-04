@@ -7,7 +7,7 @@ export function init(){
                 return new DatepickerModel(params);
             }
         },
-        template: `<input type="date" data-bind="value: value" />`
+        template: `<input class="form-control" type="date" data-bind="value: value" />`
     });
 }
 

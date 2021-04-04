@@ -206,7 +206,7 @@ export namespace Popups {
                             <span data-bind="text:title, style:{'padding-left':image() ? '2.5em' : ''}"></span>
                         </h5>
                     </div>
-                    <div class="modal-body" data-bind="template:{nodes:contentTemplateNodes, data:$data}, style:{'bottom':buttons && buttons().length ? '' : '0'}"></div>
+                    <div class="modal-body" data-bind="template:{nodes:contentTemplateNodes, data:$data}, style:{width:width() + 'px', 'max-height':height() + 'px', 'margin-bottom':buttons && buttons().length ? '' : '0'}"></div>
                     <!-- ko if:buttons && buttons().length -->
                     <div class="modal-footer">
                         <!-- ko foreach:buttons -->

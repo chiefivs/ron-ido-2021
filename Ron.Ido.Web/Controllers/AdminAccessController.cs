@@ -34,5 +34,13 @@ namespace Ron.Ido.Web.Controllers
         {
             return await _mediator.Send(new GetUsersListDictionsCommand());
         }
+
+        [HttpPost]
+        [Route("api/admin/access/roles/getpage")]
+        [AuthorizedFor(PermissionEnum.ROLE_VIEW, PermissionEnum.ROLE_CREATE, PermissionEnum.ROLE_EDIT, PermissionEnum.ROLE_DEL)]
+        public async Task<ODataPage<RolesPageItemDto>> GetRolesPage([FromBody] GetRolesPageCommand request)
+        {
+            return await _mediator.Send(request);
+        }
     }
 }

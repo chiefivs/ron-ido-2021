@@ -8,7 +8,7 @@ export function init(){
             }
         },
         template: `
-            <input type="text" data-bind="textInput: value"></input>`
+            <input class="form-control" type="text" data-bind="textInput: value"></input>`
     });
 }
 

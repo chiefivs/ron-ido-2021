@@ -8,7 +8,7 @@ export function init(){
             }
         },
         template: `
-            <select data-bind="options: options, optionsText: optionsText, value: value, optionsCaption: optionsCaption, optionsAfterRender: afterRender"></select>`
+            <select class="form-control" data-bind="options: options, optionsText: optionsText, value: value, optionsCaption: optionsCaption, optionsAfterRender: afterRender"></select>`
     });
 }
 

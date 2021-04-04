@@ -116,6 +116,9 @@ class MultiselectDialog extends Popups.Dialog {
             lines.push(line);
         }
 
+        this.width(width);
+        this.height(height);
+
         return lines;
     }
 }

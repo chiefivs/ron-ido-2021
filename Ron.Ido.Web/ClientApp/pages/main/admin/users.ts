@@ -4,8 +4,6 @@ import { IODataFilter, ODataFilterTypeEnum, ODataOrderTypeEnum } from '../../../
 import { ITablePagerState, TableColumnOrderDirection, IFilterParams, IFilterOption, FilterValueType } from '../../../components/index';
 import { AdminAccessApi } from '../../../codegen/webapi/adminAccessApi';
 import { IODataOrder } from '../../../codegen/webapi/odata';
-import { Utils } from '../../../modules/utils';
-import { App } from '../../../app';
 
 export default class UsersMainPage extends MainPageBase {
     users = ko.observableArray<AdminAccessApi.IUsersPageItemDto>([]);
@@ -15,9 +13,6 @@ export default class UsersMainPage extends MainPageBase {
         sorting: 'fullName asc',
         maxResultCount: 10,
     });
-    //filters: IFilterParams[];
-
-
     private _searchPage: UsersSearchLeftPage;
 
     constructor() {
@@ -29,15 +24,14 @@ export default class UsersMainPage extends MainPageBase {
         this.leftPages = ko.observableArray([]);
         this.activeLeftPage = ko.observable();
 
-        const filterStateChanged = (state:IODataFilter) => {};
-        //ko.utils.arrayForEach(this.filters, filter => filter.state.subscribe(filterStateChanged));
-        
         this.isActive.subscribe(active => {if(active) this.onActivated();});
         this.pagerState.subscribe(() => this.update());
 
         this._searchPage = new UsersSearchLeftPage(this);
         this.leftPages([<ILeftPage>this._searchPage]);
         this.activeLeftPage(this._searchPage);
+
+        this._searchPage.filterStates.subscribe(() => this.update());
     }
 
     onActivated() {
@@ -54,13 +48,12 @@ export default class UsersMainPage extends MainPageBase {
                 direct: sortingParts[1] === TableColumnOrderDirection.Asc ? ODataOrderTypeEnum.Asc : ODataOrderTypeEnum.Desc})
         }
 
-        const filters = ko.utils.arrayFilter(this._searchPage.filters, filter => !!filter.state())
-        console.log(filters, ko.utils.arrayMap(filters, f => f.state()));
+        const filterStates = this._searchPage.filterStates();
 
         AdminAccessApi.getUsersPage({
             skip: state.skipCount,
             take: state.maxResultCount,
-            filters:ko.utils.arrayMap(filters, f => f.state()),
+            filters:filterStates,
             orders:orders
         }).done(page => {
             this.users(page.items);
@@ -71,16 +64,17 @@ export default class UsersMainPage extends MainPageBase {
 
 class UsersSearchLeftPage extends LeftPageBase{
     filters: IFilterParams[];
+    filterStates: ko.ObservableArray<IODataFilter> = ko.observableArray([]);
 
     rolesOptions = ko.observableArray<IFilterOption>([]);
 
-    private _fullNameFilter: IFilterParams = { title: 'ФИО', field:'surName', aliases:['firstName', 'lastName'], valueType:'string', filterType: ODataFilterTypeEnum.Contains, options:[], state: ko.observable()};
-    private _rolesFilter: IFilterParams = {title: 'Роли', field: 'roles', aliases:[], valueType:'number', filterType: ODataFilterTypeEnum.In, options:this.rolesOptions, state: ko.observable()};
+    private _fullNameFilter: IFilterParams = { title: 'ФИО', field:'surName', aliases:['firstName', 'lastName'], valueType:'string', filterType: ODataFilterTypeEnum.Contains, options:[]};
+    private _rolesFilter: IFilterParams = {title: 'Роли', field: 'roles', valueType:'number', filterType: ODataFilterTypeEnum.In, options:this.rolesOptions};
 
     constructor(owner: UsersMainPage) {
         super({
             pageTitle: 'поиск',
-            templatePath: 'pages/main/admin/users-search.html'
+            templatePath: 'pages/left/search-left-page.html'
         });
 
         this.owner = owner;
@@ -93,14 +87,7 @@ class UsersSearchLeftPage extends LeftPageBase{
         });
     }
 
-    
-    search() {
-        const usersPage = <UsersMainPage>this.owner;
-        usersPage.pagerState().skipCount = 0;
-        usersPage.update();
-    }
-
-    alert() {
-        Popups.Alert.open('тестовое предупреждение', 'описание <b>тестового предупреждения</b>', true)
-    }
+    // alert() {
+    //     Popups.Alert.open('тестовое предупреждение', 'описание <b>тестового предупреждения</b>', true)
+    // }
 }

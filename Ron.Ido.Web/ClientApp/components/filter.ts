@@ -28,10 +28,10 @@ export interface IFilterParams{
     title: string | ko.Observable<string>;
     field: string;
     aliases?: string[];
-    options?: IFilterOption[]|ko.ObservableArray<IFilterOption>;
-    state: ko.Observable<IODataFilter>;
     valueType: FilterValueType;
     filterType: ODataFilterTypeEnum;
+    options?: IFilterOption[]|ko.ObservableArray<IFilterOption>;
+    state?: ko.Observable<IODataFilter>;
 }
 
 const ValueTypesDic = {
@@ -52,7 +52,7 @@ class FilterModel {
     constructor(params:IFilterParams) {
         this._defineAllTemplates();
         this.templateNodes = this._getTemplate(params.filterType, params.valueType);
-        this.state = params.state;
+        this.state = params.state || ko.observable(null);
 
         this.title = ko.isObservable(params.title) ? params.title : ko.observable(params.title || '');
         this.options = ko.isObservable(params.options) ? params.options : ko.observableArray(params.options || []);
