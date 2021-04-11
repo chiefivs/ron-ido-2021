@@ -1,12 +1,42 @@
 <div style="position: absolute; top:0; bottom: 0; width:320px; overflow: auto;">
     <cmp-table params="rows:roles, pagerState:pagerState, totalCount:tableTotalCount">
-        <cmp-table-column params="title:'Название', data:'name', orderable:true""></cmp-table-column>
+        <cmp-table-column params="title:'Название', data:'name', orderable:true, priority:101, width:'99%'"></cmp-table-column>
+        <cmp-table-column params="title:'', priority:101, width:'40px'">
+            <cmp-table-title>
+                <div class="pull-right" style="margin-right: -10px;">
+                    <a class="img img-size-20 img-add" data-bind="click:function(){$parent.setCurrent();}"></a>
+                </div>
+            </cmp-table-title>
+            <cmp-table-data>
+                <div class="pull-right">
+                    <a class="img img-size-20 img-edit" data-bind="click:function(){$parents[4].setCurrent($parent.id);}"></a>
+                </div>
+            </cmp-table-data>
+        </cmp-table-column>
     </cmp-table>
 </div>
 
 <div style="position:absolute; top:0; bottom: 0; left: 320px; right: 0;">
-    <div style="position: absolute; top:0; bottom:0; left:0; right: 50%; overflow:auto;">
-        <h2>разрешения</h2>
+    <div style="position: absolute; top:0; bottom:0; left:0; right: 50%; overflow:auto;" data-bind="if:current">
+        <div data-bind="with:current">
+            <a class="btn btn-primary pull-right" data-bind="click:$parent.remove.bind($parent), visible:item.id.value()">УДАЛИТЬ</a>
+            <a class="btn btn-primary pull-right" data-bind="click:$parent.save.bind($parent)">СОХРАНИТЬ</a>
+            <div data-bind="visible:item.name.errors().length, foreach:item.name.errors()">
+                <div data-bind="text:$data"></div>
+            </div>
+            <cmp-textbox params="value:item.name.value"></cmp-textbox>
+
+            <div data-bind="visible:item.rolePermissions.errors().length, foreach:item.rolePermissions.errors()">
+                <div data-bind="text:$data"></div>
+            </div>
+            <div data-bind="foreach:options.rolePermissions">
+                <div>
+                    <input type="checkbox" data-bind="checkedValue:value, checked:$parent.item.rolePermissions.value" />
+                    <label data-bind="text:text"></label>
+                </div>
+            </div>
+        </div>
+        
     </div>
     <div style="position: absolute; top:0; bottom:0; left:50%; right: 0; overflow:auto;">
         <h2>статусы</h2>

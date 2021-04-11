@@ -4,12 +4,16 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Ron.Ido.BM.Models.OData;
 using Ron.Ido.Common;
 using Ron.Ido.Common.DependencyInjection;
 using Ron.Ido.Common.Extensions;
@@ -20,7 +24,9 @@ using Ron.Ido.Web.Authorization;
 using System;
 using System.IO;
 using System.Net;
+using System.Net.Mime;
 using System.Security.Authentication;
+using System.Text.Json;
 
 namespace ForeignDocsRec2020.Web
 {
@@ -105,6 +111,11 @@ namespace ForeignDocsRec2020.Web
                 });
                 c.OperationFilter<SwaggerAuthorizationFilter>();
             });
+
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -118,9 +129,28 @@ namespace ForeignDocsRec2020.Web
             }
 
             //app.UseResponseCompression();
+
+            app.Use(async (context, next) =>
+            {
+                await next();
+                //  это аналог endrequest
+                //  если в процессе обработки запроса создавался AppDbContext, то нужно закрыть транзакцию
+                if (context.Items.ContainsKey(DBCONTEXT_CREATED))
+                {
+                    var dbcontext = context.RequestServices.GetService<AppDbContext>();
+                    if (context.Response.StatusCode == (int)HttpStatusCode.OK)
+                        //  при успешном результате коммитим изменения в БД
+                        dbcontext?.Commit();
+                    else
+                        //  иначе отменяем их
+                        dbcontext?.Rollback();
+                }
+            });
+
             app.UseExceptionHandler(conf =>
             {
-                conf.Run(async context => {
+                conf.Run(async context =>
+                {
                     var handler = context.Features.Get<IExceptionHandlerPathFeature>();
                     var error = handler?.Error;
 
@@ -142,25 +172,22 @@ namespace ForeignDocsRec2020.Web
                         return;
                     }
 
-                    //var factory = app.ApplicationServices.GetService<ILoggerFactory>();
-                    //var logger = factory.CreateLogger("Web application");
-                    //var logItem = new LogItem
-                    //{
-                    //    Message = "Внутренняя ошибка сервиса  URL=" + Microsoft.AspNetCore.Http.Extensions.UriHelper.GetDisplayUrl(context.Request)
-                    //};
-
-                    //var uid = Guid.NewGuid();
-                    //logger.LogError(uid, logItem, error);
+                    if (error is ODataValidationException)
+                    {
+                        context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        context.Response.ContentType = "application/json";
+                        await context.Response.WriteAsJsonAsync((error as ODataValidationException).Errors);
+                        return;
+                    }
 
                     context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                    //context.Response.ContentType = "application/json";
-                    //await context.Response.WriteAsync($"{{\"LogItemUid\":\"{uid}\"}}");
                     await context.Response.WriteAsync(error.Message);
                 });
             });
 
             app.UseAuthentication();
             app.UseRouting();
+            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
@@ -178,23 +205,21 @@ namespace ForeignDocsRec2020.Web
             });
             app.UseStaticFiles();
 
-            app.Use(async (context, next) =>
-            {
-                await next();
-                //  это аналог endrequest
-                //  если в процессе обработки запроса создавался AppDbContext, то нужно закрыть транзакцию
-                if (context.Items.ContainsKey(DBCONTEXT_CREATED))
-                {
-                    var dbcontext = context.RequestServices.GetService<AppDbContext>();
-                    if (context.Response.StatusCode == (int)HttpStatusCode.OK)
-                        //  при успешном результате коммитим изменения в БД
-                        dbcontext?.Commit();
-                    else
-                        //  иначе отменяем их
-                        dbcontext?.Rollback();
-                }
-            });
+        }
+    }
 
+    public class CustomExceptionFilterAttribute : Attribute, IExceptionFilter
+    {
+        public void OnException(ExceptionContext context)
+        {
+            string actionName = context.ActionDescriptor.DisplayName;
+            string exceptionStack = context.Exception.StackTrace;
+            string exceptionMessage = context.Exception.Message;
+            context.Result = new ContentResult
+            {
+                Content = $"В методе {actionName} возникло исключение: \n {exceptionMessage} \n {exceptionStack}"
+            };
+            context.ExceptionHandled = true;
         }
     }
 }

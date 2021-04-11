@@ -16,8 +16,8 @@ namespace RonFde.WebInternal
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder
-                        .UseStartup<Startup>()
-                        .UseIIS();
+                        .UseStartup<Startup>();
+                        //.UseIIS();
                 });
     }
 }

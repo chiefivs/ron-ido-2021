@@ -67,3 +67,9 @@
         orders:IODataOrder[];
     }
 
+    //  Ron.Ido.BM.Models.OData.ODataForm<TDto>
+    export interface IODataForm<TDto> {
+        item:TDto;
+        options:{[key:string]:IODataOption[]};
+    }
+

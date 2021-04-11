@@ -32,7 +32,7 @@ export function init(){
                             <!-- ko with:parent -->
     
                             <!-- ko if:$parent.order -->
-                            <th class="sorting" data-bind="style:{'width':$parent.width+'%'}">
+                            <th class="sorting" data-bind="style:{'width':$parent.width}">
                                 <div>
                                     <div class="sorting-title" data-bind="template:{nodes:$parent.nodes, data:$parent.data}"></div>
                                     <div class="sorting-arrows" data-bind="with:$parent.order, css:{red:$parent.order.current()}">
@@ -45,7 +45,7 @@ export function init(){
                             </th>
                             <!-- /ko -->
                             <!-- ko ifnot:$parent.order -->
-                            <th data-bind="template:{nodes:$parent.nodes, data:$parent.data}, style:{'width':$parent.width+'%'}"></th>
+                            <th data-bind="template:{nodes:$parent.nodes, data:$parent.data}, style:{width:$parent.width}"></th>
                             <!-- /ko -->
     
     
@@ -58,7 +58,7 @@ export function init(){
                             <td class="control" data-bind="visible:hasChildColumns(), css:{expanded:isExpanded}, click:toggle"></td>
                             <!-- ko foreach:cells -->
                             <!-- ko with:parent -->
-                            <td data-bind="template:{nodes:$parent.nodes, data:$parent.data}"></td>
+                            <td data-bind="template:{nodes:$parent.nodes, data:$parent.data}, style:{'width':$parent.width}"></td>
                             <!-- /ko -->
                             <!-- /ko -->
                         </tr>
@@ -158,6 +158,7 @@ export interface ITableColumnParams {
     data?: string;
     orderable?: boolean;
     priority?: number;
+    width?: string;
     titleTemplate?: string;
     cellTemplate?: string;
     childTitleTemplate?: string;
@@ -178,6 +179,7 @@ export const TableColumnOrderDirection = {
 interface IDataDescriptor {
     nodes: Node[];
     parent: any;
+    width: string;
     data: any;
 }
 
@@ -189,7 +191,7 @@ interface IOrderDescriptor {
 
 interface IParentColDescriptor extends IDataDescriptor {
     order: IOrderDescriptor;
-    width:number;
+    width:string;
 }
 
 interface IChildCellDescriptor {
@@ -263,7 +265,7 @@ class TableModel {
 
                 return <IParentColDescriptor>{
                     order: order,
-                    width: width,
+                    width: col.width || (width + '%'),
                     data: col.title,
                     parent: this.parentContext,
                     nodes: col.titleTemplateNodes || []
@@ -373,9 +375,10 @@ class TableModel {
         const maxColsCount = Math.floor((this.componentWidth() - 54) / 150);
         ko.utils.arrayForEach(this.allColumns(), col => col.isChild = false);
         const largeCols = this.allColumns();
-        for (let notChildrenCols = ko.utils.arrayFilter(largeCols, col => !col.isChild);
+        for (let notChildrenCols = ko.utils.arrayFilter(largeCols, col => !col.isChild && col.priority < 100);
             notChildrenCols.length > maxColsCount;
-            notChildrenCols = ko.utils.arrayFilter(largeCols, col => !col.isChild)) {
+            notChildrenCols = ko.utils.arrayFilter(largeCols, col => !col.isChild && col.priority < 100)) {
+            console.log('notChildrenCols', notChildrenCols);
             const minPriority = Math.min(...ko.utils.arrayMap(notChildrenCols, col => col.priority));
             const colsForDropdown = ko.utils.arrayFilter(notChildrenCols, col => col.priority === minPriority);
             if (colsForDropdown.length) {
@@ -397,7 +400,7 @@ class TableModel {
         let largeCols = this.allColumns();
         this.parentColumns(largeCols);
         while ($table.width() > this.componentWidth()) {
-            const notChildCols = ko.utils.arrayFilter(largeCols, col => !col.isChild);
+            const notChildCols = ko.utils.arrayFilter(largeCols, col => !col.isChild && col.priority < 100);
             const minPriority = Math.min(...ko.utils.arrayMap(notChildCols, col => col.priority));
             const colsForHide = ko.utils.arrayFilter(notChildCols, col => col.priority === minPriority);
             if (colsForHide.length) {
@@ -434,6 +437,7 @@ class TableRow {
                 return <IDataDescriptor>{
                     parent: row,
                     data: row[col.fieldName],
+                    width: col.width,
                     nodes: col.dataTemplateNodes
                 };
             });
@@ -650,6 +654,7 @@ class TableColumnModel {
     childTitleTemplateNodes: Node[];
     childDataTemplateNodes: Node[];
     title: string | ko.Observable<string>;
+    width: string;
     orderable: boolean;
     priority: number;
     fieldName: string;
@@ -687,6 +692,7 @@ class TableColumnModel {
         this.title = params.title || null;
         this.priority = params.priority || 0;
         this.fieldName = params.data || null;
+        this.width = params.width || '';
         this.orderable = params.orderable || false;
 
         if (this.table) {

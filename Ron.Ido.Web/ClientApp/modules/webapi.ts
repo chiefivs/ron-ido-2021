@@ -17,6 +17,13 @@ export namespace WebApi {
         });
     }
 
+    export function del<TResponse>(url:string):JQueryPromise<TResponse> {
+        return <JQueryPromise<TResponse>><any>request({
+            method: 'DELETE',
+            url: url
+        });
+   }
+
     function request<TResponse>(options: JQueryAjaxSettings):any {
         if(Identity.user())
             options.headers = { Authorization: 'Bearer ' + Identity.user().token };

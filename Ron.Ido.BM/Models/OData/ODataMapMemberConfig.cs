@@ -4,14 +4,14 @@ using System.Linq.Expressions;
 
 namespace Ron.Ido.BM.Models.OData
 {
-    public class ODataMapMemberConfig<TEntity, TDto>
+    public class ODataMapMemberConfig<TSource, TDestination>
     {
-        public Expression<Func<TDto, object>> DestinationMember { get; private set; }
-        public Action<IMemberConfigurationExpression<TEntity, TDto, object>> MemberOptions { get; private set; }
+        public Expression<Func<TDestination, object>> DestinationMember { get; private set; }
+        public Action<IMemberConfigurationExpression<TSource, TDestination, object>> MemberOptions { get; private set; }
 
         public ODataMapMemberConfig(
-            Expression<Func<TDto, object>> getDestinationMemberFunc,
-            Action<IMemberConfigurationExpression<TEntity, TDto, object>> memberMapExprAction
+            Expression<Func<TDestination, object>> getDestinationMemberFunc,
+            Action<IMemberConfigurationExpression<TSource, TDestination, object>> memberMapExprAction
         )
         {
             DestinationMember = getDestinationMemberFunc;

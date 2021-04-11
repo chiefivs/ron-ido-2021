@@ -254,4 +254,43 @@ export namespace Popups {
             alert.show();
         }
     }
+
+    export class Confirm extends Dialog {
+        private constructor(title: string, message: string, onConfirm:() => void, onReject:() => void, isModal: boolean) {
+            super({
+                title: title,
+                image: 'img-error',
+                width:500,
+                height:300,
+                isModal: isModal,
+                templateHtml: `<div>${message}</div>`
+            });
+
+            this.buttons([
+                {
+                    title:'ДА',
+                     action:() => {
+                         onConfirm();
+                         this.close()
+                    },
+                    disabled:() => false},
+                {
+                    title:'НЕТ',
+                    action:() => {
+                        if(onReject)
+                            onReject();
+                            
+                        this.close();
+                    },
+                    disabled:() => false
+                },
+                {title:'ЗАКРЫТЬ', action:() => this.close(), disabled:() => false}
+            ]);
+        }
+
+        static open(title: string, message: string, onConfirm:() => void, onReject: () => void = null, isModal: boolean = false) {
+            const alert = new Confirm(title, message, onConfirm, onReject, isModal);
+            alert.show();
+        }
+    }
 }

@@ -28,6 +28,7 @@ namespace Codegen
                 switch (descriptor.HttpMethod)
                 {
                     case "GET": CreateGetMethod(descriptor); break;
+                    case "DELETE": CreateDelMethod(descriptor); break;
                     case "POST": CreatePostMethod(descriptor); break;
                 }
             }
@@ -104,6 +105,48 @@ namespace Codegen
             else
             {
                 builder.AppendLine($"\t\treturn WebApi.get(segments.join('/'));");
+            }
+            builder.AppendLine("\t}");
+
+            EntryPoints.Add(builder.ToString());
+        }
+
+        private void CreateDelMethod(MethodDescriptor descriptor)
+        {
+            var parInfos = descriptor.MethodInfo.GetParameters();
+            var parNames = parInfos.Select(pi => pi.Name).ToList();
+            var parDefs = new List<string>();
+            foreach (var pi in parInfos)
+            {
+                parDefs.Add($"{pi.Name}:{GenerateType(pi.ParameterType)}");
+            }
+
+            var returnType = GenerateType(descriptor.MethodInfo.ReturnType);
+
+            var segments = descriptor.Segments.Select(s => {
+                if (s.StartsWith("{"))
+                {
+                    var segmPar = s.Trim('{', '}');
+                    parNames.Remove(segmPar);
+                    return segmPar;
+                }
+
+                return $"'{s}'";
+            });
+
+            var urlParams = parNames.Select(pn => "`" + pn + "=${" + pn + "}`");
+
+            var builder = new StringBuilder();
+            builder.AppendLine($"\texport function {descriptor.MethodName.ToCamel()}({string.Join(", ", parDefs)}): JQueryPromise<{returnType}>" + " {");
+            builder.AppendLine($"\t\tconst segments = [{string.Join(", ", segments)}];");
+            if (urlParams.Any())
+            {
+                builder.AppendLine($"\t\tconst urlParams = [{string.Join(", ", urlParams)}];");
+                builder.AppendLine($"\t\treturn WebApi.get(segments.join('/')+'?'+urlParams.join('&'));");
+            }
+            else
+            {
+                builder.AppendLine($"\t\treturn WebApi.del(segments.join('/'));");
             }
             builder.AppendLine("\t}");
 
@@ -196,7 +239,16 @@ namespace Codegen
             else if (type.IsGenericType)
             {
                 var typeDef = type.GetGenericTypeDefinition();
-                if (type.GetInterfaces().Any(ti => ti.Name.StartsWith("IEnumerable")))
+
+                if (typeDef.Name.StartsWith("Dictionary"))
+                {
+                    var argTypes = type.GetGenericArguments();
+                    var keyType = argTypes[0];
+                    var valType = argTypes[1];
+
+                    return $"{{[key:{GenerateType(keyType)}]:{GenerateType(valType)}}}";
+                }
+                else if (type.GetInterfaces().Any(ti => ti.Name.StartsWith("IEnumerable")))
                 {
                     var itemType = type.GetGenericArguments().First();
                     if (genericTypes != null && genericTypes.Contains(itemType.Name))

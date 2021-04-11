@@ -111,6 +111,103 @@ namespace Ron.Ido.BM.Services
             });
         }
 
+        public TDto GetDto<TEntity, TDto>(
+            long id,
+            IEnumerable<ODataMapMemberConfig<TEntity, TDto>> memberConfigs = null) where TEntity:class, new()
+        {
+            var entity = _appDbContext.Find<TEntity>(id) ?? new TEntity();
+
+            var mapperConfig = new MapperConfiguration(cfg =>
+            {
+                var expr = cfg.CreateMap<TEntity, TDto>();
+
+                if (memberConfigs != null)
+                {
+                    foreach (var config in memberConfigs)
+                    {
+                        expr = expr.ForMember(config.DestinationMember, config.MemberOptions);
+                    }
+                }
+            });
+
+            var mapper = new Mapper(mapperConfig);
+
+            return mapper.Map<TDto>(entity);
+        }
+
+        public Dictionary<string, List<string>> ValidateDto<TDto>(
+            TDto dto,
+            Func<TDto, AppDbContext, IEnumerable<ValidationResult>> validationInDb = null)
+        {
+            var dtoValidationResults = new List<ValidationResult>();
+            var context = new System.ComponentModel.DataAnnotations.ValidationContext(dto);
+            Validator.TryValidateObject(dto, context, dtoValidationResults);
+
+            if (validationInDb != null)
+                dtoValidationResults.AddRange(validationInDb(dto, _appDbContext));
+
+            var results = new Dictionary<string, List<string>>();
+            foreach(var dtoRes in dtoValidationResults)
+            {
+                foreach(var memberName in dtoRes.MemberNames)
+                {
+                    var field = memberName.ToCamel();
+                    if (!results.ContainsKey(field))
+                        results[field] = new List<string>();
+
+                    results[field].Add(dtoRes.ErrorMessage);
+                }
+            }
+
+            return results;
+        }
+
+        public void SaveDto<TDto, TEntity>(
+            TDto dto,
+            Action<TDto, TEntity, AppDbContext> customize) where TEntity:class, new()
+        {
+            SaveDto(dto, null, customize);
+        }
+
+        public void SaveDto<TDto, TEntity>(
+            TDto dto,
+            IEnumerable<ODataMapMemberConfig<TDto, TEntity>> memberConfigs = null,
+            Action<TDto, TEntity, AppDbContext> customize = null) where TEntity:class, new()
+        {
+            var keyNames = _getKeyNames(typeof(TEntity));
+            var keys = keyNames.Select(key => dto.GetPropertyValue(key)).ToArray();
+            var entity = _appDbContext.Find<TEntity>(keys);
+            if(entity == null)
+            {
+                entity = new TEntity();
+                _appDbContext.Add(entity);
+            }
+
+            var mapperConfig = new MapperConfiguration(cfg =>
+            {
+                var expr = cfg.CreateMap<TDto, TEntity>();
+                foreach(var keyName in keyNames)
+                {
+                    expr.ForMember(keyName, opt => opt.Ignore());
+                }
+
+                if (memberConfigs != null)
+                {
+                    foreach (var config in memberConfigs)
+                    {
+                        expr = expr.ForMember(config.DestinationMember, config.MemberOptions);
+                    }
+                }
+            });
+
+            var mapper = new Mapper(mapperConfig);
+            mapper.Map(dto, entity);
+            if (customize != null)
+                customize(dto, entity, _appDbContext);
+
+            _appDbContext.SaveChanges();
+        }
+
         private IQueryable<TEntity> ApplyFilters<TEntity>(
             IQueryable<TEntity> query,
             IEnumerable<ODataFilter> filters,
