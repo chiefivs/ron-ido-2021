@@ -20,19 +20,27 @@
     <div style="position: absolute; top:0; bottom:0; left:0; right: 50%; overflow:auto;" data-bind="if:current">
         <div data-bind="with:current">
             <a class="btn btn-primary pull-right" data-bind="click:$parent.remove.bind($parent), visible:item.id.value()">УДАЛИТЬ</a>
-            <a class="btn btn-primary pull-right" data-bind="click:$parent.save.bind($parent)">СОХРАНИТЬ</a>
-            <div data-bind="visible:item.name.errors().length, foreach:item.name.errors()">
-                <div data-bind="text:$data"></div>
+            <a class="btn btn-primary pull-right" data-bind="click:$parent.save.bind($parent), css:{disabled:!hasChanges() || hasErrors()}">СОХРАНИТЬ</a>
+            <a class="btn btn-primary pull-right" data-bind="click:reset, css:{disabled:!hasChanges()}">ОТМЕНИТЬ</a>
+            <div data-bind="with:item.name">
+                <div data-bind="visible:errors().length, foreach:errors()">
+                    <div data-bind="text:$data"></div>
+                </div>
+                <cmp-textbox params="value:value"></cmp-textbox>
             </div>
-            <cmp-textbox params="value:item.name.value"></cmp-textbox>
 
-            <div data-bind="visible:item.rolePermissions.errors().length, foreach:item.rolePermissions.errors()">
-                <div data-bind="text:$data"></div>
-            </div>
-            <div data-bind="foreach:options.rolePermissions">
-                <div>
-                    <input type="checkbox" data-bind="checkedValue:value, checked:$parent.item.rolePermissions.value" />
-                    <label data-bind="text:text"></label>
+            <div data-bind="with:item.rolePermissions">
+                <div data-bind="visible:errors().length, foreach:errors()">
+                    <div data-bind="text:$data"></div>
+                </div>
+                <div data-bind="foreach:$parent.permissionGroups">
+                    <h4 data-bind="text:groupName"></h4>
+                    <div data-bind="foreach:permissions">
+                        <div>
+                            <input type="checkbox" data-bind="checkedValue:value, checked:$parents[1].value" />
+                            <span data-bind="text:text"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

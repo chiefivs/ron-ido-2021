@@ -4,35 +4,40 @@ import { IODataOption, IODataForm } from '../codegen/webapi/odata';
 
 export class Form<T> {
     item: {[key:string]:IFormField};
-    private original: T;
-    private errors: {[key:string]:ko.ObservableArray<string>};
-    private options: {[key:string]:IODataOption[]};
-    private saveApi:(item:T) => JQueryPromise<any>;
-    private validateApi:(item:T) => JQueryPromise<{[key:string]:string[]}>
+    errors = ko.observableArray<string>();
+    hasChanges: ko.Computed<boolean>;
+    hasErrors: ko.Computed<boolean>;
+
+    private _original: T;
+    private _errors: {[key:string]:ko.ObservableArray<string>};
+    private _options: {[key:string]:IODataOption[]};
+    private _saveApi:(item:T) => JQueryPromise<any>;
+    private _validateApi:(item:T) => JQueryPromise<{[key:string]:string[]}>
 
     private _validateTimeout = null;
 
     constructor(data: IODataForm<T>, saveApi?:(item:T) => JQueryPromise<any>, validateApi?:(item:T) => JQueryPromise<{[key:string]:string[]}>) {
-        this.options = data.options || {};
-        this.errors = {};
+        this._options = data.options || {};
+        this._errors = {};
+        this._original = data.item;
+
         this.item = {};
-        this.original = data.item;
-        this.saveApi = saveApi;
-        this.validateApi = validateApi;
+        this._saveApi = saveApi;
+        this._validateApi = validateApi;
 
         for(const key in data.item) {
-            this.errors[key] = ko.observableArray([]);
+            this._errors[key] = ko.observableArray([]);
 
             const val = Array.isArray(data.item[key])
-                ? ko.observableArray(<any>data.item[key])
+                ? ko.observableArray(ko.utils.arrayMap(<any>data.item[key], i => i))
                 : ko.observable(data.item[key]);
             this.item[key] = {
                 value: val,
-                options: this.options[key],
-                errors: this.errors[key]
+                options: this._options[key],
+                errors: this._errors[key]
             };
 
-            if(this.validateApi) {
+            if(this._validateApi) {
                 (val as any).subscribe(v => {
                     if(this._validateTimeout)
                         clearTimeout(this._validateTimeout);
@@ -40,6 +45,35 @@ export class Form<T> {
                 });
             }
         }
+
+        this.hasChanges = ko.computed(() => {
+            for(var key in this.item) {
+                const val = this.item[key].value();
+                const org = this._original[key];
+                if(!Array.isArray(org)) {
+                    if(val !== org)
+                        return true;
+                } else {
+                    const diff = ko.utils.compareArrays((org as any[]).sort(), (val as any[]).sort());
+                    if(!!ko.utils.arrayFirst(diff, d => d.status === 'added' || d.status === 'deleted'))
+                        return true;;
+                }
+            }
+
+            return false;
+        });
+
+        this.hasErrors = ko.computed(() => {
+            if(this.errors().length)
+                return true;
+
+            for(const key in this._errors) {
+                if(this._errors[key]().length)
+                    return true;
+            }
+
+            return false;
+        });
     }
 
     get(): T {
@@ -58,14 +92,23 @@ export class Form<T> {
     }
 
     getOptions(key:string) {
-        return this.options[key] || null;
+        return this._options[key] || null;
+    }
+
+    reset() {
+        for(const key in this.item) {
+            const orig = this._original[key];
+            this.item[key].value(Array.isArray(orig)
+                ? ko.utils.arrayMap(orig, i => i)
+                : orig);
+        }
     }
 
     save() {
-        if(!this.saveApi)
-            return null;
+        if(!this._saveApi || !this.hasChanges())
+            return jQuery.Deferred();
     
-        return this.saveApi(this.get()).fail(res => {
+        return this._saveApi(this.get()).fail(res => {
             if(res.status === 400) {
                 console.log('error', res.responseJSON);
 
@@ -75,10 +118,11 @@ export class Form<T> {
 
     private _validate() {
         this._validateTimeout = null;
-        this.validateApi(this.get())
+        this._validateApi(this.get())
             .done(errors => {
-                for(const key in this.errors) {
-                    const list = this.errors[key];
+                this.errors(errors[''] || []);
+                for(const key in this._errors) {
+                    const list = this._errors[key];
                     list(errors[key] || []);
                 }
             });

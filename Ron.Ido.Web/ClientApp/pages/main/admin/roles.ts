@@ -1,6 +1,6 @@
 import * as ko from 'knockout';
 import { AdminAccessApi } from '../../../codegen/webapi/adminAccessApi';
-import { ODataOrderTypeEnum, IODataOrder } from '../../../codegen/webapi/odata';
+import { ODataOrderTypeEnum, IODataOrder, IODataForm, IODataOption } from '../../../codegen/webapi/odata';
 import { ITablePagerState, TableColumnOrderDirection, IFilterParams, IFilterOption, FilterValueType } from '../../../components/index';
 import { MainPageBase, Popups } from '../../../modules/content';
 import { Form } from '../../../modules/forms';
@@ -53,14 +53,17 @@ export default class RolesMainPage extends MainPageBase {
     setCurrent(id?:number) {
         AdminAccessApi.getRole(id || 0)
             .done(data => {
-                const form = new Form(data, AdminAccessApi.saveRole, AdminAccessApi.validateRole);
+                const form = new RoleForm(data, AdminAccessApi.saveRole, AdminAccessApi.validateRole);
                 this.current(form);
             });
     }
 
     save() {
         this.current().save()
-            .done(() => this.update())
+            .done(() => {
+                this.update();
+                this.current(null);
+            })
             .fail(() => Popups.Alert.open('ошибка сохранения', 'Не удалось сохранить роль'));
     }
 
@@ -77,4 +80,29 @@ export default class RolesMainPage extends MainPageBase {
                     .fail(() => Popups.Alert.open('ошибка удаления', 'Не удалось удалить роль'));
             });
     }
+}
+
+class RoleForm extends Form<AdminAccessApi.IRoleDto>{
+    permissionGroups: IPermissionGroup[];
+
+    constructor(
+        data:IODataForm<AdminAccessApi.IRoleDto>,
+        saveApi?:(item:AdminAccessApi.IRoleDto) => JQueryPromise<any>,
+        validateApi?:(item:AdminAccessApi.IRoleDto) => JQueryPromise<{[key:string]:string[]}>) {
+        super(data, saveApi, validateApi);
+
+        this.permissionGroups = ko.utils.arrayMap(data.options.permissionGroups, group => {
+            const perms = ko.utils.arrayFilter(data.options.rolePermissions, perm => perm.parent === group.value);
+
+            return {
+                groupName: group.value,
+                permissions: perms
+            }
+        });
+    }
+}
+
+interface IPermissionGroup {
+    groupName: string;
+    permissions: IODataOption[];
 }

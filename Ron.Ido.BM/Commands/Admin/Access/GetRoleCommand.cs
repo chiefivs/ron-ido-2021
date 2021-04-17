@@ -52,7 +52,8 @@ namespace Ron.Ido.BM.Commands.Admin.Access
                     Item = role,
                     Options = new Dictionary<string, IEnumerable<ODataOption>>
                     {
-                        { nameof(role.RolePermissions).ToCamel(), PermissionData.List.Select(i => new ODataOption{ Value = i.Id, Text = i.Name }) }
+                        { nameof(role.RolePermissions).ToCamel(), PermissionData.List.Select(i => new ODataOption{ Value = i.Id, Text = i.Name, Parent = i.GroupName }) },
+                        { "permissionGroups", PermissionGroup.List.Select(i => new ODataOption { Value = i, Text = i}) }
                     }
                 };
             });

@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Ron.Ido.EM.Enums
 {
-    internal class PermissionGroup
+    public class PermissionGroup
     {
         public const string Admin = "Администрирование";
         public const string Access = "Доступ";
