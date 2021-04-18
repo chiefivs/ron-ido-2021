@@ -23,13 +23,15 @@
             <a class="btn btn-primary pull-right" data-bind="click:$parent.save.bind($parent), css:{disabled:!hasChanges() || hasErrors()}">СОХРАНИТЬ</a>
             <a class="btn btn-primary pull-right" data-bind="click:reset, css:{disabled:!hasChanges()}">ОТМЕНИТЬ</a>
 
+            <cmp-form-errors params="form:$data"></cmp-form-errors>
+
             <label>Название</label>
             <cmp-form-field params="field:item.name"></cmp-form-field>
 
             <div data-bind="with:item.rolePermissions">
                 <div class="error-and-field">
                     <div>
-                        <div class="errors"><i class="img img-error img-size-20" data-bind="visible:errors().length, attr: { title:errors }"></i></div>
+                        <div class="errors"><i class="img img-error img-size-20" data-bind="visible:errors().length, attr: { title:errors().join('\n') }"></i></div>
                         <div style="padding:4px 0;"><label>Разрешения</label></div>
                     </div>
                 </div>

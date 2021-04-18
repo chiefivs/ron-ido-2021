@@ -143,6 +143,10 @@ namespace Ron.Ido.BM.Services
             var context = new System.ComponentModel.DataAnnotations.ValidationContext(dto);
             Validator.TryValidateObject(dto, context, dtoValidationResults);
 
+            var validable = dto as IValidatableObject;
+            if(validable != null)
+                dtoValidationResults.AddRange(validable.Validate(context));
+
             if (validationInDb != null)
                 dtoValidationResults.AddRange(validationInDb(dto, _appDbContext));
 
@@ -155,7 +159,8 @@ namespace Ron.Ido.BM.Services
                     if (!results.ContainsKey(field))
                         results[field] = new List<string>();
 
-                    results[field].Add(dtoRes.ErrorMessage);
+                    if(!results[field].Contains(dtoRes.ErrorMessage))
+                        results[field].Add(dtoRes.ErrorMessage);
                 }
             }
 

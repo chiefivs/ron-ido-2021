@@ -1,10 +1,7 @@
 ﻿using Ron.Ido.EM.Enums;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ron.Ido.BM.Models.Admin.Access
 {
@@ -30,8 +27,9 @@ namespace Ron.Ido.BM.Models.Admin.Access
             var errors = new List<ValidationResult>();
 
             if (!RolePermissions.Any())
+            {
                 errors.Add(new ValidationResult("Должно быть выбрано хотя бы одно разрешение", new[] { nameof(RolePermissions) }));
-
+            }
             return errors;
         }
     }
