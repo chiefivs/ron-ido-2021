@@ -3,10 +3,45 @@
 @import "main-panel.less";
 @import "table.less";
 
+.has-changes {
+    color: #00f;
+}
+
+.has-errors {
+    background-color: rgb(255, 125, 125);
+}
+
+.error-and-field {
+    display: table;
+    & > div {
+        display: table-row;
+
+        & > * {
+            display: table-cell;
+            vertical-align: top;
+            width: 100%;
+
+            &.errors {
+                width: 0;
+                & > * {
+                    margin-right: 4px;
+                }
+            }
+        }
+    }
+}
+
 cmp-filters-panel {
     .filters-panel {
         cmp-filter {
             width:100%;
         }
+    }
+}
+
+cmp-form-field {
+    & > div {
+        .error-and-field;
+        width: 100%;
     }
 }

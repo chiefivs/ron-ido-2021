@@ -28,17 +28,27 @@ export class Form<T> {
         for(const key in data.item) {
             this._errors[key] = ko.observableArray([]);
 
-            const val = Array.isArray(data.item[key])
+            const value = Array.isArray(data.item[key])
                 ? ko.observableArray(ko.utils.arrayMap(<any>data.item[key], i => i))
                 : ko.observable(data.item[key]);
+            
+            const original = data.item[key];
             this.item[key] = {
-                value: val,
+                value: value,
                 options: this._options[key],
-                errors: this._errors[key]
+                errors: this._errors[key],
+                hasChanges: ko.computed(() => {
+                    if(!Array.isArray(original)) {
+                        return value() !== original;
+                    } else {
+                        const diff = ko.utils.compareArrays((original as any[]).sort(), (value() as any[]).sort());
+                        return !!ko.utils.arrayFirst(diff, d => d.status === 'added' || d.status === 'deleted');
+                    }
+                })
             };
 
             if(this._validateApi) {
-                (val as any).subscribe(v => {
+                (value as any).subscribe(v => {
                     if(this._validateTimeout)
                         clearTimeout(this._validateTimeout);
                         this._validateTimeout = setTimeout(this._validate.bind(this), 500);
@@ -48,16 +58,8 @@ export class Form<T> {
 
         this.hasChanges = ko.computed(() => {
             for(var key in this.item) {
-                const val = this.item[key].value();
-                const org = this._original[key];
-                if(!Array.isArray(org)) {
-                    if(val !== org)
-                        return true;
-                } else {
-                    const diff = ko.utils.compareArrays((org as any[]).sort(), (val as any[]).sort());
-                    if(!!ko.utils.arrayFirst(diff, d => d.status === 'added' || d.status === 'deleted'))
-                        return true;;
-                }
+                if(this.item[key].hasChanges())
+                    return true;
             }
 
             return false;
@@ -127,10 +129,23 @@ export class Form<T> {
                 }
             });
     }
+    
+    private _fieldHasChanges(key:string) {
+        console.log('_fieldHasChanges', this);
+        const val = this.item[key].value();
+        const org = this._original[key];
+        if(!Array.isArray(org)) {
+            return val !== org;
+        } else {
+            const diff = ko.utils.compareArrays((org as any[]).sort(), (val as any[]).sort());
+            return !!ko.utils.arrayFirst(diff, d => d.status === 'added' || d.status === 'deleted');
+        }
+    }
 }
 
-interface IFormField {
+export interface IFormField {
     value: ko.Observable<any> | ko.ObservableArray<any>;
     options: IODataOption[];
     errors: ko.ObservableArray<string>;
+    hasChanges: ko.Computed<boolean>;
 }

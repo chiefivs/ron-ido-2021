@@ -22,19 +22,19 @@
             <a class="btn btn-primary pull-right" data-bind="click:$parent.remove.bind($parent), visible:item.id.value()">УДАЛИТЬ</a>
             <a class="btn btn-primary pull-right" data-bind="click:$parent.save.bind($parent), css:{disabled:!hasChanges() || hasErrors()}">СОХРАНИТЬ</a>
             <a class="btn btn-primary pull-right" data-bind="click:reset, css:{disabled:!hasChanges()}">ОТМЕНИТЬ</a>
-            <div data-bind="with:item.name">
-                <div data-bind="visible:errors().length, foreach:errors()">
-                    <div data-bind="text:$data"></div>
-                </div>
-                <cmp-textbox params="value:value"></cmp-textbox>
-            </div>
+
+            <label>Название</label>
+            <cmp-form-field params="field:item.name"></cmp-form-field>
 
             <div data-bind="with:item.rolePermissions">
-                <div data-bind="visible:errors().length, foreach:errors()">
-                    <div data-bind="text:$data"></div>
+                <div class="error-and-field">
+                    <div>
+                        <div class="errors"><i class="img img-error img-size-20" data-bind="visible:errors().length, attr: { title:errors }"></i></div>
+                        <div style="padding:4px 0;"><label>Разрешения</label></div>
+                    </div>
                 </div>
-                <div data-bind="foreach:$parent.permissionGroups">
-                    <h4 data-bind="text:groupName"></h4>
+                <div data-bind="foreach:$parent.permissionGroups" style="padding-left: 10px;">
+                    <b data-bind="text:groupName"></b>
                     <div data-bind="foreach:permissions">
                         <div>
                             <input type="checkbox" data-bind="checkedValue:value, checked:$parents[1].value" />

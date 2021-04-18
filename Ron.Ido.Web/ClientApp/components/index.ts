@@ -1,6 +1,7 @@
+import * as DatepickerComponent from './datepicker';
 import * as FilterComponent from './filter';
 import * as FiltersPanelComponent from './filters-panel';
-import * as DatepickerComponent from './datepicker';
+import * as FormFieldComponent from './form-field';
 import * as LeftPanelComponent from './left-panel';
 import * as MainPanelComponent from './main-panel';
 import * as MultiselectComponent from './multiselect';
@@ -12,6 +13,7 @@ export function init() {
     DatepickerComponent.init();
     FilterComponent.init();
     FiltersPanelComponent.init();
+    FormFieldComponent.init();
     LeftPanelComponent.init();
     MainPanelComponent.init();
     MultiselectComponent.init();
@@ -23,6 +25,7 @@ export function init() {
 export { IDatepickerParams } from './datepicker';
 export { IFilterParams, FilterValueType, IFilterOption } from './filter';
 export { IFiltersPanelParams } from './filters-panel';
+export { IFormFieldParams } from './form-field';
 export { ILeftPanelParams } from './left-panel';
 export { IMainPanelParams } from './main-panel';
 export { IMultiselectParams } from './multiselect';
