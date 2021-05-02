@@ -60,6 +60,7 @@ namespace Ron.Ido.Importer
         public virtual DbSet<ApplyField> ApplyFields { get; set; }
         public virtual DbSet<ApplyHandoutView> ApplyHandoutViews { get; set; }
         public virtual DbSet<ApplyLearnForm> ApplyLearnForms { get; set; }
+        public virtual DbSet<ApplyPassportType> ApplyPassportTypes { get; set; }
         public virtual DbSet<ApplyRecipientView> ApplyRecipientViews { get; set; }
         public virtual DbSet<ApplyRon> ApplyRons { get; set; }
         public virtual DbSet<ApplyRonAppeal> ApplyRonAppeals { get; set; }
@@ -648,6 +649,10 @@ namespace Ron.Ido.Importer
 
                 entity.Property(e => e.ReturnOriginalsFormId).HasColumnName("ReturnOriginalsForm_Id");
 
+                entity.Property(e => e.CreatorPassportKindTypeId).HasColumnName("CreatorPassportKindType_Id");
+
+                entity.Property(e => e.OwnerPassportKindTypeId).HasColumnName("OwnerPassportKindType_Id");
+
                 entity.Property(e => e.ReturnOriginalsPostAddress).HasMaxLength(200);
 
                 entity.Property(e => e.SchoolAddress).HasMaxLength(50);
@@ -797,6 +802,16 @@ namespace Ron.Ido.Importer
                     .WithMany(p => p.ApplyReturnOriginalsForms)
                     .HasForeignKey(d => d.ReturnOriginalsFormId)
                     .HasConstraintName("FK_Applies_ReturnOriginalsForm");
+
+                entity.HasOne(d => d.CreatorPassportKindType)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatorPassportKindTypeId)
+                    .HasConstraintName("FK_Applies_Creator_ApplyPassportTypes");
+
+                entity.HasOne(d => d.OwnerPassportKindType)
+                    .WithMany()
+                    .HasForeignKey(d => d.OwnerPassportKindTypeId)
+                    .HasConstraintName("FK_Applies_Owner_ApplyPassportTypes");
 
                 entity.HasOne(d => d.SchoolCountry)
                     .WithMany(p => p.ApplySchoolCountries)

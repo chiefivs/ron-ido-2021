@@ -6,7 +6,9 @@ namespace Ron.Ido.EM
 {
     public class AppDbContext: DbContext
     {
+        public virtual DbSet<Apply> Applies { get; set; }
         public virtual DbSet<ApplyAim> ApplyAims { get; set; }
+        public virtual DbSet<ApplyBarCode> ApplyBarCodes { get; set; }
         public virtual DbSet<ApplyDeliveryForm> ApplyDeliveryForms { get; set; }
         public virtual DbSet<ApplyDocFullPackageType> ApplyDocFullPackageTypes { get; set; }
         public virtual DbSet<ApplyDocType> ApplyDocTypes { get; set; }
@@ -73,6 +75,9 @@ namespace Ron.Ido.EM
 		{
             modelBuilder.Entity<ApplyAim>().HasIndex(a => a.Name);
             modelBuilder.Entity<ApplyAim>().HasIndex(a => a.NameEng);
+
+            modelBuilder.Entity<ApplyBarCode>().HasIndex(c => c.AssignTime);
+
             modelBuilder.Entity<ApplyDeliveryForm>().HasIndex(a => a.Name);
             modelBuilder.Entity<ApplyDeliveryForm>().HasIndex(a => a.NameEng);
             modelBuilder.Entity<ApplyEntryForm>().HasIndex(a => a.Name);

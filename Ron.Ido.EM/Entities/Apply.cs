@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Ron.Ido.EM.Entities
 {
@@ -8,5 +8,8 @@ namespace Ron.Ido.EM.Entities
         [Key]
         public long Id { get; set; }
 
+
+
+        public virtual List<ApplyBarCode> BarCodes { get; set; } = new List<ApplyBarCode>();
     }
 }

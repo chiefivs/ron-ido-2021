@@ -28,7 +28,7 @@ export function init() {
             }
         },
         template: `
-            <div class="error-and-field" data-bind="visible:form.errors().length">
+            <div class="form-field-container" data-bind="visible:form.errors().length">
                 <div>
                     <div class="errors"><i class="img img-error img-size-20"></i></div>
                     <div class="form-control" style="padding:4px 0;">

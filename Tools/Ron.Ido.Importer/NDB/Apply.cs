@@ -147,6 +147,8 @@ namespace Ron.Ido.Importer
         public bool DigSvidDeliveryByEmail { get; set; }
         public bool DigSvidDeliveryByPortal { get; set; }
         public bool DigSvidDeliveryByEpgu { get; set; }
+        public int? CreatorPassportKindTypeId { get; set; }
+        public int? OwnerPassportKindTypeId { get; set; }
 
         public virtual Act Act { get; set; }
         public virtual ApplyAim Aim { get; set; }
@@ -166,6 +168,8 @@ namespace Ron.Ido.Importer
         public virtual Country OwnerCountry { get; set; }
         public virtual Payment Payment { get; set; }
         public virtual ApplyDeliveryForm ReturnOriginalsForm { get; set; }
+        public virtual ApplyPassportType CreatorPassportKindType { get; set; }
+        public virtual ApplyPassportType OwnerPassportKindType { get; set; }
         public virtual School School { get; set; }
         public virtual Country SchoolCountry { get; set; }
         public virtual SchoolType SchoolType { get; set; }

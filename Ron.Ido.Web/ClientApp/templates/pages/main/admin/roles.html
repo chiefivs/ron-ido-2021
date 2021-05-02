@@ -19,17 +19,21 @@
 <div style="position:absolute; top:0; bottom: 0; left: 320px; right: 0;">
     <div style="position: absolute; top:0; bottom:0; left:0; right: 50%; overflow:auto;" data-bind="if:current">
         <div data-bind="with:current">
-            <a class="btn btn-primary pull-right" data-bind="click:$parent.remove.bind($parent), visible:item.id.value()">УДАЛИТЬ</a>
-            <a class="btn btn-primary pull-right" data-bind="click:$parent.save.bind($parent), css:{disabled:!hasChanges() || hasErrors()}">СОХРАНИТЬ</a>
-            <a class="btn btn-primary pull-right" data-bind="click:reset, css:{disabled:!hasChanges()}">ОТМЕНИТЬ</a>
+            <div class="pull-right">
+                <a class="btn btn-primary" data-bind="click:reset, css:{disabled:!hasChanges()}">ОТМЕНИТЬ</a>
+                <a class="btn btn-primary" data-bind="click:$parent.save.bind($parent), css:{disabled:!hasChanges() || hasErrors()}">СОХРАНИТЬ</a>
+                <a class="btn btn-primary" data-bind="click:$parent.remove.bind($parent), visible:item.id.value()">УДАЛИТЬ</a>
+            </div>
 
             <cmp-form-errors params="form:$data"></cmp-form-errors>
 
-            <label>Название</label>
-            <cmp-form-field params="field:item.name"></cmp-form-field>
+            <div style="margin:0 5px;">
+                <label>Название</label>
+                <cmp-form-field params="field:item.name"></cmp-form-field>
+            </div>
 
-            <div data-bind="with:item.rolePermissions">
-                <div class="error-and-field">
+            <div data-bind="with:item.rolePermissions" style="margin:0 5px;">
+                <div class="form-field-container">
                     <div>
                         <div class="errors"><i class="img img-error img-size-20" data-bind="visible:errors().length, attr: { title:errors().join('\n') }"></i></div>
                         <div style="padding:4px 0;"><label>Разрешения</label></div>
