@@ -30,7 +30,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ron.Ido.Migrator", "Tools\R
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ron.Ido.Importer", "Tools\Ron.Ido.Importer\Ron.Ido.Importer.csproj", "{09AF33C5-2156-4FD3-A9E0-2F130A6C6E01}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ron.Ido.FileStorage", "Ron.Ido.FileStorage\Ron.Ido.FileStorage.csproj", "{619D6F2B-1540-49F8-B901-69CB88699A21}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ron.Ido.FileStorage", "Ron.Ido.FileStorage\Ron.Ido.FileStorage.csproj", "{619D6F2B-1540-49F8-B901-69CB88699A21}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ron.Ido.DbStorage.Npgsql", "Providers\Ron.Ido.DbStorage.Npgsql\Ron.Ido.DbStorage.Npgsql.csproj", "{675D5190-B845-44D3-BC64-F8A8022CDE02}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -78,6 +80,10 @@ Global
 		{619D6F2B-1540-49F8-B901-69CB88699A21}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{619D6F2B-1540-49F8-B901-69CB88699A21}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{619D6F2B-1540-49F8-B901-69CB88699A21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{675D5190-B845-44D3-BC64-F8A8022CDE02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{675D5190-B845-44D3-BC64-F8A8022CDE02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{675D5190-B845-44D3-BC64-F8A8022CDE02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{675D5190-B845-44D3-BC64-F8A8022CDE02}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -87,6 +93,7 @@ Global
 		{2F8A0A6C-CC9D-4357-AF66-626C721B95C5} = {22AEE4D3-AE52-451D-A07C-3CBF341D8E40}
 		{58200B6D-43C4-4B16-9528-7265A499E63C} = {E14960EC-1E94-49FD-88FF-19FED53DAA01}
 		{09AF33C5-2156-4FD3-A9E0-2F130A6C6E01} = {E14960EC-1E94-49FD-88FF-19FED53DAA01}
+		{675D5190-B845-44D3-BC64-F8A8022CDE02} = {22AEE4D3-AE52-451D-A07C-3CBF341D8E40}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46FA69A3-1BE8-4C14-8087-972396E71DD3}

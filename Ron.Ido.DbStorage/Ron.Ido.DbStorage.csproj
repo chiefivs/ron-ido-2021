@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Providers\Ron.Ido.DbStorage.Npgsql\Ron.Ido.DbStorage.Npgsql.csproj" />
     <ProjectReference Include="..\Providers\Ron.Ido.DbStorage.SqlServer\Ron.Ido.DbStorage.SqlServer.csproj" />
   </ItemGroup>
 

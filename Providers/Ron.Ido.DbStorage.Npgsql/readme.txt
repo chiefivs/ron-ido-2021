@@ -1,0 +1,1 @@
+﻿add-migration Init -Project Ron.Ido.DbStorage.Npgsql -Context NpgsqlAppDbContext

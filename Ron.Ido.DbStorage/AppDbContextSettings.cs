@@ -1,4 +1,5 @@
 ﻿using Ron.Ido.Common.Extensions;
+using Ron.Ido.DbStorage.Npgsql;
 using Ron.Ido.DbStorage.SqlServer;
 using Ron.Ido.EM;
 
@@ -15,8 +16,8 @@ namespace Ron.Ido.DbStorage
         {
             switch (Provider)
             {
-                //case ProviderType.PostgreSQL:
-                //    return new NpgsqlAppDbContext(ConnectionString);
+                case ProviderType.PostgreSQL:
+                    return new NpgsqlAppDbContext(ConnectionString);
                 case ProviderType.SqlServer:
                     return new SqlServerAppDbContext(ConnectionString);
                 default:
