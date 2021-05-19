@@ -17,6 +17,7 @@ using Ron.Ido.BM.Models.OData;
 using Ron.Ido.Common;
 using Ron.Ido.Common.DependencyInjection;
 using Ron.Ido.Common.Extensions;
+using Ron.Ido.Common.Logging;
 using Ron.Ido.DbStorage;
 using Ron.Ido.EM;
 using Ron.Ido.FileStorage;
@@ -71,6 +72,13 @@ namespace ForeignDocsRec2020.Web
             AuthOptions.SetSettings(authSettings);
 
             services.AddMvcCore();
+            services.AddLogging(builder =>
+            {
+                builder
+                    .AddFileLogging(Configuration)
+                    //.AddConsole()
+                    .SetMinimumLevel(LogLevel.Debug);
+            });
             services
                 .AddHttpContextAccessor()
                 .AddFileStorage<Ron.Ido.EM.Entities.FileInfo>()
@@ -147,23 +155,21 @@ namespace ForeignDocsRec2020.Web
                 }
             });
 
-            app.UseExceptionHandler(conf =>
+            app.Use(async (context, next) =>
             {
-                conf.Run(async context =>
+                //  обработка ошибок при выполнении запросов
+                try
                 {
-                    var handler = context.Features.Get<IExceptionHandlerPathFeature>();
-                    var error = handler?.Error;
-
-                    if (error == null)
-                        return;
-
+                    await next();
+                }
+                catch(Exception error)
+                {
                     if (error is AuthenticationException)
                     {
                         context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                         context.Response.ContentType = "text/html";
                         await context.Response.WriteAsync(error.Message);
                         return;
-
                     }
 
                     if (error is UnauthorizedAccessException)
@@ -180,14 +186,26 @@ namespace ForeignDocsRec2020.Web
                         return;
                     }
 
+                    var factory = app.ApplicationServices.GetService<ILoggerFactory>();
+                    var logger = factory.CreateLogger("Web application");
+                    var logItem = new WebApiErrorLogItem
+                    {
+                        Message = "Internal server error",
+                        Path = context.Request.Path,
+                        Query = context.Request.QueryString.Value
+                    };
+
+                    var uid = Guid.NewGuid();
+                    logger.LogError(uid, logItem, error);
+
                     context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                    await context.Response.WriteAsync(error.Message);
-                });
+                    context.Response.ContentType = "application/json";
+                    await context.Response.WriteAsJsonAsync(new { LogItemUid  = uid });
+                }
             });
 
             app.UseAuthentication();
             app.UseRouting();
-            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
@@ -221,5 +239,11 @@ namespace ForeignDocsRec2020.Web
             };
             context.ExceptionHandled = true;
         }
+    }
+
+    public class WebApiErrorLogItem: LogItem
+    {
+        public string Path { get; set; }
+        public string Query { get; set; }
     }
 }
