@@ -10,14 +10,20 @@ export class Form<T> {
 
     private _original: T;
     private _errors: {[key:string]:ko.ObservableArray<string>};
-    private _options: {[key:string]:IODataOption[]};
+    private _options: {[key:string]:ko.ObservableArray<IODataOption>};
     private _saveApi:(item:T) => JQueryPromise<any>;
     private _validateApi:(item:T) => JQueryPromise<{[key:string]:string[]}>
 
     private _validateTimeout = null;
 
     constructor(data: IODataForm<T>, saveApi?:(item:T) => JQueryPromise<any>, validateApi?:(item:T) => JQueryPromise<{[key:string]:string[]}>) {
-        this._options = data.options || {};
+        this._options = {};
+        if(data.options) {
+            for(const key in data.options) {
+                this._options[key] = ko.observableArray(data.options[key]);
+            }
+        }
+
         this._errors = {};
         this._original = data.item;
 
@@ -97,6 +103,10 @@ export class Form<T> {
         return this._options[key] || null;
     }
 
+    setOptions(key:string, options:IODataOption[]) {
+        this._options[key](options);
+    }
+
     reset() {
         for(const key in this.item) {
             const orig = this._original[key];
@@ -145,7 +155,7 @@ export class Form<T> {
 
 export interface IFormField {
     value: ko.Observable<any> | ko.ObservableArray<any>;
-    options: IODataOption[];
+    options: ko.ObservableArray<IODataOption>;
     errors: ko.ObservableArray<string>;
     hasChanges: ko.Computed<boolean>;
 }

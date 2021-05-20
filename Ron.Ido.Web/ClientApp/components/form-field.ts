@@ -63,7 +63,6 @@ class FormFieldModel {
             : Utils.getNodesFromHtml(this._defaultTemplate);
 
         this.errors = ko.computed(() => {
-            console.log('computed');
             return this.data.errors().join('\n');
         });
 
