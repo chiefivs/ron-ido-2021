@@ -83,7 +83,7 @@ export default class RolesMainPage extends MainPageBase {
 }
 
 class RoleForm extends Form<AdminAccessApi.IRoleDto>{
-    permissionGroups: IPermissionGroup[];
+    permissionGroups: PermissionGroup[];
 
     constructor(
         data:IODataForm<AdminAccessApi.IRoleDto>,
@@ -94,15 +94,39 @@ class RoleForm extends Form<AdminAccessApi.IRoleDto>{
         this.permissionGroups = ko.utils.arrayMap(data.options.permissionGroups, group => {
             const perms = ko.utils.arrayFilter(data.options.rolePermissions, perm => perm.parent === group.value);
 
-            return {
-                groupName: group.value,
-                permissions: perms
-            }
+            return new PermissionGroup(group.value, perms, this);
         });
+    }
+
+    closeGroupsExcludingThis(group: PermissionGroup) {
+        const groups = ko.utils.arrayFilter(this.permissionGroups, g => g !== group && g.isExpanded());
+        ko.utils.arrayForEach(groups, g => g.isExpanded(false));
     }
 }
 
 interface IPermissionGroup {
     groupName: string;
     permissions: IODataOption[];
+    allRoles: ko.ObservableArray<any>;
+    isExpanded: ko.Observable<boolean>;
+}
+
+class PermissionGroup {
+    groupName: string;
+    permissions: IODataOption[];
+    allRoles: ko.ObservableArray<any>;
+    isExpanded: ko.Observable<boolean>;
+
+    constructor(groupName: string, permissions: IODataOption[], owner: RoleForm) {
+        this.groupName = groupName;
+        this.permissions = permissions;
+        this.allRoles = owner.item.rolePermissions.value as ko.ObservableArray<any>;
+        this.isExpanded = ko.observable(false);
+
+        this.isExpanded.subscribe(expanded => {
+            if(expanded) {
+                owner.closeGroupsExcludingThis(this);
+            }
+        });
+    }
 }

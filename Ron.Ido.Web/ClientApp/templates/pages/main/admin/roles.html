@@ -40,13 +40,14 @@
                     </div>
                 </div>
                 <div data-bind="foreach:$parent.permissionGroups" style="padding-left: 10px;">
-                    <b data-bind="text:groupName"></b>
-                    <div data-bind="foreach:permissions">
-                        <div>
-                            <input type="checkbox" data-bind="checkedValue:value, checked:$parents[1].value" />
-                            <span data-bind="text:text"></span>
+                    <cmp-expander params="title:groupName, data:$data, expanded:isExpanded, fixed:false">
+                        <div data-bind="foreach:permissions">
+                            <div>
+                                <input type="checkbox" data-bind="checkedValue:value, checked:$parent.allRoles" />
+                                <span data-bind="text:text"></span>
+                            </div>
                         </div>
-                    </div>
+                    </cmp-expander>
                 </div>
             </div>
         </div>
