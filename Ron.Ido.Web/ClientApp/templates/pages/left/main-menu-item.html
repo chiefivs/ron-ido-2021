@@ -1,7 +1,7 @@
 <div class="main-menu-item">
     <a data-bind="click:click, text:title, css:{'has-submenu':submenu.length}"></a>
     <!-- ko if:submenu.length -->
-    <div data-bind="style:{'height':submenuHeight}, foreach:submenu">
+    <div data-bind="foreach:submenu" style="display:none;">
         <!-- ko template:{nodes:itemTemplateNodes, data:$data} -->
         <!-- /ko -->
     </div>
