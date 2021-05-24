@@ -5,9 +5,11 @@ namespace Ron.Ido.EM.Entities
 {
     public class ApplyBarCode
     {
-        [Key]
+        [Key, StringLength(12)]
         public string BarCode { get; set; }
         public long ApplyId { get; set; }
         public DateTime AssignTime { get; set; }
+
+        public virtual Apply Apply { get; set; }
     }
 }
