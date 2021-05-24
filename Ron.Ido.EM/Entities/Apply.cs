@@ -64,25 +64,56 @@ namespace Ron.Ido.EM.Entities
 
         #region Доверенность (если заявитель и владелец документа - разные лица
         public bool ByWarrant { get; set; }
+
+        [StringLength(100)]
         public string WarrantReq { get; set; }
+
         public DateTime? WarrantDate { get; set; }
+
         public DateTime? WarrantTerm { get; set; }
         #endregion
 
         #region Обладатель документа
+        [StringLength(255)]
         public string OwnerFirstName { get; set; }
+
+        [StringLength(255)]
         public string OwnerLastName { get; set; }
+
+        [StringLength(255)]
         public string OwnerSurname { get; set; }
+
         public DateTime? OwnerBirthDate { get; set; }
-        public string OwnerPassportType { get; set; }
+
+        //public string OwnerPassportType { get; set; }
+        public int? OwnerPassportTypeId { get; set; }
+        public virtual ApplyPassportType OwnerPassportType { get; set; }
+
+        [StringLength(250)]
         public string OwnerPassportReq { get; set; }
+
+        [StringLength(10)]
         public string OwnerMailIndex { get; set; }
+
+        [StringLength(100)]
         public string OwnerCityName { get; set; }
+
+        [StringLength(100)]
         public string OwnerStreet { get; set; }
+
+        [StringLength(10)]
         public string OwnerCorpus { get; set; }
+
+        [StringLength(10)]
         public string OwnerBuilding { get; set; }
+
+        [StringLength(10)]
         public string OwnerBlock { get; set; }
+
+        [StringLength(10)]
         public string OwnerFlat { get; set; }
+
+        [StringLength(100)]
         public string OwnerPhone { get; set; }
         #endregion
 
