@@ -34,8 +34,10 @@ namespace Ron.Ido.Importer
             _nostrContext = serviceProvider.GetService<NostrificationRONContext>();
             _nostrStorage = serviceProvider.GetService<NostrificationStorage>();
 
+            ImportApplyStatuses();
             ImportRoles();
             ImportUsers();
+            ImportCountries();
             //ImportFiles();
         }
 
@@ -76,14 +78,79 @@ namespace Ron.Ido.Importer
             }
         }
 
+        private static void ImportApplyStatuses()
+        {
+            foreach (var nStatus in _nostrContext.ApplyStatuses)
+            {
+                var statusVal = (EM.Enums.ApplyStatusEnum)nStatus.Id;
+                string statusValString = Enum.IsDefined(statusVal) ? statusVal.ToString() : null;
+
+                var status = AddEntityIfNotExists(new EM.Entities.ApplyStatus
+                {
+                    StatusEnumValue = statusValString,
+                    Name = nStatus.Name,
+                    NameForButton = nStatus.NameForButton,
+                    NameForApplier = nStatus.NameForApplier,
+                    NameForApplierEng = nStatus.NameForApplierEng,
+                    DescriptionForApplier = nStatus.DescriptionForApplier,
+                    DescriptionForApplierEng = nStatus.DescriptionForApplierEng,
+                    EtapId = nStatus.EtapId,
+                    VisibleForApplier = nStatus.VisibleForApplier,
+                    OldId = nStatus.Id
+                }, item => item.OldId == nStatus.Id);
+            }
+
+            var newStatuses = _appContext.ApplyStatuses.ToArray();
+            foreach (var status in newStatuses)
+            {
+                var oldStatus = _nostrContext.ApplyStatuses.FirstOrDefault(s => s.Id == status.OldId);
+                if (oldStatus == null)
+                    continue;
+
+                var oldStepsStr = oldStatus.AllowStepToStatuses;
+                var oldSteps = string.IsNullOrEmpty(oldStepsStr)
+                    ? new int[] { }
+                    : oldStepsStr.Split(";").Select(v => v.Parse(0));
+
+                var newSteps = oldSteps
+                    .Select(v => newStatuses.FirstOrDefault(s => s.OldId == v)?.Id ?? 0)
+                    .Where(v => v > 0);
+
+                status.AllowStepToStatuses = newSteps
+                    .Select(v => v.ToString())
+                    .Join(";");
+
+                _appContext.SaveChanges();
+            }
+        }
+
         private static void ImportRoles()
         {
+            var getStatusIds = new Func<string, string>(oldIdsString =>
+            {
+                if (string.IsNullOrEmpty(oldIdsString))
+                    return "";
+
+                var oldIds = oldIdsString.Split(";")
+                .Select(i => i.Parse(0))
+                .ToArray();
+
+                var newIds = oldIds
+                .Select(id => _appContext.ApplyStatuses.FirstOrDefault(s => s.OldId == id)?.Id ?? 0)
+                .Where(v => v > 0)
+                .ToArray();
+
+                return newIds.Select(id => id.ToString()).Join(";");
+            });
+
             var grants = GrantsUtility.AllGrants(typeof(GRANT)).Where(g => g.Permission != EM.Enums.PermissionEnum.NULL);
             foreach(var nRole in _nostrContext.Roles)
             {
                 var role = AddEntityIfNotExists(new EM.Entities.Role
                 {
                     Name = nRole.Name,
+                    ViewApplyStatusesString = getStatusIds(nRole.ViewApplyStatusesString),
+                    StepApplyStatusesString = getStatusIds(nRole.StepApplyStatusesString)
                 },
                 (r => r.Name == nRole.Name));
 
@@ -136,6 +203,46 @@ namespace Ron.Ido.Importer
                     },
                     ur => ur.RoleId == role.Id && ur.UserId == user.Id);
                 }
+            }
+        }
+
+        private static void ImportCountries()
+        {
+            foreach(var region in _nostrContext.Regions)
+            {
+                AddEntityIfNotExists(
+                    new EM.Entities.Region
+                    {
+                        Name = region.Name,
+                        OrderNum = region.OrderNum,
+                        OldId = region.Id
+                    },
+                    item => item.OldId == region.Id);
+            }
+
+            foreach(var country in _nostrContext.Countries)
+            {
+                AddEntityIfNotExists(
+                    new EM.Entities.Country
+                    {
+                        Name = country.Name,
+                        NameEng = country.NameEng,
+                        FullName = country.FullName,
+                        LegalizationComment = country.LegalizationComment,
+                        LegalizationId = country.LegalizationId,
+                        LegalizationNeeded = country.LegalizationNeeded,
+                        RegionId = _appContext.Regions.FirstOrDefault(r => r.OldId == country.RegionId)?.Id,
+                        OrderNum = country.OrderNum,
+                        A2code = country.A2code,
+                        A3code = country.A3code,
+                        EiisCode = country.EiisCode,
+                        IsgaCode = country.IsgaCode,
+                        OksmCode = country.OksmCode,
+                        CoordX = country.CoordX,
+                        CoordY = country.CoordY,
+                        OldId = country.Id
+                    },
+                    item => item.OldId == country.Id);
             }
         }
 

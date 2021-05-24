@@ -33,6 +33,7 @@ namespace Ron.Ido.Importer
         public string A2code { get; set; }
         public string A3code { get; set; }
         public string IsgaCode { get; set; }
+        public string OksmCode { get; set; }
         public bool? LegalizationNeeded { get; set; }
         public string LegalizationComment { get; set; }
         public int OrderNum { get; set; }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Ron.Ido.DbStorage.Npgsql;
@@ -9,22 +10,23 @@ using Ron.Ido.DbStorage.Npgsql;
 namespace Ron.Ido.DbStorage.Npgsql.Migrations
 {
     [DbContext(typeof(NpgsqlAppDbContext))]
-    partial class NpgsqlAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210524150503_ApplyStatuses")]
+    partial class ApplyStatuses
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .UseIdentityByDefaultColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("ProductVersion", "5.0.5")
-                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                .HasAnnotation("ProductVersion", "5.0.5");
 
             modelBuilder.Entity("Ron.Ido.EM.Entities.Apply", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<long?>("AimId")
                         .HasColumnType("bigint");
@@ -562,7 +564,7 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<string>("AllowStepToStatuses")
                         .HasColumnType("text");
@@ -575,7 +577,10 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
-                    b.Property<long?>("EtapId")
+                    b.Property<int?>("EtapId")
+                        .HasColumnType("integer");
+
+                    b.Property<long?>("EtapId1")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Name")
@@ -594,9 +599,6 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<int>("OldId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("StatusEnumValue")
                         .HasColumnType("text");
 
@@ -605,9 +607,37 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EtapId");
+                    b.HasIndex("EtapId1");
 
                     b.ToTable("ApplyStatuses");
+                });
+
+            modelBuilder.Entity("Ron.Ido.EM.Entities.ApplyStatusPermission", b =>
+                {
+                    b.Property<long>("StatusId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("PermissionId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("ApplyStatusId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsStepAllowed")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsViewAllowed")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("StatusId", "PermissionId");
+
+                    b.HasIndex("ApplyStatusId");
+
+                    b.HasIndex("IsStepAllowed");
+
+                    b.HasIndex("IsViewAllowed");
+
+                    b.ToTable("ApplyStatusesPermissions");
                 });
 
             modelBuilder.Entity("Ron.Ido.EM.Entities.ApplyTemplate", b =>
@@ -666,7 +696,7 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<string>("A2code")
                         .HasMaxLength(2)
@@ -858,7 +888,7 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<string>("Name")
                         .HasMaxLength(200)
@@ -886,7 +916,7 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<int>("MaxTerm")
                         .HasColumnType("integer");
@@ -910,7 +940,7 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
 
                     b.HasIndex("OrderNum");
 
-                    b.ToTable("ReglamentEtaps");
+                    b.ToTable("ReglamentEtap");
                 });
 
             modelBuilder.Entity("Ron.Ido.EM.Entities.Role", b =>
@@ -918,7 +948,7 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<string>("Description")
                         .HasMaxLength(150)
@@ -934,12 +964,6 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("character varying(150)");
-
-                    b.Property<string>("StepApplyStatusesString")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ViewApplyStatusesString")
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -989,7 +1013,7 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<string>("Email")
                         .HasMaxLength(500)
@@ -1187,9 +1211,16 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                 {
                     b.HasOne("Ron.Ido.EM.Entities.ReglamentEtap", "Etap")
                         .WithMany()
-                        .HasForeignKey("EtapId");
+                        .HasForeignKey("EtapId1");
 
                     b.Navigation("Etap");
+                });
+
+            modelBuilder.Entity("Ron.Ido.EM.Entities.ApplyStatusPermission", b =>
+                {
+                    b.HasOne("Ron.Ido.EM.Entities.ApplyStatus", null)
+                        .WithMany("Permissions")
+                        .HasForeignKey("ApplyStatusId");
                 });
 
             modelBuilder.Entity("Ron.Ido.EM.Entities.Country", b =>
@@ -1245,6 +1276,11 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Navigation("BarCodes");
 
                     b.Navigation("CertificateDeliveryForms");
+                });
+
+            modelBuilder.Entity("Ron.Ido.EM.Entities.ApplyStatus", b =>
+                {
+                    b.Navigation("Permissions");
                 });
 
             modelBuilder.Entity("Ron.Ido.EM.Entities.LearnLevel", b =>

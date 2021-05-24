@@ -1,23 +1,24 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Ron.Ido.EM.Interfaces;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Ron.Ido.EM.Entities
 {
     [Index(nameof(Name))]
     [Index(nameof(OrderNum))]
-    public class ApplyEntryForm : IOrdered
+    public class ReglamentEtap
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-
         public long Id { get; set; }
 
-        [StringLength(200)]
+        [StringLength(100)]
         public string Name { get; set; }
 
-        public int OrderNum { get; set; }
+        public int MinTerm { get; set; }
 
+        public int MaxTerm { get; set; }
+
+        public bool? Required { get; set; }
+
+        public int OrderNum { get; set; }
     }
 }

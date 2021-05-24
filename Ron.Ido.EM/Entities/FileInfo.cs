@@ -1,4 +1,5 @@
-﻿using Ron.Ido.Common.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using Ron.Ido.Common.Interfaces;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -6,6 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace Ron.Ido.EM.Entities
 {
+	[Index(nameof(OldId))]
 	public class FileInfo : IFileInfo
 	{
 		[Key]

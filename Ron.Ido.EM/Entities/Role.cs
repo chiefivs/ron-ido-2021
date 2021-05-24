@@ -25,6 +25,10 @@ namespace Ron.Ido.EM.Entities
 
         public bool IsAdmin { get; set; }
 
+        public string ViewApplyStatusesString { get; set; }
+
+        public string StepApplyStatusesString { get; set; }
+
         public virtual List<RolePermission> RolePermissions { get; set; } = new List<RolePermission>();
     }
 }
