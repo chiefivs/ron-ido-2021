@@ -1,8 +1,11 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Ron.Ido.EM.Entities
 {
+    [Index(nameof(BarCode))]
+    [Index(nameof(AssignTime))]
     public class ApplyBarCode
     {
         [Key, StringLength(12)]

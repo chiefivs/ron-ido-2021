@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Ron.Ido.DbStorage.Npgsql;
@@ -9,9 +10,10 @@ using Ron.Ido.DbStorage.Npgsql;
 namespace Ron.Ido.DbStorage.Npgsql.Migrations
 {
     [DbContext(typeof(NpgsqlAppDbContext))]
-    partial class NpgsqlAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210524080305_Countries_and_Regions")]
+    partial class Countries_and_Regions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -243,8 +245,6 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
 
                     b.HasIndex("NameEng");
 
-                    b.HasIndex("OrderNum");
-
                     b.ToTable("ApplyDeliveryForms");
                 });
 
@@ -263,8 +263,6 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Name");
-
-                    b.HasIndex("OrderNum");
 
                     b.ToTable("ApplyDocFullPackageTypes");
                 });
@@ -296,17 +294,11 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BeginDate");
-
-                    b.HasIndex("EndDate");
-
                     b.HasIndex("LearnLevelId");
 
                     b.HasIndex("Name");
 
                     b.HasIndex("NameEng");
-
-                    b.HasIndex("OrderNum");
 
                     b.ToTable("ApplyDocTypes");
                 });
@@ -326,8 +318,6 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Name");
-
-                    b.HasIndex("OrderNum");
 
                     b.ToTable("ApplyEntryForms");
                 });
@@ -354,8 +344,6 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
 
                     b.HasIndex("NameEng");
 
-                    b.HasIndex("OrderNum");
-
                     b.ToTable("ApplyLearnForms");
                 });
 
@@ -377,11 +365,7 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Code");
-
                     b.HasIndex("Name");
-
-                    b.HasIndex("OrderNum");
 
                     b.ToTable("ApplyPassportTypes");
                 });
@@ -404,8 +388,6 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Name");
-
-                    b.HasIndex("OrderNum");
 
                     b.ToTable("ApplyTemplates");
                 });
@@ -562,15 +544,9 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BeginDate");
-
-                    b.HasIndex("EndDate");
-
                     b.HasIndex("FullName");
 
                     b.HasIndex("Name");
-
-                    b.HasIndex("OrderNum");
 
                     b.ToTable("LearnLevels");
                 });

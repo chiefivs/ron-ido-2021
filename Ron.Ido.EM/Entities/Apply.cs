@@ -9,10 +9,12 @@ namespace Ron.Ido.EM.Entities
         [Key]
         public long Id { get; set; }
 
+        #region Служебная информация
         public virtual List<ApplyBarCode> BarCodes { get; set; } = new List<ApplyBarCode>();
 
         [StringLength(100)]
         public string EpguCode { get; set; }
+        #endregion
 
         #region Заявитель
         [StringLength(255)]
@@ -115,6 +117,10 @@ namespace Ron.Ido.EM.Entities
 
         [StringLength(100)]
         public string OwnerPhone { get; set; }
+        #endregion
+
+        #region Документ
+        public int? DocCountryId { get; set; }
         #endregion
 
     }
