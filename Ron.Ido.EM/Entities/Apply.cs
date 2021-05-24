@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Ron.Ido.EM.Entities
 {
+    [Index(nameof(EpguCode))]
     public class Apply
     {
         [Key]
@@ -30,7 +32,7 @@ namespace Ron.Ido.EM.Entities
         public DateTime? CreatorBirthDate { get; set; }
         
         //public string CreatorPassportType { get; set; }
-        public int? CreatorPassportTypeId { get; set; }
+        public long? CreatorPassportTypeId { get; set; }
         public virtual ApplyPassportType CreatorPassportType { get; set; }
 
         [StringLength(250)]
@@ -88,7 +90,7 @@ namespace Ron.Ido.EM.Entities
         public DateTime? OwnerBirthDate { get; set; }
 
         //public string OwnerPassportType { get; set; }
-        public int? OwnerPassportTypeId { get; set; }
+        public long? OwnerPassportTypeId { get; set; }
         public virtual ApplyPassportType OwnerPassportType { get; set; }
 
         [StringLength(250)]
@@ -120,7 +122,7 @@ namespace Ron.Ido.EM.Entities
         #endregion
 
         #region Документ
-        public int? DocCountryId { get; set; }
+        public long? DocCountryId { get; set; }
         #endregion
 
     }
