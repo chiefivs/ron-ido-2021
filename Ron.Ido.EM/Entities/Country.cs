@@ -11,6 +11,7 @@ namespace Ron.Ido.EM.Entities
     [Index(nameof(EiisCode))]
     [Index(nameof(IsgaCode))]
     [Index(nameof(OksmCode))]
+    [Index(nameof(OldId))]
     public class Country
     {
         [Key]
@@ -47,7 +48,7 @@ namespace Ron.Ido.EM.Entities
         public string OksmCode { get; set; }
         #endregion
 
-        public int? RegionId { get; set; }
+        public long? RegionId { get; set; }
         public virtual Region Region { get; set; }
         
         public int? LegalizationId { get; set; }
@@ -55,5 +56,8 @@ namespace Ron.Ido.EM.Entities
         public double? CoordX { get; set; }
         
         public double? CoordY { get; set; }
+
+
+        public int OldId { get; set; }
     }
 }

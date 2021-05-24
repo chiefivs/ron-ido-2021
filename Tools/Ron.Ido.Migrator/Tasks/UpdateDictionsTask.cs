@@ -20,7 +20,7 @@ namespace Ron.Ido.Migrator.Tasks
             UpdateApplyPassportTypes(context);
 
             UpdateApplyTemplates(context);
-
+            UpdateLegalizations(context);
         }
 
         private void UpdateApplyAims(AppDbContext context)
@@ -102,6 +102,7 @@ namespace Ron.Ido.Migrator.Tasks
             foreach (var item in list)
                 context.AddEntityIfNotExists(item, entity => entity.Id == item.Id);
         }
+
         private void UpdateApplyLearnForms(AppDbContext context)
         {
             var list = new[]
@@ -192,5 +193,17 @@ namespace Ron.Ido.Migrator.Tasks
                 context.AddEntityIfNotExists(item, entity => entity.Id == item.Id);
         }
 
+        private void UpdateLegalizations(AppDbContext context)
+        {
+            var list = new[]
+            {
+                new Legalization{ Id = 1, Name = "Консульская легализация", Description = "Консульская легализация", OrderNum = 1},
+                new Legalization{ Id = 2, Name = "Апостиль", Description = "Апостиль", OrderNum = 2},
+                new Legalization{ Id = 3, Name = "В легализации не нуждается", Description = "Конвенцией о правовой помощи и правовых отношениях по гражданским, семейным и уголовным делам от 22.01.1993", OrderNum = 3},
+            };
+
+            foreach (var item in list)
+                context.AddEntityIfNotExists(item, entity => entity.Id == item.Id);
+        }
     }
 }

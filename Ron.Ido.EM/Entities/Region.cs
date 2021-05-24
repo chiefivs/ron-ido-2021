@@ -6,6 +6,7 @@ namespace Ron.Ido.EM.Entities
 {
     [Index(nameof(Name))]
     [Index(nameof(OrderNum))]
+    [Index(nameof(OldId))]
     public class Region
     {
         [Key]
@@ -17,5 +18,7 @@ namespace Ron.Ido.EM.Entities
         public int OrderNum { get; set; }
 
         public virtual List<Country> Countries { get; set; } = new List<Country>();
+
+        public int OldId { get; set; }
     }
 }

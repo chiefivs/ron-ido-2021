@@ -36,6 +36,7 @@ namespace Ron.Ido.Importer
 
             ImportRoles();
             ImportUsers();
+            ImportCountries();
             //ImportFiles();
         }
 
@@ -136,6 +137,46 @@ namespace Ron.Ido.Importer
                     },
                     ur => ur.RoleId == role.Id && ur.UserId == user.Id);
                 }
+            }
+        }
+
+        private static void ImportCountries()
+        {
+            foreach(var region in _nostrContext.Regions)
+            {
+                AddEntityIfNotExists(
+                    new EM.Entities.Region
+                    {
+                        Name = region.Name,
+                        OrderNum = region.OrderNum,
+                        OldId = region.Id
+                    },
+                    item => item.OldId == region.Id);
+            }
+
+            foreach(var country in _nostrContext.Countries)
+            {
+                AddEntityIfNotExists(
+                    new EM.Entities.Country
+                    {
+                        Name = country.Name,
+                        NameEng = country.NameEng,
+                        FullName = country.FullName,
+                        LegalizationComment = country.LegalizationComment,
+                        LegalizationId = country.LegalizationId,
+                        LegalizationNeeded = country.LegalizationNeeded,
+                        RegionId = _appContext.Regions.FirstOrDefault(r => r.OldId == country.RegionId)?.Id,
+                        OrderNum = country.OrderNum,
+                        A2code = country.A2code,
+                        A3code = country.A3code,
+                        EiisCode = country.EiisCode,
+                        IsgaCode = country.IsgaCode,
+                        OksmCode = country.OksmCode,
+                        CoordX = country.CoordX,
+                        CoordY = country.CoordY,
+                        OldId = country.Id
+                    },
+                    item => item.OldId == country.Id);
             }
         }
 
