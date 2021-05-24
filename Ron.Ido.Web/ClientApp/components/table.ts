@@ -2,18 +2,18 @@ import * as ko from 'knockout';
 import { App } from '../app';
 import { Utils } from '../modules/utils';
 
-const myepTable = 'cmp-table';
-const myepTableColumn = 'cmp-table-column';
-const myepTableTitle = 'cmp-table-title';
-const myepTableData = 'cmp-table-data';
-const myepTableChildTitle = 'cmp-table-child-title';
-const myepTableChildData = 'cmp-table-child-data';
-const myepTableFooter = 'cmp-table-footer';
-const myepTablePager = 'cmp-table-pager';
+const cmpTable = 'cmp-table';
+const cmpTableColumn = 'cmp-table-column';
+const cmpTableTitle = 'cmp-table-title';
+const cmpTableData = 'cmp-table-data';
+const cmpTableChildTitle = 'cmp-table-child-title';
+const cmpTableChildData = 'cmp-table-child-data';
+const cmpTableFooter = 'cmp-table-footer';
+const cmpTablePager = 'cmp-table-pager';
 const templatesTablesFolderPath = 'components/table/';
 
 export function init(){
-    ko.components.register(myepTable,
+    ko.components.register(cmpTable,
         {
             viewModel: {
                 createViewModel(params: ITableParams, componentInfo: any) {
@@ -130,7 +130,7 @@ export function init(){
             `
         });
     
-    ko.components.register(myepTableColumn,
+    ko.components.register(cmpTableColumn,
         {
             viewModel: {
                 createViewModel(params: ITableColumnParams, componentInfo: any) {
@@ -240,7 +240,7 @@ class TableModel {
             }
         } else {
             const columnsTemplates =
-                $(componentInfo.templateNodes).filter((i, e) => e.localName === myepTableColumn);
+                $(componentInfo.templateNodes).filter((i, e) => e.localName === cmpTableColumn);
             this.columnsTemplatesCount = columnsTemplates.length;
             $(componentInfo.element).prepend(columnsTemplates);
         }
@@ -669,24 +669,24 @@ class TableColumnModel {
             componentInfo ? componentInfo.templateNodes : [],
             params.titleTemplate,
             'table-parent-title-default.html',
-            myepTableTitle);
+            cmpTableTitle);
         this.dataTemplateNodes = this.getTemplateNodes(
             componentInfo ? componentInfo.templateNodes : [],
             params.cellTemplate,
             'table-parent-data-default.html',
-            myepTableData,
+            cmpTableData,
             null,
             true);
         this.childTitleTemplateNodes = this.getTemplateNodes(
             componentInfo ? componentInfo.templateNodes : [],
             params.childTitleTemplate,
             'table-child-title-default.html',
-            myepTableChildTitle);
+            cmpTableChildTitle);
         this.childDataTemplateNodes = this.getTemplateNodes(
             componentInfo ? componentInfo.templateNodes : [],
             params.childCellTemplate,
             'table-child-data-default.html',
-            myepTableChildData,
+            cmpTableChildData,
             this.dataTemplateNodes);
 
         this.title = params.title || null;

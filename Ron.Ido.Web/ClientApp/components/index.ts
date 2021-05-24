@@ -1,4 +1,5 @@
 import * as DatepickerComponent from './datepicker';
+import * as ExpanderComponent from './expander';
 import * as FilterComponent from './filter';
 import * as FiltersPanelComponent from './filters-panel';
 import * as FormFieldComponent from './form-field';
@@ -11,6 +12,7 @@ import * as TextBoxComponent from './textbox';
 
 export function init() {
     DatepickerComponent.init();
+    ExpanderComponent.init();
     FilterComponent.init();
     FiltersPanelComponent.init();
     FormFieldComponent.init();
@@ -23,6 +25,7 @@ export function init() {
 }
 
 export { IDatepickerParams } from './datepicker';
+export { IExpanderParams } from './expander';
 export { IFilterParams, FilterValueType, IFilterOption } from './filter';
 export { IFiltersPanelParams } from './filters-panel';
 export { IFormFieldParams } from './form-field';

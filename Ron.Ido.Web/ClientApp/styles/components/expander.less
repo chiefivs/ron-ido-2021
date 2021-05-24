@@ -1,0 +1,37 @@
+@import '../variables.less';
+
+cmp-expander {
+    display: block;
+
+    &>.expander-header {
+        background-color: @panel-info-heading-bg;
+        padding: @padding-base-vertical;
+        border-radius: @padding-base-vertical;
+        margin-bottom:  @padding-base-vertical;
+
+        a {
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        a.expander-pin {
+            display: inline-block;
+            padding: 2px;
+            border: 2px solid transparent;
+            border-style: inset;
+
+            &.fixed {
+                border-color:@panel-bg;
+            }
+        }
+
+        a.expander-title {
+            font-weight: bold;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+
+    }
+}

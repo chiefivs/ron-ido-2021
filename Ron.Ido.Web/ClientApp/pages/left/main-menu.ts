@@ -31,7 +31,7 @@ class MenuItem {
     title: string;
     submenu: MenuItem[];
     itemTemplateNodes: Element[];
-    submenuHeight = ko.observable('0');
+    isExpanded = false;
 
     private _data:AccountApi.IMenuItem;
 
@@ -48,14 +48,17 @@ class MenuItem {
         if(this._data.path) {
             App.instance().openMainPage(this._data.path);
         } else {
-            const element = $(evt.target).siblings('div');
-            const height = Utils.getElementRect(element).height;
-
-            if(this.submenuHeight() === '') {
-                Utils.animate(height, 0, h => this.submenuHeight(`${Math.round(h)}px`));
-            } else {
-                Utils.animate(0, height, h => this.submenuHeight(`${Math.round(h)}px`), () => this.submenuHeight(''));
-            }
+            this._toggle($(evt.target).siblings('div'));
         }
+    }
+
+    private _toggle(element:JQuery) {
+        if(this.isExpanded) {
+            element.slideUp();
+        } else {
+            element.slideDown();
+        }
+
+        this.isExpanded = !this.isExpanded;
     }
 }
