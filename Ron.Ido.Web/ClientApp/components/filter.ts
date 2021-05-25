@@ -48,8 +48,10 @@ class FilterModel {
     state: ko.Observable<IODataFilter>;
 
     private _templates:object = {};
+    private _name:string;
 
     constructor(params:IFilterParams) {
+        this._name = Utils.randomString(20);
         this._defineAllTemplates();
         this.templateNodes = this._getTemplate(params.filterType, params.valueType);
         this.state = params.state || ko.observable(null);
@@ -105,6 +107,12 @@ class FilterModel {
         this._setTemplate(ODataFilterTypeEnum.BetweenLeft, 'date', '');
         this._setTemplate(ODataFilterTypeEnum.BetweenRight, 'date', '');
         this._setTemplate(ODataFilterTypeEnum.BetweenAll, 'date', '');
+        this._setTemplate(ODataFilterTypeEnum.Equals, 'boolean',
+            `<div>
+                <input type="radio" name="${this._name}" value="true" data-bind="checked:value1" /><span>да</span>
+                <input type="radio" name="${this._name}" value="false" data-bind="checked:value1" /><span>нет</span>
+                <input type="radio" name="${this._name}" value="" data-bind="checked:value1" /><span>не определен</span>
+            </div>`);
 
         this.value1.subscribe(this._updateValues.bind(this));
         this.value2.subscribe(this._updateValues.bind(this));
