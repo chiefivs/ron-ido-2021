@@ -84,18 +84,21 @@ export default class RolesMainPage extends MainPageBase {
 
 class RoleForm extends Form<AdminAccessApi.IRoleDto>{
     permissionGroups: PermissionGroup[];
-
+    statuses: IODataOption[];
+    stepStatuses : ko.ObservableArray<any>;
+    viewStatuses : ko.ObservableArray<any>;
     constructor(
         data:IODataForm<AdminAccessApi.IRoleDto>,
         saveApi?:(item:AdminAccessApi.IRoleDto) => JQueryPromise<any>,
         validateApi?:(item:AdminAccessApi.IRoleDto) => JQueryPromise<{[key:string]:string[]}>) {
         super(data, saveApi, validateApi);
-
         this.permissionGroups = ko.utils.arrayMap(data.options.permissionGroups, group => {
             const perms = ko.utils.arrayFilter(data.options.rolePermissions, perm => perm.parent === group.value);
-
             return new PermissionGroup(group.value, perms, this);
         });
+        this.statuses = data.options.statuses;
+        this.viewStatuses = this.item.viewStatuses.value  as ko.ObservableArray<any>;
+        this.stepStatuses = this.item.stepStatuses.value as ko.ObservableArray<any>;;
     }
 
     closeGroupsExcludingThis(group: PermissionGroup) {
