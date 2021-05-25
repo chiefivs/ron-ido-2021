@@ -17,7 +17,7 @@ export function init(){
     });
 }
 
-export type FilterValueType = 'string'|'number'|'date';
+export type FilterValueType = 'string'|'number'|'date'|'boolean';
 
 export interface IFilterOption {
     value: string;

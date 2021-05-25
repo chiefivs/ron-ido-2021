@@ -69,8 +69,8 @@ class UsersSearchLeftPage extends LeftPageBase{
     rolesOptions = ko.observableArray<IFilterOption>([]);
 
     private _fullNameFilter: IFilterParams = { title: 'ФИО', field:'surName', aliases:['firstName', 'lastName'], valueType:'string', filterType: ODataFilterTypeEnum.Contains, options:[]};
-    private _rolesFilter: IFilterParams = {title: 'Роли', field: 'roles', valueType:'number', filterType: ODataFilterTypeEnum.In, options:this.rolesOptions};
-
+    private _rolesFilter: IFilterParams = { title: 'Роли', field: 'roles', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.rolesOptions };
+    private _blockedFilter: IFilterParams = { title: 'Блокирован', field: 'isBlocked', valueType: 'boolean', filterType: ODataFilterTypeEnum.Equals };
     constructor(owner: UsersMainPage) {
         super({
             pageTitle: 'поиск',
@@ -78,7 +78,7 @@ class UsersSearchLeftPage extends LeftPageBase{
         });
 
         this.owner = owner;
-        this.filters = [this._fullNameFilter, this._rolesFilter];
+        this.filters = [this._fullNameFilter, this._rolesFilter, this._blockedFilter];
 
         AdminAccessApi.getUsersDictions().done(dictions => {
             const roleOptionValues: IFilterOption[] = ko.utils.arrayMap(dictions.roles, role => 
