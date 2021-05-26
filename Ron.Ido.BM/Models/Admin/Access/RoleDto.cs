@@ -22,8 +22,8 @@ namespace Ron.Ido.BM.Models.Admin.Access
         public bool IsAdmin { get; set; }
 
         public IEnumerable<PermissionEnum> RolePermissions { get; set; } = Array.Empty<PermissionEnum>();
-        public IEnumerable<ApplyStatusEnum> ViewStatuses { get; set; } = Array.Empty<ApplyStatusEnum>();
-        public IEnumerable<ApplyStatusEnum> StepStatuses { get; set; } = Array.Empty<ApplyStatusEnum>();
+        public IEnumerable<long> ViewStatuses { get; set; } = Array.Empty<long>();
+        public IEnumerable<long> StepStatuses { get; set; } = Array.Empty<long>();
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

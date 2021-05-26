@@ -64,8 +64,8 @@ export namespace AdminAccessApi {
         isDefault:any;
         isAdmin:any;
         rolePermissions:PermissionEnum[];
-        viewStatuses:ApplyStatusEnum[];
-        stepStatuses:ApplyStatusEnum[];
+        viewStatuses:number[];
+        stepStatuses:number[];
     }
 
     //  Ron.Ido.EM.Enums.PermissionEnum
@@ -189,30 +189,6 @@ export namespace AdminAccessApi {
         DUTY_VIEW = 7102,
         DUTY_EDIT = 7103,
         CHIEF_JOURNAL = 7104
-    }
-
-    //  Ron.Ido.EM.Enums.ApplyStatusEnum
-    export enum ApplyStatusEnum {
-        NO_VALIDATED = 1,
-        HAS_ERRORS = 2,
-        UNDERMANNED = 3,
-        FIXED_BY_USER = 4,
-        APPROVED = 5,
-        ON_RESEARCH = 10,
-        ON_RESEARCH_END = 11,
-        ON_EXPERTIZE = 12,
-        SUSPENDED = 13,
-        DECISION_PREPARATION = 14,
-        DECISION_ACT = 15,
-        SIGNING_POSTED = 16,
-        INFO_LETTER = 17,
-        SECOND_REQUEST = 18,
-        READY_TO_GIVE = 23,
-        PREPARE_TO_GIVE = 24,
-        WAIT_PAYMENT = 32,
-        WAIT_DOCUMENTS = 33,
-        GIVEN = 41,
-        DELETED = 99
     }
 
 }
