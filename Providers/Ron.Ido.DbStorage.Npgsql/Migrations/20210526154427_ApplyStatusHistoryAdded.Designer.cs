@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Ron.Ido.DbStorage.Npgsql;
@@ -9,9 +10,10 @@ using Ron.Ido.DbStorage.Npgsql;
 namespace Ron.Ido.DbStorage.Npgsql.Migrations
 {
     [DbContext(typeof(NpgsqlAppDbContext))]
-    partial class NpgsqlAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210526154427_ApplyStatusHistoryAdded")]
+    partial class ApplyStatusHistoryAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -361,76 +363,6 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.HasIndex("NameEng");
 
                     b.ToTable("ApplyAims");
-                });
-
-            modelBuilder.Entity("Ron.Ido.EM.Entities.ApplyAttachment", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .UseIdentityByDefaultColumn();
-
-                    b.Property<long>("ApplyId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("AttachmentTypeId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Error")
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("FileInfoUid")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("Given")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("Required")
-                        .HasColumnType("boolean");
-
-                    b.Property<long?>("TypeId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FileInfoUid");
-
-                    b.HasIndex("TypeId");
-
-                    b.ToTable("ApplyAttachments");
-                });
-
-            modelBuilder.Entity("Ron.Ido.EM.Entities.ApplyAttachmentType", b =>
-                {
-                    b.Property<long>("Id")
-                        .HasColumnType("bigint");
-
-                    b.Property<bool>("ForArchive")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("ForPortal")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("NameEng")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<int>("OrderNum")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("Required")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ApplyAttachmentTypes");
                 });
 
             modelBuilder.Entity("Ron.Ido.EM.Entities.ApplyBarCode", b =>
@@ -1272,22 +1204,6 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Navigation("SpecialLearnForm");
 
                     b.Navigation("Status");
-                });
-
-            modelBuilder.Entity("Ron.Ido.EM.Entities.ApplyAttachment", b =>
-                {
-                    b.HasOne("Ron.Ido.EM.Entities.FileInfo", "FileInfo")
-                        .WithMany()
-                        .HasForeignKey("FileInfoUid")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Ron.Ido.EM.Entities.ApplyAttachmentType", "Type")
-                        .WithMany()
-                        .HasForeignKey("TypeId");
-
-                    b.Navigation("FileInfo");
-
-                    b.Navigation("Type");
                 });
 
             modelBuilder.Entity("Ron.Ido.EM.Entities.ApplyBarCode", b =>

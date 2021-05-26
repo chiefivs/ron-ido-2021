@@ -19,6 +19,7 @@ namespace Ron.Ido.Migrator.Tasks
             UpdateApplyLearnForms(context);
             UpdateApplyPassportTypes(context);
 
+            UpdateApplyAttachmentTypes(context);
             UpdateApplyTemplates(context);
             UpdateSchoolTypes(context);
             UpdateLegalizations(context);
@@ -190,6 +191,30 @@ namespace Ron.Ido.Migrator.Tasks
                 new ApplyTemplate{ Id = 5, Name = "Оформленные за месяц", IsDefault = false, OrderNum = 5 },
                 new ApplyTemplate{ Id = 6, Name = "Все заявления", IsDefault = false, OrderNum = 6 }
 
+            };
+
+            foreach (var item in list)
+                context.AddEntityIfNotExists(item, entity => entity.Id == item.Id);
+        }
+
+        private void UpdateApplyAttachmentTypes(AppDbContext context)
+        {
+            var list = new[]
+            {
+                new ApplyAttachmentType{ Id = 1, Name = "Доверенность от заявителя, выданная обладателем", NameEng = "Warrant", OrderNum = 1 , Required = false, ForArchive = false, ForPortal = true },
+                new ApplyAttachmentType{ Id = 2, Name = "Копия документа, удостоверяющего личность заявителя", NameEng = "Passport", OrderNum = 2 , Required = true, ForArchive = false, ForPortal = true },
+                new ApplyAttachmentType{ Id = 3, Name = "Копия документа, удостоверяющего личность обладателя документа об образовании", NameEng = "", OrderNum = 3 , Required = false, ForArchive = true, ForPortal = true },
+                new ApplyAttachmentType{ Id = 4, Name = "Оригинал иностранного документа об образовании, легализованного в установленном порядке (при необходимости)", NameEng = "", OrderNum = 4 , Required = false, ForArchive = true, ForPortal = true },
+                new ApplyAttachmentType{ Id = 5, Name = "Оригинал приложения к иностранному документу об образовании легализованного в установленном порядке (при необходимости)	", NameEng = "", OrderNum = 5 , Required = false, ForArchive = true, ForPortal = true },
+                new ApplyAttachmentType{ Id = 6, Name = "Копия документа об образовании с переводом на русский язык, заверенная надлежащим образом", NameEng = "", OrderNum = 6 , Required = false, ForArchive = true, ForPortal = true },
+                new ApplyAttachmentType{ Id = 7, Name = "Копия приложения документа об образовании с переводом на русский язык, заверенная надлежащим образом", NameEng = "", OrderNum = 7 , Required = false, ForArchive = true, ForPortal = true },
+                new ApplyAttachmentType{ Id = 8, Name = "Копия документа о предыдущем образовании", NameEng = "", OrderNum = 8 , Required = false, ForArchive = true, ForPortal = true },
+                new ApplyAttachmentType{ Id = 9, Name = "Информация о наличии лицензии у образовательного учреждения на период обучения", NameEng = "", OrderNum = 9 , Required = false, ForArchive = true, ForPortal = true },
+                new ApplyAttachmentType{ Id = 10, Name = "Информация о наличии аккредитации у образовательного учреждения на период обучения", NameEng = "", OrderNum = 10 , Required = false, ForArchive = true, ForPortal = true },
+                new ApplyAttachmentType{ Id = 11, Name = "Справка из образовательного учреждения, подтверждающая факт обучения и выдачи документа иностранного государства об образовании", NameEng = "", OrderNum = 11 , Required = false, ForArchive = false, ForPortal = true },
+                new ApplyAttachmentType{ Id = 12, Name = "Сведения о форме освоения образовательной программы	", NameEng = "", OrderNum = 12 , Required = false, ForArchive = false, ForPortal = true },
+                new ApplyAttachmentType{ Id = 13, Name = "Сведения о профессиональной деятельности", NameEng = "", OrderNum = 13 , Required = false, ForArchive = false, ForPortal = true },
+                new ApplyAttachmentType{ Id = 14, Name = "Копия свидетельства", NameEng = "", OrderNum = 3 , Required = false, ForArchive = true, ForPortal = false },
             };
 
             foreach (var item in list)
