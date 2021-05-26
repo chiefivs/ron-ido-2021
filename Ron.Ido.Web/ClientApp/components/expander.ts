@@ -70,15 +70,17 @@ export class ExpanderModel {
     }
 
     toggleFixed() {
-        const fixed = !this.isFixed();
+        //const fixed = !this.isFixed();
 
-        if(fixed) {
-            this.isExpanded(true);
-        } else {
+        //this.isExpanded(fixed);
+        if(this.isFixed()) {
+            this.isFixed(false);
             this.isExpanded.valueHasMutated();
+        } else {
+            this.isExpanded(true);
+            this.isFixed(true);
         }
 
-        this.isFixed(fixed);
     }
 
     toggleExpanded() {

@@ -1,4 +1,5 @@
 import * as ko from 'knockout';
+
 import { ILeftPage, LeftPageBase, MainPageBase, Popups } from '../../../modules/content';
 import { IODataFilter, ODataFilterTypeEnum, ODataOrderTypeEnum } from '../../../codegen/webapi/odata';
 import { ITablePagerState, TableColumnOrderDirection, IFilterParams, IFilterOption, FilterValueType } from '../../../components/index';
@@ -68,17 +69,19 @@ class UsersSearchLeftPage extends LeftPageBase{
 
     rolesOptions = ko.observableArray<IFilterOption>([]);
 
-    private _fullNameFilter: IFilterParams = { title: 'ФИО', field:'surName', aliases:['firstName', 'lastName'], valueType:'string', filterType: ODataFilterTypeEnum.Contains, options:[]};
-    private _rolesFilter: IFilterParams = {title: 'Роли', field: 'roles', valueType:'number', filterType: ODataFilterTypeEnum.In, options:this.rolesOptions};
+    private _fullNameFilter: IFilterParams = { title: 'ФИО', field:'surName', aliases:['firstName', 'lastName'], valueType:'string', filterType: ODataFilterTypeEnum.Contains };
+    private _rolesFilter: IFilterParams = { title: 'Роли', field: 'roles', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.rolesOptions };
+    private _blockedFilter: IFilterParams = { title: 'Блокирован', field: 'isBlocked', valueType: 'boolean', filterType: ODataFilterTypeEnum.Equals, initialValues: [''] };
+    private _deletedFilter: IFilterParams = { title: 'Удален', field: 'isDeleted', valueType: 'boolean', filterType: ODataFilterTypeEnum.Equals, initialValues: [false] };
 
     constructor(owner: UsersMainPage) {
         super({
             pageTitle: 'поиск',
-            templatePath: 'pages/left/search-left-page.html'
+            templatePath: 'pages/left/users-search.html'
         });
 
         this.owner = owner;
-        this.filters = [this._fullNameFilter, this._rolesFilter];
+        this.filters = [this._fullNameFilter, this._rolesFilter, this._blockedFilter, this._deletedFilter];
 
         AdminAccessApi.getUsersDictions().done(dictions => {
             const roleOptionValues: IFilterOption[] = ko.utils.arrayMap(dictions.roles, role => 

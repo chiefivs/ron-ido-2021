@@ -14,11 +14,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Events\" />
+    <ProjectReference Include="..\Ron.Ido.EM\Ron.Ido.EM.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Ron.Ido.EM\Ron.Ido.EM.csproj" />
+    <Folder Include="Events\" />
   </ItemGroup>
 
 </Project>

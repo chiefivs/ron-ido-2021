@@ -1,6 +1,7 @@
 <div style="position: absolute; top:0; bottom: 0; width:320px; overflow: auto;">
     <cmp-table params="rows:roles, pagerState:pagerState, totalCount:tableTotalCount">
-        <cmp-table-column params="title:'Название', data:'name', orderable:true, priority:101, width:'99%'"></cmp-table-column>
+        <cmp-table-column params="title:'Название', data:'name', orderable:true, priority:101, width:'99%'">
+        </cmp-table-column>
         <cmp-table-column params="title:'', priority:101, width:'40px'">
             <cmp-table-title>
                 <div class="pull-right" style="margin-right: -10px;">
@@ -9,7 +10,8 @@
             </cmp-table-title>
             <cmp-table-data>
                 <div class="pull-right">
-                    <a class="img img-size-20 img-edit" data-bind="click:function(){$parents[4].setCurrent($parent.id);}"></a>
+                    <a class="img img-size-20 img-edit"
+                        data-bind="click:function(){$parents[4].setCurrent($parent.id);}"></a>
                 </div>
             </cmp-table-data>
         </cmp-table-column>
@@ -21,8 +23,10 @@
         <div data-bind="with:current">
             <div class="pull-right">
                 <a class="btn btn-primary" data-bind="click:reset, css:{disabled:!hasChanges()}">ОТМЕНИТЬ</a>
-                <a class="btn btn-primary" data-bind="click:$parent.save.bind($parent), css:{disabled:!hasChanges() || hasErrors()}">СОХРАНИТЬ</a>
-                <a class="btn btn-primary" data-bind="click:$parent.remove.bind($parent), visible:item.id.value()">УДАЛИТЬ</a>
+                <a class="btn btn-primary"
+                    data-bind="click:$parent.save.bind($parent), css:{disabled:!hasChanges() || hasErrors()}">СОХРАНИТЬ</a>
+                <a class="btn btn-primary"
+                    data-bind="click:$parent.remove.bind($parent), visible:item.id.value()">УДАЛИТЬ</a>
             </div>
 
             <cmp-form-errors params="form:$data"></cmp-form-errors>
@@ -35,7 +39,8 @@
             <div data-bind="with:item.rolePermissions" style="margin:0 5px;">
                 <div class="form-field-container">
                     <div>
-                        <div class="errors"><i class="img img-error img-size-20" data-bind="visible:errors().length, attr: { title:errors().join('\n') }"></i></div>
+                        <div class="errors"><i class="img img-error img-size-20"
+                                data-bind="visible:errors().length, attr: { title:errors().join('\n') }"></i></div>
                         <div style="padding:4px 0;"><label>Разрешения</label></div>
                     </div>
                 </div>
@@ -51,9 +56,19 @@
                 </div>
             </div>
         </div>
-        
+
     </div>
-    <div style="position: absolute; top:0; bottom:0; left:50%; right: 0; overflow:auto;">
-        <h2>статусы</h2>
+    <div style="position: absolute; top:0; bottom:0; left:50%; right: 0; overflow:auto;" data-bind="if:current">
+        <div data-bind="with:current,as:'current'">
+            <div data-bind="with:item, as:'item'">
+                <label>Статусы</label>
+                <div data-bind="foreach:$parent.statuses" class="role-status-item">
+                    <span data-bind="text:text" ></span>
+                    <input type="checkbox" data-bind="checkedValue:value, checked:current.stepStatuses" />
+                    <input type="checkbox" data-bind="checkedValue:value, checked:current.viewStatuses" />
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
