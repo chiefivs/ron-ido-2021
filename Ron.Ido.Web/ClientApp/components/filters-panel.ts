@@ -13,7 +13,7 @@ export function init(){
         template: `
             <form class="filters-panel" data-bind="submit:search">
                 <div data-bind="foreach:filters">
-                    <div><cmp-filter params="title:title, field:field, aliases:aliases, options:options, state:state, filterType:filterType, valueType:valueType"></cmp-filter></div>
+                    <div><cmp-filter params="title:title, field:field, aliases:aliases, options:options, initialValues:initialValues, state:state, filterType:filterType, valueType:valueType"></cmp-filter></div>
                 </div>
                 <div>
                     <button class="btn btn-primary pull-right">ПОИСК</div>
@@ -40,6 +40,12 @@ class FiltersPanelModel {
 
         this.filters.subscribe(filters => {
             ko.utils.arrayForEach(filters, f => {
+                if(!f.options)
+                    f.options = [];
+
+                if(!f.initialValues)
+                    f.initialValues = null;
+
                 if(!f.state)
                     f.state = ko.observable<IODataFilter>(null);
                 

@@ -1,7 +1,7 @@
 <cmp-table params="rows:users, pagerState:pagerState, totalCount:tableTotalCount">
-    <cmp-table-column params="title:'ФИО', data:'fullName', orderable:true""></cmp-table-column>
-    <cmp-table-column params="title:'Логин', data:'login', orderable:true"></cmp-table-column>   
+    <cmp-table-column params="title:'ФИО', data:'fullName', orderable:true" "></cmp-table-column>
+    <cmp-table-column params="title:'Логин', data:'login', orderable:true"></cmp-table-column>
     <cmp-table-column params="title:'Блокирован', data:'isBlocked'">
         <span data-bind="text:$data ? 'да' : 'нет'"></span>
-    </cmp-table-column>   
+    </cmp-table-column>
 </cmp-table>
