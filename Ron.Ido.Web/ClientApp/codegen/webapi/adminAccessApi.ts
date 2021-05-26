@@ -52,6 +52,7 @@ export namespace AdminAccessApi {
 
     //  Ron.Ido.BM.Models.Admin.Access.RolesPageItemDto
     export interface IRolesPageItemDto {
+        id:number;
         name:string;
     }
 
@@ -63,6 +64,8 @@ export namespace AdminAccessApi {
         isDefault:any;
         isAdmin:any;
         rolePermissions:PermissionEnum[];
+        viewStatuses:number[];
+        stepStatuses:number[];
     }
 
     //  Ron.Ido.EM.Enums.PermissionEnum

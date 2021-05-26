@@ -1,4 +1,5 @@
 ﻿using Ron.Ido.EM.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -20,7 +21,9 @@ namespace Ron.Ido.BM.Models.Admin.Access
 
         public bool IsAdmin { get; set; }
 
-        public IEnumerable<PermissionEnum> RolePermissions { get; set; } = new PermissionEnum[] { };
+        public IEnumerable<PermissionEnum> RolePermissions { get; set; } = Array.Empty<PermissionEnum>();
+        public IEnumerable<long> ViewStatuses { get; set; } = Array.Empty<long>();
+        public IEnumerable<long> StepStatuses { get; set; } = Array.Empty<long>();
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

@@ -47,7 +47,11 @@ namespace Ron.Ido.BM.Commands.Admin.Access
                     .Select(p => new RolePermission { PermissionId = p, Role = role});
 
                     role.RolePermissions.AddRange(perms);
-                });
+                    role.StepApplyStatusesString = string.Join( ";", roleDto.StepStatuses );
+                    role.ViewApplyStatusesString = string.Join( ";", roleDto.ViewStatuses );
+                }
+                
+                );
 
             return Task.FromResult(Unit.Value);
         }
