@@ -115,16 +115,20 @@ interface IPermissionGroup {
 }
 
 class PermissionGroup {
-    groupName: string;
+    groupName: ko.Computed<string>;
     permissions: IODataOption[];
     allRoles: ko.ObservableArray<any>;
     isExpanded: ko.Observable<boolean>;
 
     constructor(groupName: string, permissions: IODataOption[], owner: RoleForm) {
-        this.groupName = groupName;
         this.permissions = permissions;
         this.allRoles = owner.item.rolePermissions.value as ko.ObservableArray<any>;
         this.isExpanded = ko.observable(false);
+        
+        this.groupName = ko.computed(() => {
+            const cnt = ko.utils.arrayFilter(this.permissions, p => owner.item.rolePermissions.value().indexOf(p.value) > -1).length;
+            return cnt ? `${groupName} (${cnt})` : groupName;
+        });
 
         this.isExpanded.subscribe(expanded => {
             if(expanded) {
