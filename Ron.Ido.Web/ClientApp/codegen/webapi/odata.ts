@@ -73,3 +73,11 @@
         options:{[key:string]:IODataOption[]};
     }
 
+    //  Ron.Ido.BM.Commands.Admin.Access.GetApplyStatusesPageCommand
+    export interface IGetApplyStatusesPageCommand {
+        skip:number;
+        take:number;
+        filters:IODataFilter[];
+        orders:IODataOrder[];
+    }
+

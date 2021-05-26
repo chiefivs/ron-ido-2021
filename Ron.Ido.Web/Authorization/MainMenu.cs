@@ -28,6 +28,12 @@ namespace Ron.Ido.Web.Authorization
                     new MenuItem("Пользователи", "admin/users", PermissionEnum.USER_VIEW, PermissionEnum.USER_CREATE, PermissionEnum.USER_EDIT, PermissionEnum.USER_DEL),
                     new MenuItem("Роли", "admin/roles", PermissionEnum.ROLE_VIEW, PermissionEnum.ROLE_CREATE, PermissionEnum.ROLE_EDIT, PermissionEnum.ROLE_DEL),
                 }
+            },
+            new MenuItem("Настройки")
+            {
+                Submenu = new[] {
+                    new MenuItem("Статусная модель", "admin/statusModel", PermissionEnum.SETTINGS),
+                }
             }
         };
     }
