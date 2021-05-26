@@ -1,6 +1,6 @@
 //  Сгенерировано на основе серверного кода. Не изменять!!!
-    //  Ron.Ido.BM.Commands.Admin.Access.GetUsersPageCommand
-    export interface IGetUsersPageCommand {
+    //  Ron.Ido.BM.Models.OData.ODataRequest
+    export interface IODataRequest {
         skip:number;
         take:number;
         filters:IODataFilter[];
@@ -59,25 +59,9 @@
         parent:any;
     }
 
-    //  Ron.Ido.BM.Commands.Admin.Access.GetRolesPageCommand
-    export interface IGetRolesPageCommand {
-        skip:number;
-        take:number;
-        filters:IODataFilter[];
-        orders:IODataOrder[];
-    }
-
     //  Ron.Ido.BM.Models.OData.ODataForm<TDto>
     export interface IODataForm<TDto> {
         item:TDto;
         options:{[key:string]:IODataOption[]};
-    }
-
-    //  Ron.Ido.BM.Commands.Admin.Access.GetApplyStatusesPageCommand
-    export interface IGetApplyStatusesPageCommand {
-        skip:number;
-        take:number;
-        filters:IODataFilter[];
-        orders:IODataOrder[];
     }
 

@@ -13,16 +13,16 @@ namespace Ron.Ido.BM.Commands.Admin.Settings
 	{
 		public ApplyStatusDto ApplyStatus { get; private set; }
 
-		public SaveApplyStatusCommand( ApplyStatusDto role )
+		public SaveApplyStatusCommand(ApplyStatusDto status)
 		{
-			ApplyStatus = role;
+			ApplyStatus = status;
 		}
 	}
 
 	public class SaveApplyStatusCommandHandler : ApplyStatusHandlerBase, IRequestHandler<SaveApplyStatusCommand>
 	{
 
-		public SaveApplyStatusCommandHandler( ODataService service ) : base( service )
+		public SaveApplyStatusCommandHandler(ODataService service) : base( service )
 		{
 		}
 

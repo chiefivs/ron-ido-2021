@@ -11,7 +11,7 @@ namespace Ron.Ido.BM.Commands.Admin.Settings
 	{
 		public ApplyStatusDto Status { get; private set; }
 
-		public ValidateApplyStatusCommand( ApplyStatusDto status )
+		public ValidateApplyStatusCommand(ApplyStatusDto status)
 		{
 			Status = status;
 		}
@@ -20,11 +20,11 @@ namespace Ron.Ido.BM.Commands.Admin.Settings
 	public class ValidateApplyStatusCommandHandler : ApplyStatusHandlerBase, IRequestHandler<ValidateApplyStatusCommand, Dictionary<string, List<string>>>
 	{
 
-		public ValidateApplyStatusCommandHandler( ODataService service ) : base( service )
+		public ValidateApplyStatusCommandHandler(ODataService service) : base( service )
 		{
 		}
 
-		public Task<Dictionary<string, List<string>>> Handle( ValidateApplyStatusCommand request, CancellationToken cancellationToken )
+		public Task<Dictionary<string, List<string>>> Handle(ValidateApplyStatusCommand request, CancellationToken cancellationToken)
 		{
 			return Task.Run( () =>
 			 {

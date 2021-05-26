@@ -9,8 +9,14 @@ using System.Threading.Tasks;
 
 namespace Ron.Ido.BM.Commands.Admin.Access
 {
-    public class GetApplyStatusesPageCommand : ODataRequest, IRequest<ODataPage<ApplyStatusPageItemDto>>
+    public class GetApplyStatusesPageCommand : IRequest<ODataPage<ApplyStatusPageItemDto>>
     {
+        public ODataRequest Request { get; private set; }
+
+        public GetApplyStatusesPageCommand(ODataRequest request)
+        {
+            Request = request;
+        }
     }
 
     public class GetApplyStatusesPageCommandHandler : IRequestHandler<GetApplyStatusesPageCommand, ODataPage<ApplyStatusPageItemDto>>
@@ -22,11 +28,11 @@ namespace Ron.Ido.BM.Commands.Admin.Access
             _odataService = service;
         }
 
-        public Task<ODataPage<ApplyStatusPageItemDto>> Handle(GetApplyStatusesPageCommand request, CancellationToken cancellationToken)
+        public Task<ODataPage<ApplyStatusPageItemDto>> Handle(GetApplyStatusesPageCommand cmd, CancellationToken cancellationToken)
         {
             return Task.Run(() =>
             {
-                var result = _odataService.GetPage<ApplyStatus, ApplyStatusPageItemDto>(request);
+                var result = _odataService.GetPage<ApplyStatus, ApplyStatusPageItemDto>(cmd.Request);
 
                 return result;
             });

@@ -26,9 +26,9 @@ namespace Ron.Ido.Web.Controllers
         [HttpPost]
         [Route("api/admin/settings/status/getpage")]
         [AuthorizedFor(PermissionEnum.SETTINGS)]
-        public async Task<ODataPage<ApplyStatusPageItemDto>> GetApplyStatusesPage([FromBody] GetApplyStatusesPageCommand request)
+        public async Task<ODataPage<ApplyStatusPageItemDto>> GetApplyStatusesPage([FromBody] ODataRequest request)
         {
-            return await _mediator.Send(request);
+            return await _mediator.Send(new GetApplyStatusesPageCommand(request));
         }
 
         [HttpGet]

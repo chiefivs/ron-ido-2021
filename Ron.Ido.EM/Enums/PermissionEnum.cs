@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ron.Ido.Common.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -55,6 +56,7 @@ namespace Ron.Ido.EM.Enums
         };
     }
 
+    [TypeScriptModule("enums")]
     public enum PermissionEnum
     {
         NULL = 0,

@@ -312,9 +312,9 @@ namespace Codegen
                 builder.AppendLine("\t}");
 
                 module.Models[type] = builder.ToString();
-                AddImports(typeName, module);
             }
 
+            AddImports(typeName, module);
             return typeName;
         }
 
@@ -337,9 +337,9 @@ namespace Codegen
                 builder.AppendLine("\t}");
 
                 module.Models.Add(type, builder.ToString());
-                AddImports(type.Name, module);
             }
 
+            AddImports(type.Name, module);
             return type.Name;
         }
 
@@ -363,9 +363,9 @@ namespace Codegen
                 builder.AppendLine("\t}");
 
                 module.Models[type] = builder.ToString();
-                AddImports(typeName, module);
             }
 
+            AddImports(typeName, module);
             return typeName;
         }
 
@@ -401,7 +401,10 @@ namespace Codegen
                     Imports.Add(module.ModuleName, new List<string>());
                 }
 
-                Imports[module.ModuleName].Add(typeName);
+                if (!Imports[module.ModuleName].Contains(typeName))
+                {
+                    Imports[module.ModuleName].Add(typeName);
+                }
             }
         }
     }
