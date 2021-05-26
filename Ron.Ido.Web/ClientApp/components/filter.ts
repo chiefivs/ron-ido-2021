@@ -31,6 +31,7 @@ export interface IFilterParams{
     valueType: FilterValueType;
     filterType: ODataFilterTypeEnum;
     options?: IFilterOption[]|ko.ObservableArray<IFilterOption>;
+    initialValues?: any[];
     state?: ko.Observable<IODataFilter>;
 }
 
@@ -54,7 +55,10 @@ class FilterModel {
         this._name = Utils.randomString(20);
         this._defineAllTemplates();
         this.templateNodes = this._getTemplate(params.filterType, params.valueType);
+
         this.state = params.state || ko.observable(null);
+        if(params.initialValues)
+            this.state({ field: params.field, aliases: params.aliases || [], type: params.filterType, values:this._getStateValues(params.initialValues || [])});
 
         this.title = ko.isObservable(params.title) ? params.title : ko.observable(params.title || '');
         this.options = ko.isObservable(params.options) ? params.options : ko.observableArray(params.options || []);
@@ -139,6 +143,12 @@ class FilterModel {
             return null;
 
         return Utils.getNodesFromHtml(html);
+    }
+
+    private _getStateValues(values:any[]){
+        const res = [];
+        ko.utils.arrayForEach(values, v => res.push(v.toString()));
+        return res;
     }
 
     _updateValues() {
