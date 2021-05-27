@@ -27,6 +27,7 @@ namespace Codegen
                     var filePath = Path.Combine(webapiDir, code.FileName);
                     File.WriteAllText(filePath, script);
                     Console.WriteLine($"{filePath} создан");
+                    //modules.Clear();
                 }
                 else
                 {

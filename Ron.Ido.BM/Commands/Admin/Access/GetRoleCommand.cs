@@ -46,10 +46,10 @@ namespace Ron.Ido.BM.Commands.Admin.Access
                             expr => expr.MapFrom(r => r.RolePermissions.Select(rp => (PermissionEnum)rp.PermissionId)))
                         ,new ODataMapMemberConfig<Role, RoleDto>(
                             roleDto => roleDto.ViewStatuses,
-                            expr => expr.MapFrom(r => r.ViewApplyStatusesString.Split(';', StringSplitOptions.RemoveEmptyEntries)))
+                            expr => expr.MapFrom(r => (r.ViewApplyStatusesString ?? "").Split(';', StringSplitOptions.RemoveEmptyEntries)))
                        ,new ODataMapMemberConfig<Role, RoleDto>(
                             roleDto => roleDto.StepStatuses,
-                            expr => expr.MapFrom(r => r.StepApplyStatusesString.Split(';', StringSplitOptions.RemoveEmptyEntries)))
+                            expr => expr.MapFrom(r => (r.StepApplyStatusesString ?? "").Split(';', StringSplitOptions.RemoveEmptyEntries)))
                     });
 
                 return new ODataForm<RoleDto>

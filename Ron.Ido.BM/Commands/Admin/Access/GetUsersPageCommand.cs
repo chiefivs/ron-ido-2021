@@ -10,8 +10,14 @@ using System.Threading.Tasks;
 
 namespace Ron.Ido.BM.Commands.Admin.Access
 {
-    public class GetUsersPageCommand: ODataRequest, IRequest<ODataPage<UsersPageItemDto>>
+    public class GetUsersPageCommand: IRequest<ODataPage<UsersPageItemDto>>
     {
+        public ODataRequest Request { get; private set; }
+
+        public GetUsersPageCommand(ODataRequest request)
+        {
+            Request = request;
+        }
     }
 
     public class GetUsersPageCommandHandler : IRequestHandler<GetUsersPageCommand, ODataPage<UsersPageItemDto>>
@@ -23,10 +29,11 @@ namespace Ron.Ido.BM.Commands.Admin.Access
             _odataService = service;
         }
 
-        public Task<ODataPage<UsersPageItemDto>> Handle(GetUsersPageCommand request, CancellationToken cancellationToken)
+        public Task<ODataPage<UsersPageItemDto>> Handle(GetUsersPageCommand cmd, CancellationToken cancellationToken)
         {
             return Task.Run(() =>
             {
+                var request = cmd.Request;
                 request.ReplaceOrder("FullName", "SurName", "FirstName");
                 var result = _odataService.GetPage(request,
                     new[]

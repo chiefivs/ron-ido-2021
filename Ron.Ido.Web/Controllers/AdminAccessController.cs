@@ -24,9 +24,9 @@ namespace Ron.Ido.Web.Controllers
         [HttpPost]
         [Route("api/admin/access/users/getpage")]
         [AuthorizedFor(PermissionEnum.USER_VIEW, PermissionEnum.USER_CREATE, PermissionEnum.USER_EDIT, PermissionEnum.USER_DEL)]
-        public async Task<ODataPage<UsersPageItemDto>> GetUsersPage([FromBody]GetUsersPageCommand request)
+        public async Task<ODataPage<UsersPageItemDto>> GetUsersPage([FromBody]ODataRequest request)
         {
-            return await _mediator.Send(request);
+            return await _mediator.Send(new GetUsersPageCommand(request));
         }
 
         [HttpGet]
@@ -42,9 +42,9 @@ namespace Ron.Ido.Web.Controllers
         [HttpPost]
         [Route("api/admin/access/roles/getpage")]
         [AuthorizedFor(PermissionEnum.ROLE_VIEW, PermissionEnum.ROLE_CREATE, PermissionEnum.ROLE_EDIT, PermissionEnum.ROLE_DEL)]
-        public async Task<ODataPage<RolesPageItemDto>> GetRolesPage([FromBody] GetRolesPageCommand request)
+        public async Task<ODataPage<RolesPageItemDto>> GetRolesPage([FromBody] ODataRequest request)
         {
-            return await _mediator.Send(request);
+            return await _mediator.Send(new GetRolesPageCommand(request));
         }
 
         [HttpGet]
