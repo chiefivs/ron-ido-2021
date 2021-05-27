@@ -19,8 +19,8 @@
     </cmp-table>
 </div>
 
-<!--<div style="position:absolute; top:0; bottom: 0; left: 320px; right: 0;">
-    <div style="position: absolute; top:0; bottom:0; left:0; right: 50%; overflow:auto;" data-bind="if:current">
+<div style="position:absolute; top:0; bottom: 0; left: 320px; right: 0;"  data-bind="if:current">
+    <div style="position: absolute; top:0; bottom:0; left:0; right: 50%; overflow:auto;">
         <div data-bind="with:current">
             <div class="pull-right">
                 <a class="btn btn-primary" data-bind="click:reset, css:{disabled:!hasChanges()}">ОТМЕНИТЬ</a>
@@ -36,8 +36,32 @@
                 <label>Название</label>
                 <cmp-form-field params="field:item.name"></cmp-form-field>
             </div>
+            <div style="margin:0 5px;">
+                <label>Видимость для заявителя</label>
+                <cmp-form-checkbox-field params="field:item.visibleForApplier"></cmp-form-checkbox-field>
+            </div>
 
-            <div data-bind="with:item.rolePermissions" style="margin:0 5px;">
+
+            <div style="margin:0 5px;">
+                <label>Наименование для заявителя</label>
+                <cmp-form-field params="field:item.nameForApplier,placeholder:'Наименование для заявителя'"></cmp-form-field>
+            </div>
+
+            <div style="margin:0 5px;">
+                <label>Наименование для заявителя (en)</label>
+                <cmp-form-field params="field:item.nameForApplierEng,placeholder:'Наименование для заявителя (en)'"></cmp-form-field>
+            </div>
+
+            <div style="margin:0 5px;">
+                <label>Описание для заявителя</label>
+                <cmp-form-richtext-field params="field:item.descriptionForApplier, placeholder:'Описание для заявителя'"></cmp-form-richtext-field>
+            </div>
+            <div style="margin:0 5px;">
+                <label>Описание для заявителя (en)</label>
+                <cmp-form-richtext-field params="field:item.descriptionForApplierEng, placeholder:'Описание для заявителя (en)'"></cmp-form-richtext-field>
+            </div>
+
+            <!-- <div data-bind="with:item.rolePermissions" style="margin:0 5px;">
                 <div class="form-field-container">
                     <div>
                         <div class="errors"><i class="img img-error img-size-20"
@@ -55,19 +79,19 @@
                         </div>
                     </cmp-expander>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
-    <div style="position: absolute; top:0; bottom:0; left:50%; right: 0; overflow:auto;" data-bind="if:current">
+    <div style="position: absolute; top:0; bottom:0; left:50%; right: 0; overflow:auto;">
         <div data-bind="with:current,as:'current'">
             <div data-bind="with:item, as:'item'">
                 <label>Статусы</label>
-                <div data-bind="foreach:$parent.statuses" class="role-status-item">
+                <!-- <div data-bind="foreach:$parent.statuses" class="role-status-item">
                     <span data-bind="text:text" ></span>
                     <input type="checkbox" data-bind="checkedValue:value, checked:current.stepStatuses" />
                     <input type="checkbox" data-bind="checkedValue:value, checked:current.viewStatuses" />
-                </div>
+                </div> -->
             </div>
         </div>
-    </div>-->
+    </div>
 </div>

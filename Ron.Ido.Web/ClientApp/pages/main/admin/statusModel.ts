@@ -6,18 +6,18 @@ import { MainPageBase, Popups } from '../../../modules/content';
 import { Form } from '../../../modules/forms';
 
 export default class ApplyStatusMainPage extends MainPageBase {
-    current = ko.observable<Form<AdminSettingsApi.IApplyStatusDto>>(null);
-    statuses = ko.observableArray<AdminSettingsApi.IApplyStatusPageItemDto>([]);
-    tableTotalCount = ko.observable(0);
-    pagerState = ko.observable<ITablePagerState>({
+    public current = ko.observable<Form<AdminSettingsApi.IApplyStatusDto>>(null);
+     public statuses = ko.observableArray<AdminSettingsApi.IApplyStatusPageItemDto>([]);
+     public tableTotalCount = ko.observable(0);
+     public pagerState = ko.observable<ITablePagerState>({
         skipCount: 0,
         sorting: 'name asc',
-        maxResultCount: 10
+        maxResultCount: 100
     });
 
     constructor() {
         super({
-            pageTitle: 'роли',
+            pageTitle: 'статусная модель',
             templatePath: 'pages/main/admin/statusModel.html'
         });
 
@@ -70,7 +70,7 @@ export default class ApplyStatusMainPage extends MainPageBase {
     remove() {
         Popups.Confirm.open(
             'запрос на удаление',
-            'Вы действительно хотите удалить эту роль?',
+            'Вы действительно хотите удалить этот статус?',
             () => {
                 AdminSettingsApi.deleteStatus(this.current().item.id.value())
                     .done(() => {
@@ -93,6 +93,5 @@ class StatusForm extends Form<AdminSettingsApi.IApplyStatusDto>{
         this.statuses = data.options.statuses;
         this.allowStepToStatuses = this.item.allowStepToStatuses.value as ko.ObservableArray<any>;;
     }
-
 }
 
