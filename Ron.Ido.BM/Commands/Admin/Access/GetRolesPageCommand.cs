@@ -8,8 +8,14 @@ using System.Threading.Tasks;
 
 namespace Ron.Ido.BM.Commands.Admin.Access
 {
-    public class GetRolesPageCommand : ODataRequest, IRequest<ODataPage<RolesPageItemDto>>
+    public class GetRolesPageCommand : IRequest<ODataPage<RolesPageItemDto>>
     {
+        public ODataRequest Request { get; private set; }
+
+        public GetRolesPageCommand(ODataRequest request)
+        {
+            Request = request;
+        }
     }
 
     public class GetRolesPageCommandHandler : IRequestHandler<GetRolesPageCommand, ODataPage<RolesPageItemDto>>
@@ -21,11 +27,11 @@ namespace Ron.Ido.BM.Commands.Admin.Access
             _odataService = service;
         }
 
-        public Task<ODataPage<RolesPageItemDto>> Handle(GetRolesPageCommand request, CancellationToken cancellationToken)
+        public Task<ODataPage<RolesPageItemDto>> Handle(GetRolesPageCommand cmd, CancellationToken cancellationToken)
         {
             return Task.Run(() =>
             {
-                var result = _odataService.GetPage<Role, RolesPageItemDto>(request);
+                var result = _odataService.GetPage<Role, RolesPageItemDto>(cmd.Request);
 
                 return result;
             });
