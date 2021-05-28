@@ -44,7 +44,10 @@ namespace Ron.Ido.BM.Commands.Admin.Settings
 							expr => expr.MapFrom(r => 
 							(r.AllowStepToStatuses??"").Trim().Split(';', StringSplitOptions.RemoveEmptyEntries).Select(z=>Convert.ToInt64(z))
 
-							))
+							)),
+							new ODataMapMemberConfig<ApplyStatus, ApplyStatusDto>(
+							statusDto => statusDto.DenyDelete,
+							expr => expr.MapFrom(r => !string.IsNullOrEmpty(r.StatusEnumValue)))
 							} );
 
 				return new ODataForm<ApplyStatusDto>
@@ -55,7 +58,7 @@ namespace Ron.Ido.BM.Commands.Admin.Settings
 						//{ nameof(role.ApplyStatusPermissions).ToCamel(), PermissionData.List.Select(i => new ODataOption{ Value = i.Id, Text = i.Name, Parent = i.GroupName }) },
 						//{ "permissionGroups", PermissionGroup.List.Select(i => new ODataOption { Value = i, Text = i}) },
 						//{ "statuses", Enum.GetValues<ApplyStatusEnum>().Select(i => new ODataOption { Value = i, Text = i.ToString()}) }
-						{ "statuses", _service.GetOptions<ApplyStatus>(nameof(ApplyStatus.Name), nameof(ApplyStatus.Id)) } // Id?
+						{ "allowStepToStatuses", _service.GetOptions<ApplyStatus>(nameof(ApplyStatus.Name), nameof(ApplyStatus.Id)).Where(op=>op.Value.ToString() != status.Id.ToString()) } // Id?
                     }
 				};
 			} );

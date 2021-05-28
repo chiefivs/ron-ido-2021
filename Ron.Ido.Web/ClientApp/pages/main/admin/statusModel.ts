@@ -53,7 +53,7 @@ export default class ApplyStatusMainPage extends MainPageBase {
     setCurrent(id?:number) {
         AdminSettingsApi.getStatus(id || 0)
             .done(data => {
-                const form = new StatusForm(data, AdminSettingsApi.saveStatus, AdminSettingsApi.validateApplyStatus);
+                const form = new Form<AdminSettingsApi.IApplyStatusDto>(data, AdminSettingsApi.saveStatus, AdminSettingsApi.validateApplyStatus);
                 this.current(form);
             });
     }
@@ -82,16 +82,4 @@ export default class ApplyStatusMainPage extends MainPageBase {
     }
 }
 
-class StatusForm extends Form<AdminSettingsApi.IApplyStatusDto>{
-    statuses: IODataOption[];
-    allowStepToStatuses : ko.ObservableArray<any>;
-    constructor(
-        data:IODataForm<AdminSettingsApi.IApplyStatusDto>,
-        saveApi?:(item:AdminSettingsApi.IApplyStatusDto) => JQueryPromise<any>,
-        validateApi?:(item:AdminSettingsApi.IApplyStatusDto) => JQueryPromise<{[key:string]:string[]}>) {
-        super(data, saveApi, validateApi);
-        this.statuses = data.options.statuses;
-        this.allowStepToStatuses = this.item.allowStepToStatuses.value as ko.ObservableArray<any>;;
-    }
-}
 

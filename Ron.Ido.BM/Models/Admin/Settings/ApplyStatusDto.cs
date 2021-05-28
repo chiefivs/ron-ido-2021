@@ -36,8 +36,10 @@ namespace Ron.Ido.BM.Models.Admin.Settings
 
 		public bool VisibleForApplier { get; set; }
 
-		public string StatusEnumValue { get; set; }
+		//public string StatusEnumValue { get; set; }
 
+
+		public bool DenyDelete { get; set; }
 
 		public IEnumerable<ValidationResult> Validate( ValidationContext validationContext )
 		{
@@ -51,8 +53,6 @@ namespace Ron.Ido.BM.Models.Admin.Settings
 				if ( Id > 0 && AllowStepToStatuses.Contains( Id ) )
 				errors.Add( new ValidationResult( "Циклическая ссылка на статус", new[] { nameof( AllowStepToStatuses ) } ) );
 			*/
-			if ( Id > 0 && AllowStepToStatuses.Contains( Id ) )
-				errors.Add( new ValidationResult( "Циклическая ссылка на статус", new[] { nameof( AllowStepToStatuses ) } ) );
 			return errors;
 		}
 	}
