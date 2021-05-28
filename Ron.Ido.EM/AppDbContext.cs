@@ -90,11 +90,11 @@ namespace Ron.Ido.EM
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ApplyCertificateDeliveryForm>().HasKey(ac => new { ac.ApplyId, ac.DeliveryFormId });
-            modelBuilder.Entity<ApplyCertificateDeliveryForm>()
-                .HasOne(ac => ac.Apply)
-                .WithMany(a => a.CertificateDeliveryForms)
-                .HasForeignKey(ac => ac.DeliveryFormId)
-                .OnDelete(DeleteBehavior.Cascade);
+            //modelBuilder.Entity<ApplyCertificateDeliveryForm>()
+            //    .HasOne(ac => ac.Apply)
+            //    .WithMany(a => a.CertificateDeliveryForms)
+            //    .HasForeignKey(ac => ac.DeliveryFormId)
+            //    .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ApplyDocType>()
                 .HasOne(doctype => doctype.LearnLevel)

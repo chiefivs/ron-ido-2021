@@ -19,9 +19,9 @@ namespace Ron.Ido.EM.Entities
 
         public int? EpguStatus { get; set; }
 
-        public DateTime? CreateDate { get; set; }
+        public DateTime? CreateTime { get; set; }
 
-        public DateTime? AcceptDate { get; set; }
+        public DateTime? AcceptTime { get; set; }
 
         public string Storage { get; set; }
 
@@ -46,7 +46,7 @@ namespace Ron.Ido.EM.Entities
 
         public bool Deleted { get; set; }
         
-        public int StatusId { get; set; }
+        public long StatusId { get; set; }
         public virtual ApplyStatus Status { get; set; }
         public DateTime? StatusChangeTime { get; set; }
         public virtual List<ApplyStatusHistory> StatusHistories { get; set; } = new List<ApplyStatusHistory>();
@@ -296,5 +296,7 @@ namespace Ron.Ido.EM.Entities
         /// </summary>
         public bool IsRostovFilial { get; set; }
         #endregion
+
+        public virtual List<ApplyAttachment> Attachments { get; set; } = new List<ApplyAttachment>();
     }
 }
