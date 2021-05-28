@@ -17,7 +17,7 @@ export function init(){
     });
 }
 
-export type FilterValueType = 'string'|'number'|'date';
+export type FilterValueType = 'string'|'number'|'date'|'boolean';
 
 export interface IFilterOption {
     value: string;
@@ -31,6 +31,7 @@ export interface IFilterParams{
     valueType: FilterValueType;
     filterType: ODataFilterTypeEnum;
     options?: IFilterOption[]|ko.ObservableArray<IFilterOption>;
+    initialValues?: any[];
     state?: ko.Observable<IODataFilter>;
 }
 
@@ -48,11 +49,16 @@ class FilterModel {
     state: ko.Observable<IODataFilter>;
 
     private _templates:object = {};
+    private _name:string;
 
     constructor(params:IFilterParams) {
+        this._name = Utils.randomString(20);
         this._defineAllTemplates();
         this.templateNodes = this._getTemplate(params.filterType, params.valueType);
+
         this.state = params.state || ko.observable(null);
+        if(params.initialValues)
+            this.state({ field: params.field, aliases: params.aliases || [], type: params.filterType, values:this._getStateValues(params.initialValues || [])});
 
         this.title = ko.isObservable(params.title) ? params.title : ko.observable(params.title || '');
         this.options = ko.isObservable(params.options) ? params.options : ko.observableArray(params.options || []);
@@ -105,6 +111,12 @@ class FilterModel {
         this._setTemplate(ODataFilterTypeEnum.BetweenLeft, 'date', '');
         this._setTemplate(ODataFilterTypeEnum.BetweenRight, 'date', '');
         this._setTemplate(ODataFilterTypeEnum.BetweenAll, 'date', '');
+        this._setTemplate(ODataFilterTypeEnum.Equals, 'boolean',
+            `<div>
+                <input type="radio" name="${this._name}" value="true" data-bind="checked:value1" /><span>да</span>
+                <input type="radio" name="${this._name}" value="false" data-bind="checked:value1" /><span>нет</span>
+                <input type="radio" name="${this._name}" value="" data-bind="checked:value1" /><span>не определен</span>
+            </div>`);
 
         this.value1.subscribe(this._updateValues.bind(this));
         this.value2.subscribe(this._updateValues.bind(this));
@@ -131,6 +143,12 @@ class FilterModel {
             return null;
 
         return Utils.getNodesFromHtml(html);
+    }
+
+    private _getStateValues(values:any[]){
+        const res = [];
+        ko.utils.arrayForEach(values, v => res.push(v.toString()));
+        return res;
     }
 
     _updateValues() {
