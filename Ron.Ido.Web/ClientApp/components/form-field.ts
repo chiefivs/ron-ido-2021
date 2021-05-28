@@ -117,13 +117,15 @@ class FormCheckBoxFieldModel {
     data: IFormField;
     errors: ko.Computed<string>;
     css: { [key:string]:ko.Computed<boolean> };
+    placeholder?:string;
 
-    private _defaultTemplate = '<cmp-checkbox params="value:value, css:$parent.css"></cmp-checkbox>';
+    private _defaultTemplate = '<cmp-checkbox params="value:value, css:$parent.css,placeholder:$parent.placeholder"></cmp-checkbox>';
     constructor(params: IFormFieldParams, componentInfo: any) {
         this.data = params.field;
         this.templateNodes = componentInfo.templateNodes.length
             ? componentInfo.templateNodes
             : Utils.getNodesFromHtml(this._defaultTemplate);
+        this.placeholder = params.placeholder;
 
         this.errors = ko.computed(() => {
             return this.data.errors().join('\n');

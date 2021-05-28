@@ -38,7 +38,7 @@
             </div>
             <div style="margin:0 5px;">
                 <label>Видимость для заявителя</label>
-                <cmp-form-checkbox-field params="field:item.visibleForApplier"></cmp-form-checkbox-field>
+                <cmp-form-checkbox-field params="field:item.visibleForApplier,placeholder:'Видимость для заявителя'"></cmp-form-checkbox-field>
             </div>
 
 
@@ -67,8 +67,9 @@
         <div data-bind="with:current,as:'current'">
             <div data-bind="with:item, as:'item'" >
                 <label>Статусы</label>
+
                 <div data-bind="foreach:$parent.statuses" class="status-status-item custom-cb">
-                    <label><input type="checkbox" data-bind="checkedValue:value, checked:current.allowStepToStatuses" /><span data-bind="text:text" ></span></label>
+                        <label><input type="checkbox" data-bind="checkedValue:value, checked:current.allowStepToStatuses" /><span data-bind="text:text" ></span></label>
                 </div>
             </div>
         </div>
