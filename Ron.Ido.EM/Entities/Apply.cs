@@ -17,6 +17,12 @@ namespace Ron.Ido.EM.Entities
         [StringLength(100)]
         public string EpguCode { get; set; }
 
+        public int? EpguStatus { get; set; }
+
+        public DateTime? CreateTime { get; set; }
+
+        public DateTime? AcceptTime { get; set; }
+
         public string Storage { get; set; }
 
         public bool IsEnglish { get; set; }
@@ -40,9 +46,10 @@ namespace Ron.Ido.EM.Entities
 
         public bool Deleted { get; set; }
         
-        public int StatusId { get; set; }
-
-        public int? EpguStatus { get; set; }
+        public long StatusId { get; set; }
+        public virtual ApplyStatus Status { get; set; }
+        public DateTime? StatusChangeTime { get; set; }
+        public virtual List<ApplyStatusHistory> StatusHistories { get; set; } = new List<ApplyStatusHistory>();
         #endregion
 
         #region Заявитель
@@ -289,5 +296,7 @@ namespace Ron.Ido.EM.Entities
         /// </summary>
         public bool IsRostovFilial { get; set; }
         #endregion
+
+        public virtual List<ApplyAttachment> Attachments { get; set; } = new List<ApplyAttachment>();
     }
 }

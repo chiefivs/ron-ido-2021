@@ -1,14 +1,15 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Ron.Ido.Common;
 using Ron.Ido.Common.Extensions;
 using Ron.Ido.Common.Interfaces;
 using Ron.Ido.EM;
 using Ron.Ido.EM.Entities;
+using Ron.Ido.EM.Enums;
 using Ron.Ido.FileStorage;
 using Ron.Ido.Importer.NDB.Classes;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -34,10 +35,11 @@ namespace Ron.Ido.Importer
             _nostrContext = serviceProvider.GetService<NostrificationRONContext>();
             _nostrStorage = serviceProvider.GetService<NostrificationStorage>();
 
-            ImportApplyStatuses();
-            ImportRoles();
-            ImportUsers();
-            ImportCountries();
+            //ImportApplyStatuses();
+            //ImportRoles();
+            //ImportUsers();
+            //ImportCountries();
+            ImportApplies();
             //ImportFiles();
         }
 
@@ -243,6 +245,170 @@ namespace Ron.Ido.Importer
                         OldId = country.Id
                     },
                     item => item.OldId == country.Id);
+            }
+        }
+
+        private static void ImportApplies()
+        {
+            var nApplies = _nostrContext.Applies.OrderByDescending(a => a.CreateDate).Take(100).ToArray();
+
+            foreach(var nApply in nApplies)
+            {
+                var apply = new EM.Entities.Apply
+                {
+                    BarCodes = new List<ApplyBarCode>(),
+                    CreateTime = nApply.CreateDate,
+                    AcceptTime = nApply.AcceptDate,
+                    AimId = nApply.AimId,
+                    BaseLearnDateBegin = nApply.BaseLearnDateBegin,
+                    BaseLearnDateEnd = nApply.BaseLearnDateEnd,
+                    ByWarrant = nApply.ByWarrant,
+                    CertificateDeliveryForms = new List<ApplyCertificateDeliveryForm>(),
+                    CreatorBirthDate = nApply.CreatorBirthDate,
+                    CreatorBlock = nApply.CreatorBlock,
+                    CreatorBuilding = nApply.CreatorBuilding,
+                    CreatorCitizenshipId = nApply.CreatorCitizenshipId,
+                    CreatorCityName = nApply.CreatorCityName,
+                    CreatorCorpus = nApply.CreatorCorpus,
+                    CreatorCountryId = _appContext.Countries.FirstOrDefault(c => c.OldId == nApply.CreatorCountryId)?.Id,
+                    CreatorEmail = nApply.CreatorEmail,
+                    CreatorFirstName = nApply.CreatorFirstName,
+                    CreatorFlat = nApply.CreatorFlat,
+                    CreatorLastName = nApply.CreatorLastName,
+                    CreatorMailIndex = nApply.CreatorMailIndex,
+                    CreatorPassportReq = nApply.CreatorPassportReq,
+                    CreatorPassportTypeId = nApply.CreatorPassportKindTypeId,
+                    CreatorPhone = nApply.CreatorPhone,
+                    CreatorStreet = nApply.CreatorStreet,
+                    CreatorSurname = nApply.CreatorSurname,
+                    Deleted = nApply.Deleted,
+                    DeliveryFormId = nApply.DeliveryFormId,
+                    DocAttachmentsCount = nApply.DocAttachment,
+                    DocBlankNum = nApply.DocBlankNum,
+                    DocCountryId = _appContext.Countries.FirstOrDefault(c => c.OldId == nApply.DocCountryId)?.Id,
+                    DocDate = nApply.DocDate,
+                    DocDateYear = nApply.DocDateYear,
+                    DocFullName = nApply.DocFullName,
+                    DocRegNum = nApply.DocRegNum,
+                    DocsWillSendByPost = nApply.DocsWillSendByPost,
+                    DocTypeId = nApply.DocTypeId,
+                    EntryFormId = nApply.EntryFormId,
+                    EpguCode = nApply.EpguCode,
+                    EpguStatus = nApply.EpguStatus,
+                    FixedLearnSpecialityName = nApply.FixedLearnSpecialityName,
+                    ForInfoLetter = nApply.ForInfoLetter,
+                    ForOferta = nApply.ForOferta,
+                    IsEnglish = nApply.IsEnglish,
+                    IsNovorossia = nApply.IsNovorossia,
+                    IsRostovFilial = nApply.IsRostovFilial,
+                    OrgCreator = nApply.OrgCreator,
+                    Other = nApply.Other,
+                    OwnerBirthDate = nApply.OwnerBirthDate,
+                    OwnerBlock = nApply.OwnerBlock,
+                    OwnerBuilding = nApply.OwnerBuilding,
+                    OwnerCitizenshipId = _appContext.Countries.FirstOrDefault(c => c.OldId == nApply.OwnerCitizenshipId)?.Id,
+                    OwnerCityName = nApply.OwnerCityName,
+                    OwnerCorpus = nApply.OwnerCorpus,
+                    OwnerCountryId = _appContext.Countries.FirstOrDefault(c => c.OldId == nApply.OwnerCountryId)?.Id,
+                    OwnerFirstName = nApply.OwnerFirstName,
+                    OwnerFlat = nApply.OwnerFlat,
+                    OwnerLastName = nApply.OwnerLastName,
+                    OwnerMailIndex = nApply.OwnerMailIndex,
+                    OwnerPassportReq = nApply.OwnerPassportReq,
+                    OwnerPassportTypeId = nApply.OwnerPassportKindTypeId,
+                    OwnerPhone = nApply.OwnerPhone,
+                    OwnerStreet = nApply.OwnerStreet,
+                    OwnerSurname = nApply.OwnerSurname,
+                    ReturnOriginalsFormId = nApply.ReturnOriginalsFormId,
+                    WarrantReq = nApply.WarrantReq,
+                    WarrantDate = nApply.WarrantDate,
+                    WarrantTerm = nApply.WarrantTerm,
+                    SchoolAddress = nApply.SchoolAddress,
+                    SchoolCityName = nApply.SchoolCityName,
+                    SchoolCountryId = _appContext.Countries.FirstOrDefault(c => c.OldId == nApply.SchoolCountryId)?.Id,
+                    SchoolEmail = nApply.SchoolEmail,
+                    SchoolFax = nApply.SchoolFax,
+                    SchoolName = nApply.SchoolName,
+                    SchoolPhone = nApply.SchoolPhone,
+                    SchoolPostIndex = nApply.SchoolPostIndex,
+                    SchoolTypeId = nApply.SchoolTypeId,
+                    SpecialLearnDateBegin = nApply.SpecialLearnDateBegin,
+                    SpecialLearnDateEnd = nApply.SpecialLearnDateEnd,
+                    SpecialLearnFormId = nApply.SpecialLearnFormId,
+                    StatusId = _appContext.ApplyStatuses.FirstOrDefault(s => s.OldId == nApply.StatusId)?.Id ?? (long)ApplyStatusEnum.NO_VALIDATED,
+                    StatusChangeTime = nApply.StatusChangeTime,
+                    StatusHistories = new List<EM.Entities.ApplyStatusHistory>(),
+                    Storage = nApply.Storage,
+                    TransmitOpenChannels = nApply.TransmitOpenChannels
+                };
+
+                _appContext.Applies.Add(apply);
+                _appContext.SaveChanges();
+
+                apply.BarCodes.Add(new ApplyBarCode { ApplyId = apply.Id, BarCode = nApply.BarCode, AssignTime = nApply.CreateDate.Value });
+                if (!string.IsNullOrEmpty(nApply.CurrentBarCode) && nApply.CurrentBarCode != nApply.BarCode && nApply.AcceptDate.HasValue)
+                    apply.BarCodes.Add(new ApplyBarCode { ApplyId = apply.Id, BarCode = nApply.CurrentBarCode, AssignTime = nApply.AcceptDate.Value });
+
+                if (nApply.DigSvidDeliveryByEmail)
+                    apply.CertificateDeliveryForms.Add(new ApplyCertificateDeliveryForm { ApplyId = apply.Id, DeliveryFormId = (long)CertificateDeliveryFormEnum.EMAIL });
+                if (nApply.DigSvidDeliveryByPortal)
+                    apply.CertificateDeliveryForms.Add(new ApplyCertificateDeliveryForm { ApplyId = apply.Id, DeliveryFormId = (long)CertificateDeliveryFormEnum.PORTAL });
+                if (nApply.DigSvidDeliveryByEpgu)
+                    apply.CertificateDeliveryForms.Add(new ApplyCertificateDeliveryForm { ApplyId = apply.Id, DeliveryFormId = (long)CertificateDeliveryFormEnum.EPGU });
+
+                foreach(var nsHistory in nApply.ApplyStatusHistories)
+                {
+                    apply.StatusHistories.Add(new EM.Entities.ApplyStatusHistory { 
+                        ApplyId = apply.Id,
+                        ChangeTime = nsHistory.ChangeTime,
+                        EndTime = nsHistory.EndTime,
+                        PrevStatusId = _appContext.ApplyStatuses.FirstOrDefault(s => s.OldId == nsHistory.PrevStatusId)?.Id ?? (long)ApplyStatusEnum.NO_VALIDATED,
+                        StatusId = _appContext.ApplyStatuses.FirstOrDefault(s => s.OldId == nsHistory.StatusId)?.Id ?? (long)ApplyStatusEnum.NO_VALIDATED,
+                        UserId = _appContext.Users.First(u => u.Login == nsHistory.User.Login).Id
+                    });
+                }
+
+                _appContext.SaveChanges();
+
+                foreach (var nAttach in nApply.ApplyDocuments)
+                {
+                    var bytes = _nostrStorage.GetFileBytes(nAttach.DocumentFile);
+                    Guid uid = Guid.Empty;
+                    if (bytes != null)
+                    {
+                        uid = _appStorage.SaveFile(bytes);
+                        var login = nAttach.DocumentFile?.User?.Login;
+                        var userId = login != null ? _appContext.Users.FirstOrDefault(u => u.Login == login)?.Id : null;
+
+                        var newFileInfo = new EM.Entities.FileInfo
+                        {
+                            Name = Path.GetFileName(nAttach.DocumentFile.FileName),
+                            ContentType = nAttach.DocumentFile.ContentType,
+                            CreateTime = nAttach.DocumentFile.UploadTime ?? DateTime.Now,
+                            Uid = uid,
+                            Size = bytes?.Length ?? 0,
+                            Source = nAttach.DocumentFile.Source,
+                            OldId = nAttach.DocumentFile.Id,
+                            CreatorEmail = nAttach.DocumentFile.CreatorEmail,
+                            CreatedById = userId
+                        };
+                        _appContext.Add(newFileInfo);
+                        _appContext.SaveChanges();
+                    }
+
+                    apply.Attachments.Add(new ApplyAttachment
+                    {
+                        ApplyId = apply.Id,
+                        AttachmentTypeId = nAttach.DocumentTypeId,
+                        Description = nAttach.Description,
+                        Error = nAttach.Error,
+                        FileInfoUid = uid != Guid.Empty ? uid : null,
+                        Given = nAttach.Given,
+                        Required = nAttach.Required
+                    });
+
+                    _appContext.SaveChanges();
+                }
             }
         }
 
