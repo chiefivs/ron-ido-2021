@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Ron.Ido.Common;
 using Ron.Ido.Common.Extensions;
 using Ron.Ido.Common.Interfaces;
@@ -250,15 +251,21 @@ namespace Ron.Ido.Importer
 
         private static void ImportApplies()
         {
-            var nApplies = _nostrContext.Applies.OrderByDescending(a => a.CreateDate).Take(100).ToArray();
+            var nApplies = _nostrContext.Applies
+                .Include(a => a.ApplyStatusHistories)
+                .Include(a => a.ApplyDocuments)
+                .OrderByDescending(a => a.CreateDate).Take(100).ToArray();
 
             foreach(var nApply in nApplies)
             {
+                var createTime = nApply.ApplyStatusHistories.OrderBy(h => h.ChangeDate).FirstOrDefault(h => h.StatusId == 1)?.ChangeTime ?? nApply.CreateDate;
+                var acceptTime = nApply.ApplyStatusHistories.OrderBy(h => h.ChangeDate).FirstOrDefault(h => h.StatusId == 5)?.ChangeTime;
+
                 var apply = new EM.Entities.Apply
                 {
                     BarCodes = new List<ApplyBarCode>(),
-                    CreateTime = nApply.CreateDate,
-                    AcceptTime = nApply.AcceptDate,
+                    CreateTime = createTime,
+                    AcceptTime = acceptTime,
                     AimId = nApply.AimId,
                     BaseLearnDateBegin = nApply.BaseLearnDateBegin,
                     BaseLearnDateEnd = nApply.BaseLearnDateEnd,
@@ -267,7 +274,7 @@ namespace Ron.Ido.Importer
                     CreatorBirthDate = nApply.CreatorBirthDate,
                     CreatorBlock = nApply.CreatorBlock,
                     CreatorBuilding = nApply.CreatorBuilding,
-                    CreatorCitizenshipId = nApply.CreatorCitizenshipId,
+                    CreatorCitizenshipId = _appContext.Countries.FirstOrDefault(c => c.OldId == nApply.CreatorCitizenshipId)?.Id,
                     CreatorCityName = nApply.CreatorCityName,
                     CreatorCorpus = nApply.CreatorCorpus,
                     CreatorCountryId = _appContext.Countries.FirstOrDefault(c => c.OldId == nApply.CreatorCountryId)?.Id,
@@ -345,9 +352,9 @@ namespace Ron.Ido.Importer
                 _appContext.Applies.Add(apply);
                 _appContext.SaveChanges();
 
-                apply.BarCodes.Add(new ApplyBarCode { ApplyId = apply.Id, BarCode = nApply.BarCode, AssignTime = nApply.CreateDate.Value });
-                if (!string.IsNullOrEmpty(nApply.CurrentBarCode) && nApply.CurrentBarCode != nApply.BarCode && nApply.AcceptDate.HasValue)
-                    apply.BarCodes.Add(new ApplyBarCode { ApplyId = apply.Id, BarCode = nApply.CurrentBarCode, AssignTime = nApply.AcceptDate.Value });
+                apply.BarCodes.Add(new ApplyBarCode { ApplyId = apply.Id, BarCode = nApply.BarCode, AssignTime = createTime.Value });
+                if (!string.IsNullOrEmpty(nApply.CurrentBarCode) && nApply.CurrentBarCode != nApply.BarCode && acceptTime.HasValue)
+                    apply.BarCodes.Add(new ApplyBarCode { ApplyId = apply.Id, BarCode = nApply.CurrentBarCode, AssignTime = acceptTime.Value });
 
                 if (nApply.DigSvidDeliveryByEmail)
                     apply.CertificateDeliveryForms.Add(new ApplyCertificateDeliveryForm { ApplyId = apply.Id, DeliveryFormId = (long)CertificateDeliveryFormEnum.EMAIL });
@@ -358,13 +365,15 @@ namespace Ron.Ido.Importer
 
                 foreach(var nsHistory in nApply.ApplyStatusHistories)
                 {
+                    var nUser = _nostrContext.Users.FirstOrDefault(u => u.Id == nsHistory.UserId);
+                    var prevStatus = nsHistory.PrevStatusId != null ? _appContext.ApplyStatuses.FirstOrDefault(s => s.OldId == nsHistory.PrevStatusId)?.Id : null;
                     apply.StatusHistories.Add(new EM.Entities.ApplyStatusHistory { 
                         ApplyId = apply.Id,
                         ChangeTime = nsHistory.ChangeTime,
                         EndTime = nsHistory.EndTime,
-                        PrevStatusId = _appContext.ApplyStatuses.FirstOrDefault(s => s.OldId == nsHistory.PrevStatusId)?.Id ?? (long)ApplyStatusEnum.NO_VALIDATED,
-                        StatusId = _appContext.ApplyStatuses.FirstOrDefault(s => s.OldId == nsHistory.StatusId)?.Id ?? (long)ApplyStatusEnum.NO_VALIDATED,
-                        UserId = _appContext.Users.First(u => u.Login == nsHistory.User.Login).Id
+                        PrevStatusId = prevStatus,
+                        StatusId = _appContext.ApplyStatuses.FirstOrDefault(s => s.OldId == nsHistory.StatusId).Id,
+                        UserId = nUser != null ? _appContext.Users.First(u => u.Login == nUser.Login)?.Id : null
                     });
                 }
 
@@ -372,28 +381,34 @@ namespace Ron.Ido.Importer
 
                 foreach (var nAttach in nApply.ApplyDocuments)
                 {
-                    var bytes = _nostrStorage.GetFileBytes(nAttach.DocumentFile);
                     Guid uid = Guid.Empty;
-                    if (bytes != null)
-                    {
-                        uid = _appStorage.SaveFile(bytes);
-                        var login = nAttach.DocumentFile?.User?.Login;
-                        var userId = login != null ? _appContext.Users.FirstOrDefault(u => u.Login == login)?.Id : null;
 
-                        var newFileInfo = new EM.Entities.FileInfo
+                    if (nAttach.DocumentFileId != null)
+                    {
+                        var nDocFile = _nostrContext.UploadedFiles.First(f => f.Id == nAttach.DocumentFileId);
+                        var bytes = _nostrStorage.GetFileBytes(nDocFile);
+                        if (bytes != null)
                         {
-                            Name = Path.GetFileName(nAttach.DocumentFile.FileName),
-                            ContentType = nAttach.DocumentFile.ContentType,
-                            CreateTime = nAttach.DocumentFile.UploadTime ?? DateTime.Now,
-                            Uid = uid,
-                            Size = bytes?.Length ?? 0,
-                            Source = nAttach.DocumentFile.Source,
-                            OldId = nAttach.DocumentFile.Id,
-                            CreatorEmail = nAttach.DocumentFile.CreatorEmail,
-                            CreatedById = userId
-                        };
-                        _appContext.Add(newFileInfo);
-                        _appContext.SaveChanges();
+                            uid = _appStorage.SaveFile(bytes);
+                            var nUser = nDocFile.UserId != null ? _nostrContext.Users.First(u => u.Id == nDocFile.UserId) : null;
+                            var login = nUser?.Login;
+                            var userId = login != null ? _appContext.Users.FirstOrDefault(u => u.Login == login)?.Id : null;
+
+                            var newFileInfo = new EM.Entities.FileInfo
+                            {
+                                Name = Path.GetFileName(nDocFile.FileName),
+                                ContentType = nDocFile.ContentType,
+                                CreateTime = nDocFile.UploadTime ?? DateTime.Now,
+                                Uid = uid,
+                                Size = bytes?.Length ?? 0,
+                                Source = nDocFile.Source,
+                                OldId = nDocFile.Id,
+                                CreatorEmail = nDocFile.CreatorEmail,
+                                CreatedById = userId
+                            };
+                            _appContext.Add(newFileInfo);
+                            _appContext.SaveChanges();
+                        }
                     }
 
                     apply.Attachments.Add(new ApplyAttachment
