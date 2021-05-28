@@ -8,6 +8,8 @@ namespace Ron.Ido.EM
     {
         public virtual DbSet<Apply> Applies { get; set; }
         public virtual DbSet<ApplyAim> ApplyAims { get; set; }
+        public virtual DbSet<ApplyAttachment> ApplyAttachments { get; set; }
+        public virtual DbSet<ApplyAttachmentType> ApplyAttachmentTypes { get; set; }
         public virtual DbSet<ApplyBarCode> ApplyBarCodes { get; set; }
         public virtual DbSet<ApplyCertificateDeliveryForm> ApplyCertificateDeliveryForms { get; set; }
         public virtual DbSet<ApplyDeliveryForm> ApplyDeliveryForms { get; set; }
@@ -18,6 +20,7 @@ namespace Ron.Ido.EM
         public virtual DbSet<ApplyPassportType> ApplyPassportTypes { get; set; }
 
         public virtual DbSet<ApplyStatus> ApplyStatuses { get; set; }
+        public virtual DbSet<ApplyStatusHistory> ApplyStatusHistories { get; set; }
         public virtual DbSet<ApplyTemplate> ApplyTemplates { get; set; }
 
 
@@ -80,12 +83,18 @@ namespace Ron.Ido.EM
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-            modelBuilder.Entity<ApplyCertificateDeliveryForm>().HasKey(ac => new { ac.ApplyId, ac.DeliveryFormId });
-            modelBuilder.Entity<ApplyCertificateDeliveryForm>()
-                .HasOne(ac => ac.Apply)
-                .WithMany(a => a.CertificateDeliveryForms)
-                .HasForeignKey(ac => ac.DeliveryFormId)
+            modelBuilder.Entity<ApplyAttachment>()
+                .HasOne(aa => aa.FileInfo)
+                .WithMany()
+                .HasForeignKey(aa => aa.FileInfoUid)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ApplyCertificateDeliveryForm>().HasKey(ac => new { ac.ApplyId, ac.DeliveryFormId });
+            //modelBuilder.Entity<ApplyCertificateDeliveryForm>()
+            //    .HasOne(ac => ac.Apply)
+            //    .WithMany(a => a.CertificateDeliveryForms)
+            //    .HasForeignKey(ac => ac.DeliveryFormId)
+            //    .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ApplyDocType>()
                 .HasOne(doctype => doctype.LearnLevel)

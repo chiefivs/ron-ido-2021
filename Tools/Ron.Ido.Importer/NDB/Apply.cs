@@ -71,8 +71,8 @@ namespace Ron.Ido.Importer
         public DateTime? SpecialLearnDateEnd { get; set; }/**/
         public bool DocsWillSendByPost { get; set; }/**/
         public bool TransmitOpenChannels { get; set; }/**/
-        public DateTime? CreateDate { get; set; }
-        public DateTime? AcceptDate { get; set; }
+        public DateTime? CreateDate { get; set; }/**/
+        public DateTime? AcceptDate { get; set; }/**/
         public DateTime? PostDate { get; set; }
         public DateTime? PostDateFact { get; set; }
         public DateTime? GetDate { get; set; }
@@ -84,7 +84,7 @@ namespace Ron.Ido.Importer
         public DateTime? DateLastPrint { get; set; }
         public bool Deleted { get; set; }/**/
         public int StatusId { get; set; }/**/
-        public DateTime? StatusChangeTime { get; set; }
+        public DateTime? StatusChangeTime { get; set; }/**/
         public string SvidNum { get; set; }
         public DateTime? SvidDate { get; set; }
         public int? DocAttachment { get; set; }/**/

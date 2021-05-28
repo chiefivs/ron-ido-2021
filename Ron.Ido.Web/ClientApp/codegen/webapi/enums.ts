@@ -122,3 +122,12 @@
         CHIEF_JOURNAL = 7104
     }
 
+    //  Ron.Ido.EM.Enums.ApplyEntryFormEnum
+    export enum ApplyEntryFormEnum {
+        SELF = 1,
+        MAIL = 2,
+        CABINET = 3,
+        EPGU = 4,
+        ONLINE = 5
+    }
+

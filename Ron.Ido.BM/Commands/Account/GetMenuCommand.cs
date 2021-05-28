@@ -18,18 +18,18 @@ namespace Ron.Ido.BM.Commands.Account
             MenuItems = items;
             Permissions = permissions;
         }
+    }
 
-        public class GetMenuCommandHandler : IRequestHandler<GetMenuCommand, IEnumerable<MenuItem>>
+    public class GetMenuCommandHandler : IRequestHandler<GetMenuCommand, IEnumerable<MenuItem>>
+    {
+        public Task<IEnumerable<MenuItem>> Handle(GetMenuCommand request, CancellationToken cancellationToken)
         {
-            public Task<IEnumerable<MenuItem>> Handle(GetMenuCommand request, CancellationToken cancellationToken)
+            return Task.Run(() =>
             {
-                return Task.Run(() =>
-                {
-                    return request.MenuItems
-                        .Select(i => i.CreateFor(request.Permissions))
-                        .Where(i => i != null);
-                });
-            }
+                return request.MenuItems
+                    .Select(i => i.CreateFor(request.Permissions))
+                    .Where(i => i != null);
+            });
         }
     }
 }
