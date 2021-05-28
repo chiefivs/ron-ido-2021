@@ -47,10 +47,15 @@ cmp-form-field {
     }
 }
 
+.custom-cb,
 cmp-checkbox {
     & > label {
         cursor: pointer;
+        height: 36px;
+        padding: 0;
+        display: table-row;
 
+        
         & > input[type=checkbox] {
             z-index: -1;
             //opacity: 0.1;
@@ -60,6 +65,7 @@ cmp-checkbox {
             user-select: none;
             margin: 0;
             padding: 0;
+            margin-right: 40px;
         }
 
         & > input[type=checkbox]:focus {
@@ -75,11 +81,12 @@ cmp-checkbox {
             width: 30px;
             border: 1px solid #adb5bd;
             border-radius: 0.25em;
-            margin-right: 0.5em;
             background-repeat: no-repeat;
             background-position: center center;
             background-size: 50% 50%;
             background-color: white;
+            margin: 0;
+            padding: 0;
         }
 
         & > input[type=checkbox]:not(:disabled):not(:checked) :hover::after {
@@ -108,6 +115,10 @@ cmp-checkbox {
 
         & > input[type=checkbox]:disabled::after {
             background-color: #e9ecef;
+        }
+        & > span {
+            vertical-align: middle;
+            display: table-cell;
         }
     }
 }

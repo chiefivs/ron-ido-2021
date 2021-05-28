@@ -48,9 +48,11 @@ namespace Ron.Ido.BM.Models.Admin.Settings
 				errors.Add( new ValidationResult( "Должен быть выбран хотя бы один статус", new[] { nameof( AllowStepToStatuses ) } ) );
 			}
 			else
-				if ( Id < 0 && AllowStepToStatuses.Contains( Id ) )
+				if ( Id > 0 && AllowStepToStatuses.Contains( Id ) )
 				errors.Add( new ValidationResult( "Циклическая ссылка на статус", new[] { nameof( AllowStepToStatuses ) } ) );
 			*/
+			if ( Id > 0 && AllowStepToStatuses.Contains( Id ) )
+				errors.Add( new ValidationResult( "Циклическая ссылка на статус", new[] { nameof( AllowStepToStatuses ) } ) );
 			return errors;
 		}
 	}
