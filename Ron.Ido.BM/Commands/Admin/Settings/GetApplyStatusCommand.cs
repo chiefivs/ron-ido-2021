@@ -25,9 +25,9 @@ namespace Ron.Ido.BM.Commands.Admin.Settings
 
 	public class GetApplyStatusCommandHandler : IRequestHandler<GetApplyStatusCommand, ODataForm<ApplyStatusDto>>
 	{
-		private ODataService _service;
+		private ApplyStatusService _service;
 
-		public GetApplyStatusCommandHandler( ODataService service )
+		public GetApplyStatusCommandHandler( ApplyStatusService service )
 		{
 			_service = service;
 		}
@@ -47,7 +47,7 @@ namespace Ron.Ido.BM.Commands.Admin.Settings
 							)),
 							new ODataMapMemberConfig<ApplyStatus, ApplyStatusDto>(
 							statusDto => statusDto.DenyDelete,
-							expr => expr.MapFrom(r => !string.IsNullOrEmpty(r.StatusEnumValue)))
+							expr => expr.MapFrom(r => !string.IsNullOrEmpty(r.StatusEnumValue) || _service.DenyDelete(r.Id)))
 							} );
 
 				return new ODataForm<ApplyStatusDto>
@@ -55,9 +55,6 @@ namespace Ron.Ido.BM.Commands.Admin.Settings
 					Item = status,
 					Options = new Dictionary<string, IEnumerable<ODataOption>>
 					{
-						//{ nameof(role.ApplyStatusPermissions).ToCamel(), PermissionData.List.Select(i => new ODataOption{ Value = i.Id, Text = i.Name, Parent = i.GroupName }) },
-						//{ "permissionGroups", PermissionGroup.List.Select(i => new ODataOption { Value = i, Text = i}) },
-						//{ "statuses", Enum.GetValues<ApplyStatusEnum>().Select(i => new ODataOption { Value = i, Text = i.ToString()}) }
 						{ "allowStepToStatuses", _service.GetOptions<ApplyStatus>(nameof(ApplyStatus.Name), nameof(ApplyStatus.Id)).Where(op=>op.Value.ToString() != status.Id.ToString()) } // Id?
                     }
 				};
