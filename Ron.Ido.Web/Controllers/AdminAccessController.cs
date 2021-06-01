@@ -36,7 +36,40 @@ namespace Ron.Ido.Web.Controllers
         {
             return await _mediator.Send(new GetUsersListDictionsCommand());
         }
+        [HttpGet]
+        [Route("api/admin/access/users/{id}/get")]
+        [AuthorizedFor(PermissionEnum.USER_CREATE, PermissionEnum.USER_EDIT, PermissionEnum.USER_DEL)]
+        public async Task<ODataForm<UserDto>> GetUser(long id)
+        {
+            return await _mediator.Send(new GetUserCommand(id));
+        }
+
+        [HttpPost]
+        [Route("api/admin/access/users/validate")]
+        [AuthorizedFor(PermissionEnum.USER_CREATE, PermissionEnum.USER_EDIT)]
+        public async Task<Dictionary<string, List<string>>> ValidateUser([FromBody] UserDto user)
+        {
+            return await _mediator.Send(new ValidateUserCommand(user));
+        }
+
+        [HttpPost]
+        [Route("api/admin/access/users/save")]
+        [AuthorizedFor(PermissionEnum.USER_CREATE, PermissionEnum.USER_EDIT)]
+        public async Task SaveUser([FromBody] UserDto user)
+        {
+            await _mediator.Send(new SaveUserCommand(user));
+        }
+
+        [HttpDelete]
+        [Route("api/admin/access/users/{id}/delete")]
+        [AuthorizedFor(PermissionEnum.USER_DEL)]
+        public async Task DeleteUser(long id)
+        {
+            await _mediator.Send(new DeleteUserCommand(id));
+        }
+
         #endregion
+
 
         #region Roles
         [HttpPost]

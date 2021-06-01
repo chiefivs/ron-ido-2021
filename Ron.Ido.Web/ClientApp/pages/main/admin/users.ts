@@ -5,6 +5,7 @@ import { IODataFilter, ODataFilterTypeEnum, ODataOrderTypeEnum } from '../../../
 import { ITablePagerState, TableColumnOrderDirection, IFilterParams, IFilterOption, FilterValueType } from '../../../components/index';
 import { AdminAccessApi } from '../../../codegen/webapi/adminAccessApi';
 import { IODataOrder } from '../../../codegen/webapi/odata';
+import { Form } from '../../../modules/forms';
 
 export default class UsersMainPage extends MainPageBase {
     users = ko.observableArray<AdminAccessApi.IUsersPageItemDto>([]);
@@ -14,6 +15,9 @@ export default class UsersMainPage extends MainPageBase {
         sorting: 'fullName asc',
         maxResultCount: 10,
     });
+
+    current = ko.observable<Form<AdminAccessApi.IUserDto>>(null);
+
     private _searchPage: UsersSearchLeftPage;
 
     constructor() {
@@ -61,6 +65,38 @@ export default class UsersMainPage extends MainPageBase {
             this.tableTotalCount(page.total);
         });
     }
+
+    setCurrent(id?:number) {
+        AdminAccessApi.getUser(id || 0)
+            .done(data => {
+                const form = new Form(data, AdminAccessApi.saveUser, AdminAccessApi.validateUser);
+                this.current(form);
+            });
+    }
+
+
+    save() {
+        this.current().save()
+            .done(() => {
+                this.update();
+                this.current(null);
+            })
+            .fail(() => Popups.Alert.open('ошибка сохранения', 'Не удалось сохранить пользователя'));
+    }
+
+    remove() {
+        Popups.Confirm.open(
+            'запрос на удаление',
+            'Вы действительно хотите удалить этуго пользователя ?',
+            () => {
+                AdminAccessApi.deleteUser(this.current().item.id.value())
+                    .done(() => {
+                        this.current(null);
+                        this.update();
+                    })
+                    .fail(() => Popups.Alert.open('ошибка удаления', 'Не удалось удалить пользователя'));
+            });
+    }
 }
 
 class UsersSearchLeftPage extends LeftPageBase{
@@ -94,3 +130,4 @@ class UsersSearchLeftPage extends LeftPageBase{
     //     Popups.Alert.open('тестовое предупреждение', 'описание <b>тестового предупреждения</b>', true)
     // }
 }
+

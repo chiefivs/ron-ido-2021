@@ -14,6 +14,26 @@ export namespace AdminAccessApi {
         return WebApi.get(segments.join('/'));
     }
 
+    export function getUser(id:number): JQueryPromise<IODataForm<IUserDto>> {
+        const segments = ['api', 'admin', 'access', 'users', id, 'get'];
+        return WebApi.get(segments.join('/'));
+    }
+
+    export function validateUser(user:IUserDto): JQueryPromise<any> {
+        const segments = ['api', 'admin', 'access', 'users', 'validate'];
+        return WebApi.post(segments.join('/'), user);
+    }
+
+    export function saveUser(user:IUserDto): JQueryPromise<any> {
+        const segments = ['api', 'admin', 'access', 'users', 'save'];
+        return WebApi.post(segments.join('/'), user);
+    }
+
+    export function deleteUser(id:number): JQueryPromise<any> {
+        const segments = ['api', 'admin', 'access', 'users', id, 'delete'];
+        return WebApi.del(segments.join('/'));
+    }
+
     export function getRolesPage(request:IODataRequest): JQueryPromise<IODataPage<IRolesPageItemDto>> {
         const segments = ['api', 'admin', 'access', 'roles', 'getpage'];
         return WebApi.post(segments.join('/'), request);
@@ -41,6 +61,7 @@ export namespace AdminAccessApi {
 
     //  Ron.Ido.BM.Models.Admin.Access.UsersPageItemDto
     export interface IUsersPageItemDto {
+        id:number;
         fullName:string;
         login:string;
         isBlocked:any;
@@ -49,6 +70,22 @@ export namespace AdminAccessApi {
     //  Ron.Ido.BM.Models.Admin.Access.UsersListDictions
     export interface IUsersListDictions {
         roles:IODataOption[];
+    }
+
+    //  Ron.Ido.BM.Models.Admin.Access.UserDto
+    export interface IUserDto {
+        id:number;
+        surName:string;
+        firstName:string;
+        lastName:string;
+        login:string;
+        email:string;
+        snils:string;
+        remark:string;
+        isBlocked:any;
+        password:string;
+        confirmPassword:string;
+        roles:number[];
     }
 
     //  Ron.Ido.BM.Models.Admin.Access.RolesPageItemDto
