@@ -21,7 +21,7 @@ namespace Ron.Ido.Web.Controllers
 
         [HttpPost]
         [Route("api/acceptance/getpage")]
-        [AuthorizedFor(PermissionEnum.APPLY_VIEW, PermissionEnum.APPLY_CREATE, PermissionEnum.APPLY_EDIT, PermissionEnum.APPLY_DEL)]
+        //[AuthorizedFor(PermissionEnum.APPLY_VIEW, PermissionEnum.APPLY_CREATE, PermissionEnum.APPLY_EDIT, PermissionEnum.APPLY_DEL)]
         public async Task<ODataPage<AppliesAcceptancePageItemDto>> GetAppliesPage([FromBody] ODataRequest request)
         {
             return await _mediator.Send(new GetAppliesAcceptancePageCommand(request));

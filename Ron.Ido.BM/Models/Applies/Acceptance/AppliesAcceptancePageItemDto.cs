@@ -4,7 +4,11 @@ namespace Ron.Ido.BM.Models.Applies.Acceptance
 {
     public class AppliesAcceptancePageItemDto
     {
+        public long Id { get; set; }
+
         public string BarCode { get; set; }
+
+        public string CreateDate { get; set; }
 
         public ApplyEntryFormEnum EntryFormId { get; set; }
 

@@ -89,7 +89,7 @@ export class App {
         Identity.setIdentity(null);
     }
 
-    openMainPage(path: string, key: string = '') {
+    openMainPage(path: string, key: string = ''): any {
         const pageKey = path + (key ? '/'+key : '');
         let page = ko.utils.arrayFirst(this.mainPages(), page => page.pageKey === pageKey);
         if(!page) {
@@ -117,6 +117,8 @@ export class App {
 
         this.activeMainPage(page);
         this._saveLastPage(path, key);
+
+        return page;
     }
 
     closeMainPage(page: IMainPage) {

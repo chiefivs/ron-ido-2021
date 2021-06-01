@@ -258,12 +258,14 @@ namespace Ron.Ido.Importer
 
             foreach(var nApply in nApplies)
             {
-                var createTime = nApply.ApplyStatusHistories.OrderBy(h => h.ChangeDate).FirstOrDefault(h => h.StatusId == 1)?.ChangeTime ?? nApply.CreateDate;
+                var createTime = nApply.ApplyStatusHistories.OrderBy(h => h.ChangeDate).FirstOrDefault(h => h.StatusId == 1)?.ChangeTime ?? nApply.CreateDate.Value;
                 var acceptTime = nApply.ApplyStatusHistories.OrderBy(h => h.ChangeDate).FirstOrDefault(h => h.StatusId == 5)?.ChangeTime;
 
                 var apply = new EM.Entities.Apply
                 {
-                    BarCodes = new List<ApplyBarCode>(),
+                    PrimaryBarCode = nApply.BarCode,
+                    BarCode = nApply.CurrentBarCode,
+
                     CreateTime = createTime,
                     AcceptTime = acceptTime,
                     AimId = nApply.AimId,
@@ -351,10 +353,6 @@ namespace Ron.Ido.Importer
 
                 _appContext.Applies.Add(apply);
                 _appContext.SaveChanges();
-
-                apply.BarCodes.Add(new ApplyBarCode { ApplyId = apply.Id, BarCode = nApply.BarCode, AssignTime = createTime.Value });
-                if (!string.IsNullOrEmpty(nApply.CurrentBarCode) && nApply.CurrentBarCode != nApply.BarCode && acceptTime.HasValue)
-                    apply.BarCodes.Add(new ApplyBarCode { ApplyId = apply.Id, BarCode = nApply.CurrentBarCode, AssignTime = acceptTime.Value });
 
                 if (nApply.DigSvidDeliveryByEmail)
                     apply.CertificateDeliveryForms.Add(new ApplyCertificateDeliveryForm { ApplyId = apply.Id, DeliveryFormId = (long)CertificateDeliveryFormEnum.EMAIL });
