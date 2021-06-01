@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Ron.Ido.DbStorage.Npgsql;
@@ -9,9 +10,10 @@ using Ron.Ido.DbStorage.Npgsql;
 namespace Ron.Ido.DbStorage.Npgsql.Migrations
 {
     [DbContext(typeof(NpgsqlAppDbContext))]
-    partial class NpgsqlAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210528154733_ApplyStatusHistory_UserId_nullable")]
+    partial class ApplyStatusHistory_UserId_nullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,9 +34,6 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<long?>("AimId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("BarCode")
-                        .HasColumnType("text");
-
                     b.Property<DateTime?>("BaseLearnDateBegin")
                         .HasColumnType("timestamp without time zone");
 
@@ -44,7 +43,7 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<bool>("ByWarrant")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime>("CreateTime")
+                    b.Property<DateTime?>("CreateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("CreatorBirthDate")
@@ -237,9 +236,6 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<string>("OwnerSurname")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
-
-                    b.Property<string>("PrimaryBarCode")
-                        .HasColumnType("text");
 
                     b.Property<long?>("ReturnOriginalsFormId")
                         .HasColumnType("bigint");
@@ -436,6 +432,29 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ApplyAttachmentTypes");
+                });
+
+            modelBuilder.Entity("Ron.Ido.EM.Entities.ApplyBarCode", b =>
+                {
+                    b.Property<string>("BarCode")
+                        .HasMaxLength(12)
+                        .HasColumnType("character varying(12)");
+
+                    b.Property<long>("ApplyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("AssignTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("BarCode");
+
+                    b.HasIndex("ApplyId");
+
+                    b.HasIndex("AssignTime");
+
+                    b.HasIndex("BarCode");
+
+                    b.ToTable("ApplyBarCodes");
                 });
 
             modelBuilder.Entity("Ron.Ido.EM.Entities.ApplyCertificateDeliveryForm", b =>
@@ -1277,6 +1296,17 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Navigation("Type");
                 });
 
+            modelBuilder.Entity("Ron.Ido.EM.Entities.ApplyBarCode", b =>
+                {
+                    b.HasOne("Ron.Ido.EM.Entities.Apply", "Apply")
+                        .WithMany("BarCodes")
+                        .HasForeignKey("ApplyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Apply");
+                });
+
             modelBuilder.Entity("Ron.Ido.EM.Entities.ApplyCertificateDeliveryForm", b =>
                 {
                     b.HasOne("Ron.Ido.EM.Entities.Apply", "Apply")
@@ -1398,6 +1428,8 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
             modelBuilder.Entity("Ron.Ido.EM.Entities.Apply", b =>
                 {
                     b.Navigation("Attachments");
+
+                    b.Navigation("BarCodes");
 
                     b.Navigation("CertificateDeliveryForms");
 

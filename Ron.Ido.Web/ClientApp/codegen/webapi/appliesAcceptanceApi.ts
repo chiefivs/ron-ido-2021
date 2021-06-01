@@ -11,7 +11,9 @@ export namespace AppliesAcceptanceApi {
 
     //  Ron.Ido.BM.Models.Applies.Acceptance.AppliesAcceptancePageItemDto
     export interface IAppliesAcceptancePageItemDto {
+        id:number;
         barCode:string;
+        createDate:string;
         entryFormId:ApplyEntryFormEnum;
         creatorFullName:string;
         ownerFullName:string;

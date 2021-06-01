@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Ron.Ido.DbStorage.Npgsql;
@@ -9,9 +10,10 @@ using Ron.Ido.DbStorage.Npgsql;
 namespace Ron.Ido.DbStorage.Npgsql.Migrations
 {
     [DbContext(typeof(NpgsqlAppDbContext))]
-    partial class NpgsqlAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210601041521_Apply_BarCodesAdded")]
+    partial class Apply_BarCodesAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,14 +28,14 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<string>("AcceptBarCode")
+                        .HasColumnType("text");
+
                     b.Property<DateTime?>("AcceptTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<long?>("AimId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("BarCode")
-                        .HasColumnType("text");
 
                     b.Property<DateTime?>("BaseLearnDateBegin")
                         .HasColumnType("timestamp without time zone");
@@ -43,6 +45,9 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
 
                     b.Property<bool>("ByWarrant")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("CreateBarCode")
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreateTime")
                         .HasColumnType("timestamp without time zone");
@@ -237,9 +242,6 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<string>("OwnerSurname")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
-
-                    b.Property<string>("PrimaryBarCode")
-                        .HasColumnType("text");
 
                     b.Property<long?>("ReturnOriginalsFormId")
                         .HasColumnType("bigint");

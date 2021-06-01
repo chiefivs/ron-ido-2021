@@ -10,7 +10,6 @@ namespace Ron.Ido.EM
         public virtual DbSet<ApplyAim> ApplyAims { get; set; }
         public virtual DbSet<ApplyAttachment> ApplyAttachments { get; set; }
         public virtual DbSet<ApplyAttachmentType> ApplyAttachmentTypes { get; set; }
-        public virtual DbSet<ApplyBarCode> ApplyBarCodes { get; set; }
         public virtual DbSet<ApplyCertificateDeliveryForm> ApplyCertificateDeliveryForms { get; set; }
         public virtual DbSet<ApplyDeliveryForm> ApplyDeliveryForms { get; set; }
         public virtual DbSet<ApplyDocFullPackageType> ApplyDocFullPackageTypes { get; set; }

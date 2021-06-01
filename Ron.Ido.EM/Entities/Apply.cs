@@ -12,16 +12,18 @@ namespace Ron.Ido.EM.Entities
         public long Id { get; set; }
 
         #region Служебная информация
-        public virtual List<ApplyBarCode> BarCodes { get; set; } = new List<ApplyBarCode>();
+        public string PrimaryBarCode { get; set; }
+
+        public string BarCode { get; set; }
+
+        public DateTime CreateTime { get; set; }
+
+        public DateTime? AcceptTime { get; set; }
 
         [StringLength(100)]
         public string EpguCode { get; set; }
 
         public int? EpguStatus { get; set; }
-
-        public DateTime? CreateTime { get; set; }
-
-        public DateTime? AcceptTime { get; set; }
 
         public string Storage { get; set; }
 

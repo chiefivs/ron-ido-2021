@@ -23,7 +23,7 @@ namespace Ron.Ido.EM.Entities
         public long? PrevStatusId { get; set; }
         public virtual ApplyStatus PrevStatus { get; set; }
 
-        public long UserId { get; set; }
+        public long? UserId { get; set; }
         public virtual User User { get; set; }
     }
 }
