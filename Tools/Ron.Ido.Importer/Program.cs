@@ -422,6 +422,9 @@ namespace Ron.Ido.Importer
 
                     _appContext.SaveChanges();
                 }
+
+                _appContext.Dossiers.Add(new Dossier { ApplyId = apply.Id });
+                _appContext.SaveChanges();
             }
         }
 

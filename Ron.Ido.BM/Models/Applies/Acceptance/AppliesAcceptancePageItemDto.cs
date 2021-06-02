@@ -6,6 +6,8 @@ namespace Ron.Ido.BM.Models.Applies.Acceptance
     {
         public long Id { get; set; }
 
+        public long DossierId { get; set; }
+
         public string BarCode { get; set; }
 
         public string CreateDate { get; set; }
