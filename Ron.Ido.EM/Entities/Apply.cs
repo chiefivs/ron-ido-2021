@@ -52,6 +52,7 @@ namespace Ron.Ido.EM.Entities
         public virtual ApplyStatus Status { get; set; }
         public DateTime? StatusChangeTime { get; set; }
         public virtual List<ApplyStatusHistory> StatusHistories { get; set; } = new List<ApplyStatusHistory>();
+        public virtual List<Dossier> Dossiers { get; set; } = new List<Dossier>();
         #endregion
 
         #region Заявитель

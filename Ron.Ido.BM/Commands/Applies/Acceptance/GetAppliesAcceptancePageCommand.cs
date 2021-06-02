@@ -43,6 +43,10 @@ namespace Ron.Ido.BM.Commands.Applies.Acceptance
                 var result = _odataService.GetPage(request,
                     new[] {
                         new ODataMapMemberConfig<Apply, AppliesAcceptancePageItemDto>(
+                            applyDto => applyDto.DossierId,
+                            expr => expr.MapFrom(apply => apply.Dossiers.First().Id)
+                        ),
+                        new ODataMapMemberConfig<Apply, AppliesAcceptancePageItemDto>(
                             applyDto => applyDto.CreateDate,
                             expr => expr.MapFrom(apply => $"{apply.CreateTime:dd.MM.yyyy}")
                         ),
