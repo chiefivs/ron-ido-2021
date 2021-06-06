@@ -65,7 +65,7 @@ export default class AcceptanceMainPage extends MainPageBase {
     open(item: AppliesAcceptanceApi.IAppliesAcceptancePageItemDto) {
         console.log(item);
         const page = <DossierMainPage>App.instance().openMainPage('dossier/dossier', item.dossierId.toString());
-        page.openApply(item.id);
+        page.openApply(item.dossierId);
     }
 
 }

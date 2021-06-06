@@ -15,16 +15,16 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .UseIdentityByDefaultColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("ProductVersion", "5.0.5")
-                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                .HasAnnotation("ProductVersion", "5.0.5");
 
             modelBuilder.Entity("Ron.Ido.EM.Entities.Apply", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<DateTime?>("AcceptTime")
                         .HasColumnType("timestamp without time zone");
@@ -49,6 +49,9 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
 
                     b.Property<DateTime?>("CreatorBirthDate")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("CreatorBirthPlace")
+                        .HasColumnType("text");
 
                     b.Property<string>("CreatorBlock")
                         .HasMaxLength(10)
@@ -83,6 +86,9 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<string>("CreatorFlat")
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)");
+
+                    b.Property<int>("CreatorGender")
+                        .HasColumnType("integer");
 
                     b.Property<string>("CreatorLastName")
                         .HasMaxLength(255)
@@ -132,6 +138,9 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<int?>("DocDateYear")
                         .HasColumnType("integer");
 
+                    b.Property<string>("DocDescription")
+                        .HasColumnType("text");
+
                     b.Property<string>("DocFullName")
                         .HasColumnType("text");
 
@@ -163,10 +172,31 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<bool>("ForOferta")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsCreatorFirstNameAbsent")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsCreatorLastNameAbsent")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsCreatorSurnameAbsent")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsEnglish")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsNovorossia")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsOwnerFirstNameAbsent")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsOwnerLastNameAbsent")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsOwnerSurnameAbsent")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsReturnOriginalsPostAddressDifferent")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsRostovFilial")
@@ -180,6 +210,9 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
 
                     b.Property<DateTime?>("OwnerBirthDate")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("OwnerBirthPlace")
+                        .HasColumnType("text");
 
                     b.Property<string>("OwnerBlock")
                         .HasMaxLength(10)
@@ -203,6 +236,10 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<long?>("OwnerCountryId")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("OwnerEmail")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
                     b.Property<string>("OwnerFirstName")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
@@ -210,6 +247,9 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<string>("OwnerFlat")
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)");
+
+                    b.Property<int>("OwnerGender")
+                        .HasColumnType("integer");
 
                     b.Property<string>("OwnerLastName")
                         .HasMaxLength(255)
@@ -243,6 +283,9 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
 
                     b.Property<long?>("ReturnOriginalsFormId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("ReturnOriginalsPostAddress")
+                        .HasColumnType("text");
 
                     b.Property<string>("SchoolAddress")
                         .HasColumnType("text");
@@ -371,7 +414,7 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<long>("ApplyId")
                         .HasColumnType("bigint");
@@ -623,7 +666,7 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<string>("AllowStepToStatuses")
                         .HasColumnType("text");
@@ -676,7 +719,7 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<long>("ApplyId")
                         .HasColumnType("bigint");
@@ -769,7 +812,7 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<string>("A2code")
                         .HasMaxLength(2)
@@ -849,6 +892,23 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.HasIndex("RegionId");
 
                     b.ToTable("Countries");
+                });
+
+            modelBuilder.Entity("Ron.Ido.EM.Entities.Dossier", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .UseIdentityByDefaultColumn();
+
+                    b.Property<long?>("ApplyId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplyId");
+
+                    b.ToTable("Dossiers");
                 });
 
             modelBuilder.Entity("Ron.Ido.EM.Entities.FileInfo", b =>
@@ -961,7 +1021,7 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<string>("Name")
                         .HasMaxLength(200)
@@ -989,7 +1049,7 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<int>("MaxTerm")
                         .HasColumnType("integer");
@@ -1021,7 +1081,7 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<string>("Description")
                         .HasMaxLength(150)
@@ -1092,7 +1152,7 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<string>("Email")
                         .HasMaxLength(500)
@@ -1356,6 +1416,15 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Navigation("Region");
                 });
 
+            modelBuilder.Entity("Ron.Ido.EM.Entities.Dossier", b =>
+                {
+                    b.HasOne("Ron.Ido.EM.Entities.Apply", "Apply")
+                        .WithMany("Dossiers")
+                        .HasForeignKey("ApplyId");
+
+                    b.Navigation("Apply");
+                });
+
             modelBuilder.Entity("Ron.Ido.EM.Entities.FileInfo", b =>
                 {
                     b.HasOne("Ron.Ido.EM.Entities.User", "CreatedBy")
@@ -1400,6 +1469,8 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Navigation("Attachments");
 
                     b.Navigation("CertificateDeliveryForms");
+
+                    b.Navigation("Dossiers");
 
                     b.Navigation("StatusHistories");
                 });

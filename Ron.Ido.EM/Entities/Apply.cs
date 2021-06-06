@@ -58,15 +58,25 @@ namespace Ron.Ido.EM.Entities
         #region Заявитель
         [StringLength(255)]
         public string CreatorFirstName { get; set; }
-        
+
+        public bool IsCreatorFirstNameAbsent { get; set; }
+
         [StringLength(255)]
         public string CreatorLastName { get; set; }
-        
+
+        public bool IsCreatorLastNameAbsent { get; set; }
+
         [StringLength(255)]
         
         public string CreatorSurname { get; set; }
+
+        public bool IsCreatorSurnameAbsent { get; set; }
+
+        public int CreatorGender { get; set; }
         
         public DateTime? CreatorBirthDate { get; set; }
+
+        public string CreatorBirthPlace { get; set; }
 
         /// <summary>
         /// Гражданство заявителя
@@ -140,23 +150,37 @@ namespace Ron.Ido.EM.Entities
 
 
         /// <summary>
-        /// Форма получения результата
+        /// Форма получения оригиналов документов
         /// </summary>
         public long? ReturnOriginalsFormId { get; set; }
         public virtual ApplyDeliveryForm ReturnOriginalsForm { get; set; }
+
+        public bool IsReturnOriginalsPostAddressDifferent { get; set; }
+
+        public string ReturnOriginalsPostAddress { get; set; }
         #endregion
 
         #region Обладатель документа
         [StringLength(255)]
         public string OwnerFirstName { get; set; }
 
+        public bool IsOwnerFirstNameAbsent { get; set; }
+
         [StringLength(255)]
         public string OwnerLastName { get; set; }
+
+        public bool IsOwnerLastNameAbsent { get; set; }
 
         [StringLength(255)]
         public string OwnerSurname { get; set; }
 
+        public bool IsOwnerSurnameAbsent { get; set; }
+
+        public int OwnerGender { get; set; }
+
         public DateTime? OwnerBirthDate { get; set; }
+
+        public string OwnerBirthPlace { get; set; }
 
         /// <summary>
         /// Страна жительства обладателя
@@ -188,6 +212,9 @@ namespace Ron.Ido.EM.Entities
         [StringLength(100)]
         public string OwnerPhone { get; set; }
 
+        [StringLength(100)]
+        public string OwnerEmail { get; set; }
+
         /// <summary>
         /// Гражданство обладателя
         /// </summary>
@@ -208,6 +235,11 @@ namespace Ron.Ido.EM.Entities
 
         public long? DocTypeId { get; set; }
         public virtual ApplyDocType DocType { get; set; }
+
+        /// <summary>
+        /// Наименование иностранного документа
+        /// </summary>
+        public string DocDescription { get; set; }
 
         public string DocBlankNum { get; set; }
 
