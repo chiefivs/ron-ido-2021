@@ -26,6 +26,8 @@ namespace Ron.Ido.EM
         public virtual DbSet<CertificateDeliveryForm> CertificateDeliveryForms { get; set; }
         public virtual DbSet<Country> Countries { get; set; } 
 
+        public virtual DbSet<Dossier> Dossiers { get; set; }
+
         public virtual DbSet<FileInfo> FileInfos { get; set; }
         public virtual DbSet<LearnLevel> LearnLevels { get; set; }
         public virtual DbSet<Legalization> Legalizations { get; set; }

@@ -10,8 +10,8 @@ using Ron.Ido.DbStorage.Npgsql;
 namespace Ron.Ido.DbStorage.Npgsql.Migrations
 {
     [DbContext(typeof(NpgsqlAppDbContext))]
-    [Migration("20210527142235_Apply_StatusId_type_changed")]
-    partial class Apply_StatusId_type_changed
+    [Migration("20210602155721_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -34,6 +34,9 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<long?>("AimId")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("BarCode")
+                        .HasColumnType("text");
+
                     b.Property<DateTime?>("BaseLearnDateBegin")
                         .HasColumnType("timestamp without time zone");
 
@@ -43,11 +46,14 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<bool>("ByWarrant")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("CreateTime")
+                    b.Property<DateTime>("CreateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("CreatorBirthDate")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("CreatorBirthPlace")
+                        .HasColumnType("text");
 
                     b.Property<string>("CreatorBlock")
                         .HasMaxLength(10)
@@ -82,6 +88,9 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<string>("CreatorFlat")
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)");
+
+                    b.Property<int>("CreatorGender")
+                        .HasColumnType("integer");
 
                     b.Property<string>("CreatorLastName")
                         .HasMaxLength(255)
@@ -131,6 +140,9 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<int?>("DocDateYear")
                         .HasColumnType("integer");
 
+                    b.Property<string>("DocDescription")
+                        .HasColumnType("text");
+
                     b.Property<string>("DocFullName")
                         .HasColumnType("text");
 
@@ -162,10 +174,31 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<bool>("ForOferta")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsCreatorFirstNameAbsent")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsCreatorLastNameAbsent")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsCreatorSurnameAbsent")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsEnglish")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsNovorossia")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsOwnerFirstNameAbsent")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsOwnerLastNameAbsent")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsOwnerSurnameAbsent")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsReturnOriginalsPostAddressDifferent")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsRostovFilial")
@@ -179,6 +212,9 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
 
                     b.Property<DateTime?>("OwnerBirthDate")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("OwnerBirthPlace")
+                        .HasColumnType("text");
 
                     b.Property<string>("OwnerBlock")
                         .HasMaxLength(10)
@@ -202,6 +238,10 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<long?>("OwnerCountryId")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("OwnerEmail")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
                     b.Property<string>("OwnerFirstName")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
@@ -209,6 +249,9 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<string>("OwnerFlat")
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)");
+
+                    b.Property<int>("OwnerGender")
+                        .HasColumnType("integer");
 
                     b.Property<string>("OwnerLastName")
                         .HasMaxLength(255)
@@ -237,8 +280,14 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
+                    b.Property<string>("PrimaryBarCode")
+                        .HasColumnType("text");
+
                     b.Property<long?>("ReturnOriginalsFormId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("ReturnOriginalsPostAddress")
+                        .HasColumnType("text");
 
                     b.Property<string>("SchoolAddress")
                         .HasColumnType("text");
@@ -395,6 +444,8 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ApplyId");
+
                     b.HasIndex("FileInfoUid");
 
                     b.HasIndex("TypeId");
@@ -432,29 +483,6 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.ToTable("ApplyAttachmentTypes");
                 });
 
-            modelBuilder.Entity("Ron.Ido.EM.Entities.ApplyBarCode", b =>
-                {
-                    b.Property<string>("BarCode")
-                        .HasMaxLength(12)
-                        .HasColumnType("character varying(12)");
-
-                    b.Property<long>("ApplyId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("AssignTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.HasKey("BarCode");
-
-                    b.HasIndex("ApplyId");
-
-                    b.HasIndex("AssignTime");
-
-                    b.HasIndex("BarCode");
-
-                    b.ToTable("ApplyBarCodes");
-                });
-
             modelBuilder.Entity("Ron.Ido.EM.Entities.ApplyCertificateDeliveryForm", b =>
                 {
                     b.Property<long>("ApplyId")
@@ -463,14 +491,9 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<long>("DeliveryFormId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("DeliveryFormId1")
-                        .HasColumnType("bigint");
-
                     b.HasKey("ApplyId", "DeliveryFormId");
 
                     b.HasIndex("DeliveryFormId");
-
-                    b.HasIndex("DeliveryFormId1");
 
                     b.ToTable("ApplyCertificateDeliveryForms");
                 });
@@ -715,7 +738,7 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Property<long>("StatusId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("UserId")
+                    b.Property<long?>("UserId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
@@ -871,6 +894,23 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.HasIndex("RegionId");
 
                     b.ToTable("Countries");
+                });
+
+            modelBuilder.Entity("Ron.Ido.EM.Entities.Dossier", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .UseIdentityByDefaultColumn();
+
+                    b.Property<long?>("ApplyId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplyId");
+
+                    b.ToTable("Dossiers");
                 });
 
             modelBuilder.Entity("Ron.Ido.EM.Entities.FileInfo", b =>
@@ -1277,6 +1317,12 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
 
             modelBuilder.Entity("Ron.Ido.EM.Entities.ApplyAttachment", b =>
                 {
+                    b.HasOne("Ron.Ido.EM.Entities.Apply", "Apply")
+                        .WithMany("Attachments")
+                        .HasForeignKey("ApplyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Ron.Ido.EM.Entities.FileInfo", "FileInfo")
                         .WithMany()
                         .HasForeignKey("FileInfoUid")
@@ -1286,33 +1332,24 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                         .WithMany()
                         .HasForeignKey("TypeId");
 
+                    b.Navigation("Apply");
+
                     b.Navigation("FileInfo");
 
                     b.Navigation("Type");
-                });
-
-            modelBuilder.Entity("Ron.Ido.EM.Entities.ApplyBarCode", b =>
-                {
-                    b.HasOne("Ron.Ido.EM.Entities.Apply", "Apply")
-                        .WithMany("BarCodes")
-                        .HasForeignKey("ApplyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Apply");
                 });
 
             modelBuilder.Entity("Ron.Ido.EM.Entities.ApplyCertificateDeliveryForm", b =>
                 {
                     b.HasOne("Ron.Ido.EM.Entities.Apply", "Apply")
                         .WithMany("CertificateDeliveryForms")
-                        .HasForeignKey("DeliveryFormId")
+                        .HasForeignKey("ApplyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Ron.Ido.EM.Entities.CertificateDeliveryForm", "DeliveryForm")
                         .WithMany()
-                        .HasForeignKey("DeliveryFormId1")
+                        .HasForeignKey("DeliveryFormId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1343,7 +1380,7 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
 
             modelBuilder.Entity("Ron.Ido.EM.Entities.ApplyStatusHistory", b =>
                 {
-                    b.HasOne("Ron.Ido.EM.Entities.Apply", null)
+                    b.HasOne("Ron.Ido.EM.Entities.Apply", "Apply")
                         .WithMany("StatusHistories")
                         .HasForeignKey("ApplyId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1361,9 +1398,9 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
 
                     b.HasOne("Ron.Ido.EM.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Apply");
 
                     b.Navigation("PrevStatus");
 
@@ -1379,6 +1416,15 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                         .HasForeignKey("RegionId");
 
                     b.Navigation("Region");
+                });
+
+            modelBuilder.Entity("Ron.Ido.EM.Entities.Dossier", b =>
+                {
+                    b.HasOne("Ron.Ido.EM.Entities.Apply", "Apply")
+                        .WithMany("Dossiers")
+                        .HasForeignKey("ApplyId");
+
+                    b.Navigation("Apply");
                 });
 
             modelBuilder.Entity("Ron.Ido.EM.Entities.FileInfo", b =>
@@ -1422,9 +1468,11 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
 
             modelBuilder.Entity("Ron.Ido.EM.Entities.Apply", b =>
                 {
-                    b.Navigation("BarCodes");
+                    b.Navigation("Attachments");
 
                     b.Navigation("CertificateDeliveryForms");
+
+                    b.Navigation("Dossiers");
 
                     b.Navigation("StatusHistories");
                 });

@@ -19,7 +19,7 @@ export namespace AdminAccessApi {
         return WebApi.get(segments.join('/'));
     }
 
-    export function validateUser(user:IUserDto): JQueryPromise<any> {
+    export function validateUser(user:IUserDto): JQueryPromise<{[key:string]:string[]}> {
         const segments = ['api', 'admin', 'access', 'users', 'validate'];
         return WebApi.post(segments.join('/'), user);
     }

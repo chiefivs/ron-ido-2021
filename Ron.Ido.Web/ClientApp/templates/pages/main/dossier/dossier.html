@@ -1,1 +1,6 @@
-<h4>дело</h4>
+<div data-bind="foreach:parts">
+    <div class="panel panel-default"
+         style="position:absolute; top:0; bottom: 0;"
+         data-bind="template:{nodes:templateNodes, data:$data}, style:{width:$parent.partWidth()+'%', left:'67%'}"></div>
+    <div data-bind="text:$index"></div>
+</div>
