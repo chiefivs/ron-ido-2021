@@ -4,7 +4,7 @@ import { IODataRequest, IODataPage, IODataOption } from './odata';
 import { ApplyEntryFormEnum } from './enums';
 
 export namespace AppliesAcceptanceApi {
-    export function getAppliesPage(request:IODataRequest): JQueryPromise<IODataPage<IAppliesAcceptancePageItemDto>> {
+    export function getAppliesPage(request:IODataRequest): JQueryPromise<IODataPage<IAcceptancePageItemDto>> {
         const segments = ['api', 'acceptance', 'getpage'];
         return WebApi.post(segments.join('/'), request);
     }
@@ -14,8 +14,8 @@ export namespace AppliesAcceptanceApi {
         return WebApi.get(segments.join('/'));
     }
 
-    //  Ron.Ido.BM.Models.Applies.Acceptance.AppliesAcceptancePageItemDto
-    export interface IAppliesAcceptancePageItemDto {
+    //  Ron.Ido.BM.Models.Applies.Acceptance.AcceptancePageItemDto
+    export interface IAcceptancePageItemDto {
         id:number;
         dossierId:number;
         barCode:string;
@@ -29,8 +29,8 @@ export namespace AppliesAcceptanceApi {
     //  Ron.Ido.BM.Models.Applies.Acceptance.AcceptanceDictions
     export interface IAcceptanceDictions {
         statuses:IODataOption[];
-        educationLevels:IODataOption[];
-        applyEntryForm:IODataOption[];
+        learnLevels:IODataOption[];
+        entryForms:IODataOption[];
     }
 
 }

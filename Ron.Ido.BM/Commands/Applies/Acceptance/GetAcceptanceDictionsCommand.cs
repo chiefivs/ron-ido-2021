@@ -1,15 +1,14 @@
 ﻿using MediatR;
 using Ron.Ido.BM.Constants;
+using Ron.Ido.BM.Models.Applies.Acceptance;
 using Ron.Ido.BM.Services;
 using Ron.Ido.EM.Entities;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Ron.Ido.BM.Models.Applies.Acceptance
+namespace Ron.Ido.BM.Commands.Applies.Acceptance
 {
     public class GetAcceptanceDictionsCommand : IRequest<AcceptanceDictions>
     {
@@ -29,13 +28,13 @@ namespace Ron.Ido.BM.Models.Applies.Acceptance
             {
                 var statuses = _odataService.GetOptions<ApplyStatus>("Name", "Id", query => query.Where(s => ApplyAllowedStatuses.Acceptance.Contains(s.Id)));
                 var levels = _odataService.GetOptions<LearnLevel>("Name", "Id");
-                var eForms = _odataService.GetOptions<ApplyEntryForm>("Name", "Id");
+                var entryForms = _odataService.GetOptions<ApplyEntryForm>("Name", "Id");
 
                 return new AcceptanceDictions
                 {
                     Statuses = statuses,
-                    EducationLevels = levels,
-                    ApplyEntryForm = eForms
+                    LearnLevels = levels,
+                    EntryForms = entryForms
                 };
             });
         }

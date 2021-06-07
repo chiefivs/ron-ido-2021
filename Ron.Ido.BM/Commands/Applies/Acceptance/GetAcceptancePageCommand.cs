@@ -12,17 +12,17 @@ using System.Threading.Tasks;
 
 namespace Ron.Ido.BM.Commands.Applies.Acceptance
 {
-    public class GetAppliesAcceptancePageCommand: IRequest<ODataPage<AppliesAcceptancePageItemDto>>
+    public class GetAcceptancePageCommand: IRequest<ODataPage<AcceptancePageItemDto>>
     {
         public ODataRequest Request { get; private set; }
 
-        public GetAppliesAcceptancePageCommand(ODataRequest request)
+        public GetAcceptancePageCommand(ODataRequest request)
         {
             Request = request;
         }
     }
 
-    public class GetAppliesAcceptancePageCommandHandler : IRequestHandler<GetAppliesAcceptancePageCommand, ODataPage<AppliesAcceptancePageItemDto>>
+    public class GetAppliesAcceptancePageCommandHandler : IRequestHandler<GetAcceptancePageCommand, ODataPage<AcceptancePageItemDto>>
     {
         private ODataService _odataService;
 
@@ -31,15 +31,15 @@ namespace Ron.Ido.BM.Commands.Applies.Acceptance
             _odataService = service;
         }
 
-        public Task<ODataPage<AppliesAcceptancePageItemDto>> Handle(GetAppliesAcceptancePageCommand cmd, CancellationToken cancellationToken)
+        public Task<ODataPage<AcceptancePageItemDto>> Handle(GetAcceptancePageCommand cmd, CancellationToken cancellationToken)
         {
             return Task.Run(() =>
             {
                 var request = cmd.Request;
-                request.ReplaceOrder(nameof(AppliesAcceptancePageItemDto.CreateDate), nameof(Apply.CreateTime));
-                request.ReplaceOrder(nameof(AppliesAcceptancePageItemDto.CreatorFullName), nameof(Apply.CreatorSurname), nameof(Apply.CreatorFirstName), nameof(Apply.CreatorLastName));
-                request.ReplaceOrder(nameof(AppliesAcceptancePageItemDto.OwnerFullName), nameof(Apply.OwnerSurname), nameof(Apply.OwnerFirstName), nameof(Apply.OwnerLastName));
-                request.ReplaceOrder(nameof(AppliesAcceptancePageItemDto.Status), nameof(Apply.StatusId));
+                request.ReplaceOrder(nameof(AcceptancePageItemDto.CreateDate), nameof(Apply.CreateTime));
+                request.ReplaceOrder(nameof(AcceptancePageItemDto.CreatorFullName), nameof(Apply.CreatorSurname), nameof(Apply.CreatorFirstName), nameof(Apply.CreatorLastName));
+                request.ReplaceOrder(nameof(AcceptancePageItemDto.OwnerFullName), nameof(Apply.OwnerSurname), nameof(Apply.OwnerFirstName), nameof(Apply.OwnerLastName));
+                request.ReplaceOrder(nameof(AcceptancePageItemDto.Status), nameof(Apply.StatusId));
 
                 var result = _odataService.GetPage(request,
                     new[]
@@ -51,18 +51,18 @@ namespace Ron.Ido.BM.Commands.Applies.Acceptance
                                 : ApplyAllowedStatuses.Acceptance;
                             query = query.Where(a => allowedStatuses.Contains(a.StatusId));
 
-                            var levelFilter = request.GetFilter("educationLevel");
+                            var levelFilter = request.GetFilter("learnLevels");
                             if(levelFilter != null)
                             {
                                 var ids = levelFilter.GetIds();
                                 query = query.Where(a => a.DocTypeId != null && ids.Contains(a.DocType.LearnLevelId));
                             }
 
-                            var entryFormFilter = request.GetFilter("entryForm");
+                            var entryFormFilter = request.GetFilter("entryForms");
                             if(entryFormFilter != null)
                             {
                                 var ids = entryFormFilter.GetIds();
-                                query = query.Where(a => a.Id != null && ids.Contains(a.Id));
+                                query = query.Where(a => ids.Contains(a.Id));
                             }
 
 
@@ -70,27 +70,27 @@ namespace Ron.Ido.BM.Commands.Applies.Acceptance
                         })
                     },
                     new[] {
-                        new ODataMapMemberConfig<Apply, AppliesAcceptancePageItemDto>(
+                        new ODataMapMemberConfig<Apply, AcceptancePageItemDto>(
                             applyDto => applyDto.DossierId,
                             expr => expr.MapFrom(apply => apply.Dossiers.First().Id)
                         ),
-                        new ODataMapMemberConfig<Apply, AppliesAcceptancePageItemDto>(
+                        new ODataMapMemberConfig<Apply, AcceptancePageItemDto>(
                             applyDto => applyDto.CreateDate,
                             expr => expr.MapFrom(apply => $"{apply.CreateTime:dd.MM.yyyy}")
                         ),
-                        new ODataMapMemberConfig<Apply, AppliesAcceptancePageItemDto>(
+                        new ODataMapMemberConfig<Apply, AcceptancePageItemDto>(
                             applyDto => applyDto.EntryFormId,
                             expr => expr.MapFrom(apply => apply.EntryFormId.HasValue ? (ApplyEntryFormEnum)apply.EntryFormId : ApplyEntryFormEnum.SELF)
                         ),
-                        new ODataMapMemberConfig<Apply, AppliesAcceptancePageItemDto>(
+                        new ODataMapMemberConfig<Apply, AcceptancePageItemDto>(
                             applyDto => applyDto.CreatorFullName,
                             expr => expr.MapFrom(apply => $"{apply.CreatorSurname} {apply.CreatorFirstName} {apply.CreatorLastName}")
                         ),
-                        new ODataMapMemberConfig<Apply, AppliesAcceptancePageItemDto>(
+                        new ODataMapMemberConfig<Apply, AcceptancePageItemDto>(
                             applyDto => applyDto.OwnerFullName,
                             expr => expr.MapFrom(apply => $"{apply.OwnerSurname} {apply.OwnerFirstName} {apply.OwnerLastName}")
                         ),
-                        new ODataMapMemberConfig<Apply, AppliesAcceptancePageItemDto>(
+                        new ODataMapMemberConfig<Apply, AcceptancePageItemDto>(
                             applyDto => applyDto.Status,
                             expr => expr.MapFrom(apply => apply.Status.Name)
                         )
