@@ -7,7 +7,8 @@ import { AdminAccessApi } from '../../../codegen/webapi/adminAccessApi';
 import { IODataOrder } from '../../../codegen/webapi/odata';
 import { Form } from '../../../modules/forms';
 
-export default class UsersMainPage extends MainPageBase {
+export default class UsersMainPage extends MainPageBase
+{
     users = ko.observableArray<AdminAccessApi.IUsersPageItemDto>([]);
     tableTotalCount = ko.observable(0);
     pagerState = ko.observable<ITablePagerState>({

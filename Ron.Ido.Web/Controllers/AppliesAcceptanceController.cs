@@ -26,5 +26,13 @@ namespace Ron.Ido.Web.Controllers
         {
             return await _mediator.Send(new GetAppliesAcceptancePageCommand(request));
         }
+
+        [HttpGet]
+        [Route("api/acceptance/getdictions")]
+        [AuthorizedFor(PermissionEnum.APPLY_VIEW, PermissionEnum.APPLY_CREATE, PermissionEnum.APPLY_EDIT, PermissionEnum.APPLY_DEL)]
+        public async Task<AcceptanceDictions> GetAcceptanceDictions()
+        {
+            return await _mediator.Send(new GetAcceptanceDictionsCommand());
+        }
     }
 }

@@ -49,12 +49,12 @@ export default class AcceptanceMainPage extends MainPageBase {
                 direct: sortingParts[1] === TableColumnOrderDirection.Asc ? ODataOrderTypeEnum.Asc : ODataOrderTypeEnum.Desc})
         }
 
-        //const filterStates = this._searchPage.filterStates();
+        const filterStates = this._searchPage.filterStates();
 
         AppliesAcceptanceApi.getAppliesPage({
             skip: state.skipCount,
             take: state.maxResultCount,
-            filters:[],//filterStates,
+            filters:filterStates,
             orders:orders
         }).done(page => {
             this.applies(page.items);
@@ -74,13 +74,15 @@ class AcceptanceSearchLeftPage extends LeftPageBase{
     filters: IFilterParams[];
     filterStates: ko.ObservableArray<IODataFilter> = ko.observableArray([]);
 
-    // rolesOptions = ko.observableArray<IFilterOption>([]);
+    statusesOptions = ko.observableArray<IFilterOption>([]);
+    educationLevelOptions = ko.observableArray<IFilterOption>([]);
 
-    // private _fullNameFilter: IFilterParams = { title: 'ФИО', field:'surName', aliases:['firstName', 'lastName'], valueType:'string', filterType: ODataFilterTypeEnum.Contains };
-    // private _rolesFilter: IFilterParams = { title: 'Роли', field: 'roles', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.rolesOptions };
-    // private _blockedFilter: IFilterParams = { title: 'Блокирован', field: 'isBlocked', valueType: 'boolean', filterType: ODataFilterTypeEnum.Equals, initialValues: [''] };
-    // private _deletedFilter: IFilterParams = { title: 'Удален', field: 'isDeleted', valueType: 'boolean', filterType: ODataFilterTypeEnum.Equals, initialValues: [false] };
-
+    private _creatorFullNameFilter: IFilterParams = { title: 'ФИО заявителя', field:'creatorSurname', aliases:['creatorFirstname', 'creatorLastname'], valueType:'string', filterType: ODataFilterTypeEnum.Contains };
+    private _ownerFullNameFilter: IFilterParams = { title: 'ФИО владельца', field:'ownerSurname', aliases:['ownerFirstName', 'ownerLastName'], valueType:'string', filterType: ODataFilterTypeEnum.Contains };
+    private _barCodeFilter: IFilterParams = { title: 'Номер заявления', field:'barCode', aliases:['primaryBarCode'], valueType:'string', filterType: ODataFilterTypeEnum.Contains };
+    private _createDateFilter: IFilterParams = { title: 'Дата создания', field:'createTime', valueType:'date', filterType: ODataFilterTypeEnum.BetweenLeft };
+    private _statusesFilter: IFilterParams = { title: 'Статусы', field: 'statuses', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.statusesOptions };
+    private _educationLevelFilter: IFilterParams = { title: 'Уровень образования', field: 'learnLevel', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.educationLevelOptions };
     constructor(owner: AcceptanceMainPage) {
         super({
             pageTitle: 'поиск',
@@ -88,12 +90,16 @@ class AcceptanceSearchLeftPage extends LeftPageBase{
         });
 
         this.owner = owner;
-        //this.filters = [this._fullNameFilter, this._rolesFilter, this._blockedFilter, this._deletedFilter];
+        this.filters = [this._creatorFullNameFilter, this._ownerFullNameFilter, this._barCodeFilter, this._createDateFilter, this._statusesFilter, this._educationLevelFilter];
 
-        // AdminAccessApi.getUsersDictions().done(dictions => {
-        //     const roleOptionValues: IFilterOption[] = ko.utils.arrayMap(dictions.roles, role => 
-        //         <IFilterOption>{value: role.value.toString(), text: role.text});
-        //     this.rolesOptions(roleOptionValues);
-        // });
+        AppliesAcceptanceApi.getAcceptanceDictions().done(dictions => {
+             const statusOptionValues: IFilterOption[] = ko.utils.arrayMap(dictions.statuses, status => 
+                 <IFilterOption>{value: status.value.toString(), text: status.text});
+             this.statusesOptions(statusOptionValues);
+
+             const educationLevelOptionValues: IFilterOption[] = ko.utils.arrayMap(dictions.educationLevels, level => 
+                <IFilterOption>{value: level.value.toString(), text: level.text});
+            this.educationLevelOptions(educationLevelOptionValues);
+           });
     }
 }

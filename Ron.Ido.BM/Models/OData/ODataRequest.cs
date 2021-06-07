@@ -20,6 +20,11 @@ namespace Ron.Ido.BM.Models.OData
             return Orders?.FirstOrDefault(i => i.Field.FromCamel() == field.FromCamel());
         }
 
+        public ODataFilter GetFilter(string field)
+        {
+            return Filters?.FirstOrDefault(i => i.Field.FromCamel() == field.FromCamel() && i.Values.Any());
+        }
+
         public void ReplaceOrder(string srcField, params string[] dstField)
         {
             if (Orders == null)

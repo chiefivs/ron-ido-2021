@@ -1,7 +1,9 @@
 ﻿using MediatR;
+using Ron.Ido.BM.Constants;
 using Ron.Ido.BM.Models.Applies.Acceptance;
 using Ron.Ido.BM.Models.OData;
 using Ron.Ido.BM.Services;
+using Ron.Ido.Common.Extensions;
 using Ron.Ido.EM.Entities;
 using Ron.Ido.EM.Enums;
 using System.Linq;
@@ -39,8 +41,34 @@ namespace Ron.Ido.BM.Commands.Applies.Acceptance
                 request.ReplaceOrder(nameof(AppliesAcceptancePageItemDto.OwnerFullName), nameof(Apply.OwnerSurname), nameof(Apply.OwnerFirstName), nameof(Apply.OwnerLastName));
                 request.ReplaceOrder(nameof(AppliesAcceptancePageItemDto.Status), nameof(Apply.StatusId));
 
-
                 var result = _odataService.GetPage(request,
+                    new[]
+                    {
+                        request.CreateCustomFilter<Apply>(query => {
+                            var statusFilter = request.GetFilter("statuses");
+                            var allowedStatuses = statusFilter != null
+                                ? ApplyAllowedStatuses.Acceptance.Intersect(statusFilter.GetIds()).ToArray()
+                                : ApplyAllowedStatuses.Acceptance;
+                            query = query.Where(a => allowedStatuses.Contains(a.StatusId));
+
+                            var levelFilter = request.GetFilter("educationLevel");
+                            if(levelFilter != null)
+                            {
+                                var ids = levelFilter.GetIds();
+                                query = query.Where(a => a.DocTypeId != null && ids.Contains(a.DocType.LearnLevelId));
+                            }
+
+                            var entryFormFilter = request.GetFilter("entryForm");
+                            if(entryFormFilter != null)
+                            {
+                                var ids = entryFormFilter.GetIds();
+                                query = query.Where(a => a.Id != null && ids.Contains(a.Id));
+                            }
+
+
+                            return query;
+                        })
+                    },
                     new[] {
                         new ODataMapMemberConfig<Apply, AppliesAcceptancePageItemDto>(
                             applyDto => applyDto.DossierId,
