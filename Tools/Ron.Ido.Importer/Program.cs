@@ -37,9 +37,9 @@ namespace Ron.Ido.Importer
             _nostrStorage = serviceProvider.GetService<NostrificationStorage>();
 
             ImportApplyStatuses();
-            //ImportRoles();
-            //ImportUsers();
-            //ImportCountries();
+            ImportRoles();
+            ImportUsers();
+            ImportCountries();
             ImportApplies();
             //ImportFiles();
         }
@@ -258,6 +258,9 @@ namespace Ron.Ido.Importer
 
             foreach(var nApply in nApplies)
             {
+                if (_appContext.Applies.Any(a => a.PrimaryBarCode == nApply.BarCode))
+                    continue;
+
                 var createTime = nApply.ApplyStatusHistories.OrderBy(h => h.ChangeDate).FirstOrDefault(h => h.StatusId == 1)?.ChangeTime ?? nApply.CreateDate.Value;
                 var acceptTime = nApply.ApplyStatusHistories.OrderBy(h => h.ChangeDate).FirstOrDefault(h => h.StatusId == 5)?.ChangeTime;
 

@@ -10,6 +10,7 @@ interface IControl {
 export interface ILeftPage extends IControl {
     pageTitle: string | ko.Observable<string>;
     owner?: IMainPage;
+    isVisible: ko.Observable<boolean>;
 }
 
 export interface IMainPage extends IControl {
@@ -46,6 +47,7 @@ export abstract class Control implements IControl {
 export abstract class LeftPageBase extends Control implements ILeftPage {
     pageTitle: string | ko.Observable<string>;
     owner?: IMainPage;
+    isVisible = ko.observable(true);
 
     constructor(params: IPageParams) {
         super(params);

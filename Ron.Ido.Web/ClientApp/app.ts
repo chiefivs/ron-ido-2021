@@ -62,7 +62,7 @@ export class App {
         this._openLoginDialog();
 
         this._mainMenu = new MainMenuLeftPage();
-        this.leftPages = ko.computed(() => ko.utils.arrayFilter(this._leftPages(), page => !page.owner || page.owner === this.activeMainPage()));
+        this.leftPages = ko.computed(() => ko.utils.arrayFilter(this._leftPages(), page => (!page.owner || page.owner === this.activeMainPage()) && page.isVisible()));
         this._leftPages.push(this._mainMenu);
         this.activeLeftPage(this._mainMenu);
 
