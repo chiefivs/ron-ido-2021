@@ -7,6 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ron.Ido.Web", "Ron.Ido.Web\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6FFF6872-66CB-47B3-8EE9-734580A59237}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		readme.txt = readme.txt
 	EndProjectSection
 EndProject
@@ -32,7 +33,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ron.Ido.Importer", "Tools\R
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ron.Ido.FileStorage", "Ron.Ido.FileStorage\Ron.Ido.FileStorage.csproj", "{619D6F2B-1540-49F8-B901-69CB88699A21}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ron.Ido.DbStorage.Npgsql", "Providers\Ron.Ido.DbStorage.Npgsql\Ron.Ido.DbStorage.Npgsql.csproj", "{675D5190-B845-44D3-BC64-F8A8022CDE02}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ron.Ido.DbStorage.Npgsql", "Providers\Ron.Ido.DbStorage.Npgsql\Ron.Ido.DbStorage.Npgsql.csproj", "{675D5190-B845-44D3-BC64-F8A8022CDE02}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
