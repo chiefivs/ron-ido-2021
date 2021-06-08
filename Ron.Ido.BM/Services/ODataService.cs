@@ -13,9 +13,10 @@ using System.Linq;
 
 namespace Ron.Ido.BM.Services
 {
-    public class ODataService: IDependency
+
+	public class ODataService: IDependency
     {
-        private AppDbContext _appDbContext;
+        protected AppDbContext _appDbContext;
 
         public ODataService(AppDbContext appDbContext)
         {

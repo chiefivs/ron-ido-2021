@@ -45,6 +45,7 @@ export namespace AdminSettingsApi {
         descriptionForApplier:string;
         descriptionForApplierEng:string;
         visibleForApplier:any;
+        denyDelete:any;
     }
 
 }

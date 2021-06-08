@@ -19,15 +19,15 @@
     </cmp-table>
 </div>
 
-<!--<div style="position:absolute; top:0; bottom: 0; left: 320px; right: 0;">
-    <div style="position: absolute; top:0; bottom:0; left:0; right: 50%; overflow:auto;" data-bind="if:current">
+<div style="position:absolute; top:0; bottom: 0; left: 320px; right: 0;"  data-bind="if:current">
+    <div style="position: absolute; top:0; bottom:0; left:0; right: 50%; overflow:auto;">
         <div data-bind="with:current">
             <div class="pull-right">
                 <a class="btn btn-primary" data-bind="click:reset, css:{disabled:!hasChanges()}">ОТМЕНИТЬ</a>
                 <a class="btn btn-primary"
                     data-bind="click:$parent.save.bind($parent), css:{disabled:!hasChanges() || hasErrors()}">СОХРАНИТЬ</a>
-                <a class="btn btn-primary"
-                    data-bind="click:$parent.remove.bind($parent), visible:item.id.value()">УДАЛИТЬ</a>
+                <button class="btn btn-primary"
+                    data-bind="click:$parent.remove.bind($parent), visible:item.id.value, disable:item.denyDelete.value">УДАЛИТЬ</button>
             </div>
 
             <cmp-form-errors params="form:$data"></cmp-form-errors>
@@ -36,38 +36,42 @@
                 <label>Название</label>
                 <cmp-form-field params="field:item.name"></cmp-form-field>
             </div>
+            <div style="margin:0 5px;">
+                <!-- <label>Видимость для заявителя</label> -->
+                <cmp-form-checkbox-field params="field:item.visibleForApplier,placeholder:'Видимость для заявителя'"></cmp-form-checkbox-field>
+            </div>
 
-            <div data-bind="with:item.rolePermissions" style="margin:0 5px;">
-                <div class="form-field-container">
-                    <div>
-                        <div class="errors"><i class="img img-error img-size-20"
-                                data-bind="visible:errors().length, attr: { title:errors().join('\n') }"></i></div>
-                        <div style="padding:4px 0;"><label>Разрешения</label></div>
-                    </div>
-                </div>
-                <div data-bind="foreach:$parent.permissionGroups" style="padding-left: 10px;">
-                    <cmp-expander params="title:groupName, data:$data, expanded:isExpanded, fixed:false">
-                        <div data-bind="foreach:permissions">
-                            <div>
-                                <input type="checkbox" data-bind="checkedValue:value, checked:$parent.allRoles" />
-                                <span data-bind="text:text"></span>
-                            </div>
-                        </div>
-                    </cmp-expander>
+
+            <div style="margin:0 5px;">
+                <label>Наименование для заявителя</label>
+                <cmp-form-field params="field:item.nameForApplier,placeholder:'Наименование для заявителя'"></cmp-form-field>
+            </div>
+
+            <div style="margin:0 5px;">
+                <label>Наименование для заявителя (en)</label>
+                <cmp-form-field params="field:item.nameForApplierEng,placeholder:'Наименование для заявителя (en)'"></cmp-form-field>
+            </div>
+
+            <div style="margin:0 5px;">
+                <label>Описание для заявителя</label>
+                <cmp-form-richtext-field params="field:item.descriptionForApplier, placeholder:'Описание для заявителя'"></cmp-form-richtext-field>
+            </div>
+            <div style="margin:0 5px;">
+                <label>Описание для заявителя (en)</label>
+                <cmp-form-richtext-field params="field:item.descriptionForApplierEng, placeholder:'Описание для заявителя (en)'"></cmp-form-richtext-field>
+            </div>
+
+        </div>
+    </div>
+    <div style="position: absolute; top:0; bottom:0; left:50%; right: 0; overflow:auto;">
+        <div data-bind="with:current,as:'current'">
+            <div data-bind="with:item, as:'item'" >
+                <label>Статусы</label>
+
+                <div data-bind="foreach:item.allowStepToStatuses.options" class="status-status-item custom-cb">
+                        <label><input type="checkbox" data-bind="checkedValue:value, checked:item.allowStepToStatuses.value" /><span data-bind="text:text" ></span></label>
                 </div>
             </div>
         </div>
     </div>
-    <div style="position: absolute; top:0; bottom:0; left:50%; right: 0; overflow:auto;" data-bind="if:current">
-        <div data-bind="with:current,as:'current'">
-            <div data-bind="with:item, as:'item'">
-                <label>Статусы</label>
-                <div data-bind="foreach:$parent.statuses" class="role-status-item">
-                    <span data-bind="text:text" ></span>
-                    <input type="checkbox" data-bind="checkedValue:value, checked:current.stepStatuses" />
-                    <input type="checkbox" data-bind="checkedValue:value, checked:current.viewStatuses" />
-                </div>
-            </div>
-        </div>
-    </div>-->
 </div>

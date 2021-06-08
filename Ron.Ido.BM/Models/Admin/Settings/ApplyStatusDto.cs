@@ -27,27 +27,32 @@ namespace Ron.Ido.BM.Models.Admin.Settings
 		public string NameForApplierEng { get; set; }
 
 		[StringLength( 1000 )]
-		[Required( ErrorMessage = "Поле обязательно для заполнения", AllowEmptyStrings = false )]
+		//[Required( ErrorMessage = "Поле обязательно для заполнения", AllowEmptyStrings = false )]
 		public string DescriptionForApplier { get; set; }
 
 		[StringLength( 1000 )]
-		[Required( ErrorMessage = "Поле обязательно для заполнения", AllowEmptyStrings = false )]
+		//[Required( ErrorMessage = "Поле обязательно для заполнения", AllowEmptyStrings = false )]
 		public string DescriptionForApplierEng { get; set; }
 
 		public bool VisibleForApplier { get; set; }
 
+		//public string StatusEnumValue { get; set; }
+
+
+		public bool DenyDelete { get; set; }
 
 		public IEnumerable<ValidationResult> Validate( ValidationContext validationContext )
 		{
 			var errors = new List<ValidationResult>();
-
+			/*
 			if ( !AllowStepToStatuses.Any() )
 			{
 				errors.Add( new ValidationResult( "Должен быть выбран хотя бы один статус", new[] { nameof( AllowStepToStatuses ) } ) );
 			}
 			else
-				if ( Id < 0 && AllowStepToStatuses.Contains( Id ) )
+				if ( Id > 0 && AllowStepToStatuses.Contains( Id ) )
 				errors.Add( new ValidationResult( "Циклическая ссылка на статус", new[] { nameof( AllowStepToStatuses ) } ) );
+			*/
 			return errors;
 		}
 	}

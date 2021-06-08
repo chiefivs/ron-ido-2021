@@ -62,10 +62,11 @@
         <div data-bind="with:current,as:'current'">
             <div data-bind="with:item, as:'item'">
                 <label>Статусы</label>
-                <div data-bind="foreach:$parent.statuses" class="role-status-item">
+                <div data-bind="foreach:$parent.statuses" class="role-status-item custom-cb">
                     <span data-bind="text:text" ></span>
-                    <input type="checkbox" data-bind="checkedValue:value, checked:current.stepStatuses" />
-                    <input type="checkbox" data-bind="checkedValue:value, checked:current.viewStatuses" />
+
+                    <label><input type="checkbox" data-bind="checkedValue:value, checked:current.stepStatuses" /></label>
+                    <label><input type="checkbox" data-bind="checkedValue:value, checked:current.viewStatuses" /></label>
                 </div>
             </div>
         </div>

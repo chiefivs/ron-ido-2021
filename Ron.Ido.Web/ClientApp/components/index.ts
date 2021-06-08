@@ -9,6 +9,7 @@ import * as MultiselectComponent from './multiselect';
 import * as SelectComponent from './select';
 import * as TableComponent from './table';
 import * as TextBoxComponent from './textbox';
+import * as CheckBoxComponent from './checkbox';
 
 export function init() {
     DatepickerComponent.init();
@@ -22,6 +23,7 @@ export function init() {
     SelectComponent.init();
     TableComponent.init();
     TextBoxComponent.init();
+    CheckBoxComponent.init();
 }
 
 export { IDatepickerParams } from './datepicker';
@@ -35,3 +37,4 @@ export { IMultiselectParams } from './multiselect';
 export { ISelectParams } from './select';
 export { ITableParams, ITableColumnParams, ITablePagerState, TableColumnOrderDirection } from './table';
 export { ITextBoxParams } from './textbox';
+export { ICheckBoxParams } from './checkbox';

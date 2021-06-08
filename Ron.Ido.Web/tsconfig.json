@@ -4,7 +4,7 @@
     "noEmitOnError": true,
     "removeComments": false,
     "alwaysStrict": true,
-
+    "outDir": "",
     "allowSyntheticDefaultImports": true,
     "lib": [
       "dom",
