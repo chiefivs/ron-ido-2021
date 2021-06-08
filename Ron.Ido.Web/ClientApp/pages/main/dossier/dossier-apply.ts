@@ -6,6 +6,8 @@ export class Apply extends DossierPartBase {
         super({
             templatePath: 'pages/main/dossier/dossier-apply.html',
             owner: owner
-        })
+        });
+
+        this.priority = 0;
     }
 }

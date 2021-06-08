@@ -23,7 +23,6 @@ export default class AcceptanceMainPage extends MainPageBase {
             templatePath: 'pages/main/applies/acceptance.html'
         });
 
-        this.isActive.subscribe(active => {if(active) this.onActivated();});
         this.pagerState.subscribe(() => this.update());
 
         this.leftPages = ko.observableArray([]);
@@ -35,7 +34,7 @@ export default class AcceptanceMainPage extends MainPageBase {
         this._searchPage.filterStates.subscribe(() => this.update());
     }
 
-    onActivated() {
+    afterActivate() {
         this.update();
     }
 
@@ -65,7 +64,7 @@ export default class AcceptanceMainPage extends MainPageBase {
     open(item: AppliesAcceptanceApi.IAppliesAcceptancePageItemDto) {
         console.log(item);
         const page = <DossierMainPage>App.instance().openMainPage('dossier/dossier', item.dossierId.toString());
-        page.openApply(item.dossierId);
+        page.openApply();
     }
 
 }

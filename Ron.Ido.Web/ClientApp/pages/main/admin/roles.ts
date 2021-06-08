@@ -21,11 +21,10 @@ export default class RolesMainPage extends MainPageBase {
             templatePath: 'pages/main/admin/roles.html'
         });
 
-        this.isActive.subscribe(active => {if(active) this.onActivated();});
         this.pagerState.subscribe(() => this.update());
     }
 
-    onActivated() {
+    afterActivate() {
         this.update();
     }
 

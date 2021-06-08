@@ -6,6 +6,8 @@ export class Conclusion extends DossierPartBase {
         super({
             templatePath: 'pages/main/dossier/dossier-conclusion.html',
             owner: owner
-        })
+        });
+
+        this.priority = 5;
     }
 }

@@ -21,11 +21,10 @@ export default class ApplyStatusMainPage extends MainPageBase {
             templatePath: 'pages/main/admin/statusModel.html'
         });
 
-        this.isActive.subscribe(active => {if(active) this.onActivated();});
         this.pagerState.subscribe(() => this.update());
     }
 
-    onActivated() {
+    afterActivate() {
         this.update();
     }
 

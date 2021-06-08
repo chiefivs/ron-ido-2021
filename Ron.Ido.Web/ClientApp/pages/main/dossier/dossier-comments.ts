@@ -6,6 +6,8 @@ export class Comments extends DossierPartBase {
         super({
             templatePath: 'pages/main/dossier/dossier-comments.html',
             owner: owner
-        })
+        });
+
+        this.priority = 2;
     }
 }

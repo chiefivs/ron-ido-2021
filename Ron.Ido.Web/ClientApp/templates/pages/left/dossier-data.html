@@ -1,6 +1,19 @@
-<div data-bind="with:data">
+<div data-bind="with:owner">
     <div data-bind="with:apply">
-        <b>заявление <span data-bind="text:barCode"></span>
-            <br />от <span data-bind="text:createTime"></span></b>
+        <input type="checkbox" data-bind="checked:isVisible, value:true, enable:allowOpen" />
+        <b>заявление <span data-bind="text:item.barCode"></span> от <span data-bind="text:item.createTime"></span></b>
+    </div>
+
+    <div data-bind="with:comments">
+        <input type="checkbox" data-bind="checked:isVisible, value:true, enable:allowOpen" />
+        <span>комментарии</span>
+    </div>
+
+    <b>заключения</b>
+    <div data-bind="foreach:conclusions">
+        <div>
+            <input type="checkbox" data-bind="checked:isVisible, value:true, enable:allowOpen" />
+            <span data-bind="text:item"></span>
+        </div>
     </div>
 </div>
