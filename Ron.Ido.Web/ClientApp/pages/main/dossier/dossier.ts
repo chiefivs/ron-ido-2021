@@ -2,12 +2,13 @@ import * as ko from 'knockout';
 import { Control, IControlParams, ILeftPage, MainPageBase, LeftPageBase } from '../../../modules/content';
 import { DossierApi } from '../../../codegen/webapi/dossierApi';
 import { App } from '../../../app';
-import  { DossierPartBase } from './dossier-part-base';
+import  { IDossier, DossierPartBase } from './dossier-part-base';
 import { Apply } from './dossier-apply';
 import { Comments } from './dossier-comments';
 import { Conclusion } from './dossier-conclusion';
 
-export default class DossierMainPage extends MainPageBase {
+export default class DossierMainPage extends MainPageBase implements IDossier {
+    id: number;
     parts: ko.ObservableArray<DossierPartBase>;
     partWidth: ko.Computed<number>;
 
@@ -18,6 +19,7 @@ export default class DossierMainPage extends MainPageBase {
             pageTitle: 'дело',
             templatePath: 'pages/main/dossier/dossier.html'
         });
+
 
         this.isActive.subscribe(active => {if(active) this.onActivated();});
 
@@ -36,9 +38,9 @@ export default class DossierMainPage extends MainPageBase {
             return Math.round(100/len);
         });
 
-        this.parts.push(new Apply());
-        this.parts.push(new Comments());
-        this.parts.push(new Conclusion());
+        this.parts.push(new Apply(this));
+        this.parts.push(new Comments(this));
+        this.parts.push(new Conclusion(this));
     }
 
     openApply(id:number){

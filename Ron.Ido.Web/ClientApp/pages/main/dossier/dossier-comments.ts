@@ -1,10 +1,11 @@
-import { DossierPartBase } from './dossier-part-base';
+import { DossierPartBase, IDossier } from './dossier-part-base';
 
 export class Comments extends DossierPartBase {
 
-    constructor() {
+    constructor(owner: IDossier) {
         super({
-            templatePath: 'pages/main/dossier/dossier-comments.html'
+            templatePath: 'pages/main/dossier/dossier-comments.html',
+            owner: owner
         })
     }
 }

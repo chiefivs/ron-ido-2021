@@ -1,8 +1,24 @@
+import * as ko from 'knockout';
 import { Control, IControlParams } from '../../../modules/content';
 
-export abstract class DossierPartBase extends Control {
+export interface IDossier {
+    id: number;
+}
 
-    constructor(params: IControlParams) {
+export interface IDossierPartBaseParams extends IControlParams {
+    owner: IDossier;
+}
+
+export abstract class DossierPartBase extends Control {
+    isVisible = ko.observable(false);
+
+    private _owner: IDossier;
+
+    constructor(params: IDossierPartBaseParams) {
         super(params);
+    }
+
+    onClose(): boolean {
+        return true;
     }
 }
