@@ -123,7 +123,6 @@ export class Form<T> {
         return this._saveApi(this.get()).fail(res => {
             if(res.status === 400) {
                 console.log('error', res.responseJSON);
-
             }
         });
     }

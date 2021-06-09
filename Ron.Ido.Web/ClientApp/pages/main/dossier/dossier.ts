@@ -29,7 +29,6 @@ export default class DossierMainPage extends MainPageBase implements IDossier {
         this.id = parseInt(dossierId) || 0;
         this.parts = ko.observableArray();
         this.sortedParts = ko.computed(() => this.parts().sort((a, b) => a.priority < b.priority ? -1 : a.priority > b.priority ? 1 : 0));
-        console.log('dossier constructor', dossierId, this.id);
 
         this.leftPages = ko.observableArray([]);
         this.activeLeftPage = ko.observable(null);
@@ -41,19 +40,18 @@ export default class DossierMainPage extends MainPageBase implements IDossier {
             this._loadDossierPromise = DossierApi.getDossier(this.id)
             .done(data => {
                 this.pageTitle(data.apply.barCode);
-                console.log(data);
 
                 this.data(data);
                 this._dataPage.isVisible(true);
                 App.instance().activeLeftPage(this._dataPage);
 
-                this.apply(new DossierPartDescriptor(data.apply, this, () => new Apply(this)));
-                this.comments(new DossierPartDescriptor('Комментарии', this, () => new Comments(this)));
+                this.apply(new DossierPartDescriptor(data.apply, this, () => new Apply(data.apply.id, this)));
+                // this.comments(new DossierPartDescriptor('Комментарии', this, () => new Comments(this)));
 
-                this.conclusions.push(
-                    new DossierPartDescriptor('123', this, () => new Conclusion(this)),
-                    new DossierPartDescriptor('45', this, () => new Conclusion(this))
-                )
+                // this.conclusions.push(
+                //     new DossierPartDescriptor('123', this, () => new Conclusion(this)),
+                //     new DossierPartDescriptor('45', this, () => new Conclusion(this))
+                // )
             });
         }
     }
@@ -69,7 +67,7 @@ export default class DossierMainPage extends MainPageBase implements IDossier {
     }
 
     afterActivate() {
-        console.log('dossier after activate');
+        //console.log('dossier after activate');
     }
 }
 

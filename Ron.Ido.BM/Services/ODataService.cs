@@ -15,7 +15,7 @@ namespace Ron.Ido.BM.Services
 {
     public class ODataService: IDependency
     {
-        public AppDbContext AppDbContext;
+        protected AppDbContext AppDbContext;
 
         public ODataService(AppDbContext appDbContext)
         {

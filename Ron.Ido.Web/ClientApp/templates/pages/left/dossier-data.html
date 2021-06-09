@@ -4,11 +4,14 @@
         <b>заявление <span data-bind="text:item.barCode"></span> от <span data-bind="text:item.createTime"></span></b>
     </div>
 
+    <!-- ko if:comments -->
     <div data-bind="with:comments">
         <input type="checkbox" data-bind="checked:isVisible, value:true, enable:allowOpen" />
         <span>комментарии</span>
     </div>
+    <!-- /ko -->
 
+    <!-- ko if:conclusions.length -->
     <b>заключения</b>
     <div data-bind="foreach:conclusions">
         <div>
@@ -16,4 +19,5 @@
             <span data-bind="text:item"></span>
         </div>
     </div>
+    <!-- /ko -->
 </div>
