@@ -68,8 +68,8 @@ namespace Ron.Ido.BM.Commands.Applies.Acceptance
                             var stagesFilter = request.GetFilter("stages");
                             if(stagesFilter != null)
                             {
-                                var stagesIds = stagesFilter.GetIds();
-                                query = query.Where(a => stagesIds.Contains(a.Status.EtapId));
+                                var ids = stagesFilter.GetIds();
+                                query = query.Where(a => a.Status.EtapId != null && ids.Contains(a.Status.EtapId.Value));
                             }
 
 
