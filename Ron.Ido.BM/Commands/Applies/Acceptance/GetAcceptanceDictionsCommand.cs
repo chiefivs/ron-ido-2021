@@ -29,12 +29,14 @@ namespace Ron.Ido.BM.Commands.Applies.Acceptance
                 var statuses = _odataService.GetOptions<ApplyStatus>("Name", "Id", query => query.Where(s => ApplyAllowedStatuses.Acceptance.Contains(s.Id)));
                 var levels = _odataService.GetOptions<LearnLevel>("Name", "Id");
                 var entryForms = _odataService.GetOptions<ApplyEntryForm>("Name", "Id");
+                var stages = _odataService.GetOptions<ReglamentEtap>("Name", "Id");
 
                 return new AcceptanceDictions
                 {
                     Statuses = statuses,
                     LearnLevels = levels,
-                    EntryForms = entryForms
+                    EntryForms = entryForms,
+                    Stages = stages
                 };
             });
         }
