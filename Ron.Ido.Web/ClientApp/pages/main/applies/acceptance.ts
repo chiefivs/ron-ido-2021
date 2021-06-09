@@ -8,7 +8,7 @@ import { AppliesAcceptanceApi } from '../../../codegen/webapi/appliesAcceptanceA
 import { IODataOrder } from '../../../codegen/webapi/odata';
 
 export default class AcceptanceMainPage extends MainPageBase {
-    applies = ko.observableArray<AppliesAcceptanceApi.IAppliesAcceptancePageItemDto>([]);
+    applies = ko.observableArray<AppliesAcceptanceApi.IAcceptancePageItemDto>([]);
     tableTotalCount = ko.observable(0);
     pagerState = ko.observable<ITablePagerState>({
         skipCount: 0,
@@ -62,7 +62,7 @@ export default class AcceptanceMainPage extends MainPageBase {
         });
     }
 
-    open(item: AppliesAcceptanceApi.IAppliesAcceptancePageItemDto) {
+    open(item: AppliesAcceptanceApi.IAcceptancePageItemDto) {
         console.log(item);
         const page = <DossierMainPage>App.instance().openMainPage('dossier/dossier', item.dossierId.toString());
         page.openApply(item.id);
@@ -75,18 +75,10 @@ class AcceptanceSearchLeftPage extends LeftPageBase{
     filterStates: ko.ObservableArray<IODataFilter> = ko.observableArray([]);
 
     statusesOptions = ko.observableArray<IFilterOption>([]);
-    educationLevelOptions = ko.observableArray<IFilterOption>([]);
+    learnLevelOptions = ko.observableArray<IFilterOption>([]);
     entryFormOptions = ko.observableArray<IFilterOption>([]);
     stagesOptions = ko.observableArray<IFilterOption>([]);
 
-    private _creatorFullNameFilter: IFilterParams = { title: 'ФИО заявителя', field:'creatorSurname', aliases:['creatorFirstname', 'creatorLastname'], valueType:'string', filterType: ODataFilterTypeEnum.Contains };
-    private _ownerFullNameFilter: IFilterParams = { title: 'ФИО владельца', field:'ownerSurname', aliases:['ownerFirstName', 'ownerLastName'], valueType:'string', filterType: ODataFilterTypeEnum.Contains };
-    private _barCodeFilter: IFilterParams = { title: 'Номер заявления', field:'barCode', aliases:['primaryBarCode'], valueType:'string', filterType: ODataFilterTypeEnum.Contains };
-    private _createDateFilter: IFilterParams = { title: 'Дата создания', field:'createTime', valueType:'date', filterType: ODataFilterTypeEnum.BetweenLeft };
-    private _statusesFilter: IFilterParams = { title: 'Статусы', field: 'statuses', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.statusesOptions };
-    private _educationLevelFilter: IFilterParams = { title: 'Уровень образования', field: 'learnLevel', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.educationLevelOptions };
-    private _entryFormFilter: IFilterParams = { title: 'Форма приема', field: 'entryForm', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.entryFormOptions };
-    private _stagesFilter: IFilterParams = { title: 'Этапы', field: 'stages', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.stagesOptions };
     constructor(owner: AcceptanceMainPage) {
         super({
             pageTitle: 'поиск',
@@ -94,18 +86,27 @@ class AcceptanceSearchLeftPage extends LeftPageBase{
         });
 
         this.owner = owner;
-        this.filters = [this._creatorFullNameFilter, this._ownerFullNameFilter, this._barCodeFilter, this._createDateFilter, this._statusesFilter, this._educationLevelFilter, this._entryFormFilter, this._stagesFilter];
+        this.filters = [
+            { title: 'ФИО заявителя', field:'creatorSurname', aliases:['creatorFirstname', 'creatorLastname'], valueType:'string', filterType: ODataFilterTypeEnum.Contains },
+            { title: 'ФИО владельца', field:'ownerSurname', aliases:['ownerFirstName', 'ownerLastName'], valueType:'string', filterType: ODataFilterTypeEnum.Contains },
+            { title: 'Номер заявления', field:'barCode', aliases:['primaryBarCode'], valueType:'string', filterType: ODataFilterTypeEnum.Contains },
+            { title: 'Дата создания', field:'createTime', valueType:'date', filterType: ODataFilterTypeEnum.BetweenLeft },
+            { title: 'Статусы', field: 'statuses', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.statusesOptions },
+            { title: 'Уровень образования', field: 'learnLevel', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.learnLevelOptions },
+            { title: 'Форма приема', field: 'entryForm', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.entryFormOptions },
+            { title: 'Этапы', field: 'stages', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.stagesOptions }
+        ];
 
         AppliesAcceptanceApi.getAcceptanceDictions().done(dictions => {
             const statusOptionValues: IFilterOption[] = ko.utils.arrayMap(dictions.statuses, status => 
                  <IFilterOption>{value: status.value.toString(), text: status.text});
             this.statusesOptions(statusOptionValues);
 
-            const educationLevelOptionValues: IFilterOption[] = ko.utils.arrayMap(dictions.educationLevels, level => 
+            const learnLevelOptionValues: IFilterOption[] = ko.utils.arrayMap(dictions.learnLevels, level => 
                 <IFilterOption>{value: level.value.toString(), text: level.text});
-            this.educationLevelOptions(educationLevelOptionValues);
+            this.learnLevelOptions(learnLevelOptionValues);
 
-            const entryFormOptionValues: IFilterOption[] = ko.utils.arrayMap(dictions.applyEntryForm, eForm => 
+            const entryFormOptionValues: IFilterOption[] = ko.utils.arrayMap(dictions.entryForms, eForm => 
                 <IFilterOption>{value: eForm.value.toString(), text: eForm.text});
             this.entryFormOptions(entryFormOptionValues);
 
