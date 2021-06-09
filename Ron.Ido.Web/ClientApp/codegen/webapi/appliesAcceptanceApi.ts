@@ -31,6 +31,7 @@ export namespace AppliesAcceptanceApi {
         statuses:IODataOption[];
         learnLevels:IODataOption[];
         entryForms:IODataOption[];
+        stages:IODataOption[];
     }
 
 }
