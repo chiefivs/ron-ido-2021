@@ -38,6 +38,7 @@ export namespace DossierApi {
     //  Ron.Ido.BM.Models.Dossier.ApplyDto
     export interface IApplyDto {
         id:number;
+        createTime:string;
         transmitOpenChannels:boolean;
         docsWillSendByPost:boolean;
         creatorFirstName:string;

@@ -44,7 +44,7 @@ namespace Ron.Ido.BM.Commands.Dossier.Apply
                 var date = dto.Id > 0 ? dto.CreateTime : DateTime.Now;
 
                 var allCountries = _odataService.GetOptions<EM.Entities.Country>("Name", "Id");
-                var foreignCountries = _odataService.GetOptions<EM.Entities.Country>("Name", "Id", countries => countries.Where(c => c.A2code == "RU"));
+                var foreignCountries = _odataService.GetOptions<EM.Entities.Country>("Name", "Id", countries => countries.Where(c => c.A2code != "RU"));
                 var genders = new[] { new ODataOption("не определен", 0), new ODataOption("мужской", 1), new ODataOption("женский", 2) };
                 var deliveryForms = _odataService.GetOptions<EM.Entities.ApplyDeliveryForm>("Name", "Id");
                 var passportTypes = _odataService.GetOptions<EM.Entities.ApplyPassportType>("Name", "Id");
@@ -65,7 +65,7 @@ namespace Ron.Ido.BM.Commands.Dossier.Apply
                         { nameof(ApplyDto.OwnerCitizenshipId).ToCamel(), foreignCountries },
                         { nameof(ApplyDto.OwnerPassportTypeId).ToCamel(), passportTypes },
                         { nameof(ApplyDto.DocCountryId).ToCamel(), foreignCountries },
-                        { nameof(ApplyDto.DocTypeId).ToCamel(), _odataService.GetOptions<EM.Entities.ApplyDocType>("Name", "Id") },
+                        { nameof(ApplyDto.DocTypeId).ToCamel(), _odataService.GetOptions<EM.Entities.ApplyDocType>("Name", "Id", date) },
                         { nameof(ApplyDto.SchoolCountryId).ToCamel(), foreignCountries },
                         { nameof(ApplyDto.SchoolTypeId).ToCamel(), _odataService.GetOptions<EM.Entities.SchoolType>("Name", "Id") },
                         { nameof(ApplyDto.SpecialLearnFormId).ToCamel(), _odataService.GetOptions<EM.Entities.ApplyLearnForm>("Name", "Id") },
