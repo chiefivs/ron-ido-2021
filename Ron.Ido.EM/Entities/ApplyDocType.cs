@@ -11,7 +11,7 @@ namespace Ron.Ido.EM.Entities
     [Index(nameof(OrderNum))]
     [Index(nameof(BeginDate))]
     [Index(nameof(EndDate))]
-    public class ApplyDocType : IOrdered
+    public class ApplyDocType : IOrdered, IDateDependent
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]

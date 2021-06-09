@@ -106,13 +106,6 @@ class RoleForm extends Form<AdminAccessApi.IRoleDto>{
     }
 }
 
-interface IPermissionGroup {
-    groupName: string;
-    permissions: IODataOption[];
-    allRoles: ko.ObservableArray<any>;
-    isExpanded: ko.Observable<boolean>;
-}
-
 class PermissionGroup {
     groupName: ko.Computed<string>;
     permissions: IODataOption[];

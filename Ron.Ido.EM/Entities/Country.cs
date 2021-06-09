@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Ron.Ido.EM.Interfaces;
 using System.ComponentModel.DataAnnotations;
 
 namespace Ron.Ido.EM.Entities
@@ -12,7 +13,7 @@ namespace Ron.Ido.EM.Entities
     [Index(nameof(IsgaCode))]
     [Index(nameof(OksmCode))]
     [Index(nameof(OldId))]
-    public class Country
+    public class Country: IOrdered
     {
         [Key]
         public long Id { get; set; }

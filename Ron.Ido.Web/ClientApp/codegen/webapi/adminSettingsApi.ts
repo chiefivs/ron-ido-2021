@@ -44,7 +44,7 @@ export namespace AdminSettingsApi {
         nameForApplierEng:string;
         descriptionForApplier:string;
         descriptionForApplierEng:string;
-        visibleForApplier:any;
+        visibleForApplier:boolean;
     }
 
 }
