@@ -17,8 +17,4 @@
     <ProjectReference Include="..\Ron.Ido.EM\Ron.Ido.EM.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Events\" />
-  </ItemGroup>
-
 </Project>

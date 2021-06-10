@@ -35,6 +35,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ron.Ido.FileStorage", "Ron.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ron.Ido.DbStorage.Npgsql", "Providers\Ron.Ido.DbStorage.Npgsql\Ron.Ido.DbStorage.Npgsql.csproj", "{675D5190-B845-44D3-BC64-F8A8022CDE02}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ron.Ido.Tests", "Ron.Ido.Tests\Ron.Ido.Tests.csproj", "{60EE3251-70D4-456C-81BE-B3193B74405A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,6 +87,10 @@ Global
 		{675D5190-B845-44D3-BC64-F8A8022CDE02}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{675D5190-B845-44D3-BC64-F8A8022CDE02}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{675D5190-B845-44D3-BC64-F8A8022CDE02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60EE3251-70D4-456C-81BE-B3193B74405A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60EE3251-70D4-456C-81BE-B3193B74405A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60EE3251-70D4-456C-81BE-B3193B74405A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60EE3251-70D4-456C-81BE-B3193B74405A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
