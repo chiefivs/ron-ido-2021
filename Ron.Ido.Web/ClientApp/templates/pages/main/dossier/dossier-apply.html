@@ -1,1 +1,16 @@
-<h4>Заявление</h4>
+<div data-bind="foreach:blocks">
+    <cmp-expander params="title:title, templateId:'dossier-apply-block', data:$data, expanded:isExpanded, fixed:false"></cmp-expander>
+</div>
+
+<script type="text/html" id="dossier-apply-block">
+    <div style="padding-left:20px;" data-bind="foreach:fields">
+        <cmp-form-field params="field:$data">
+            <label data-bind="text:title, click:function(){hasFocus(true);}"></label>
+            <cmp-textbox params="value:value, hasFocus:hasFocus, keyDown:keyDown"></cmp-textbox>
+        </cmp-form-field>
+
+    </div>
+    <div style="padding-left:20px;" data-bind="foreach:blocks">
+        <cmp-expander params="title:title, templateId:'dossier-apply-block', data:$data, expanded:isExpanded, fixed:false"></cmp-expander>
+    </div>
+</script>

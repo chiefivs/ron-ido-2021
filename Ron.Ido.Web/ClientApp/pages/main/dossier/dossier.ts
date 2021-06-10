@@ -95,7 +95,6 @@ class DossierPartDescriptor<TPartData> {
         this._create = create;
 
         this.allowOpen = ko.computed(() => {
-            console.log(owner.parts().length);
             return owner.parts().length < 3 || this.isVisible();
         });
 

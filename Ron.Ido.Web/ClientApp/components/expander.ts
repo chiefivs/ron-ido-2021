@@ -26,6 +26,8 @@ export function init(){
 export interface IExpanderParams {
     title: string | ko.Observable<string> | ko.Computed<string>;
     data: any;
+    templateId?: string;
+    templateFile?: string;
     expanded?: boolean | ko.Observable<boolean>;
     fixed?: boolean | ko.Observable<boolean>;
 }
@@ -40,7 +42,7 @@ export class ExpanderModel {
     contentElement: JQuery<Node[]> = null;
 
     constructor(params: IExpanderParams, componentInfo: any) {
-        this.templateNodes = componentInfo.templateNodes;
+        this.templateNodes = this._getTemplateNodes(params) || componentInfo.templateNodes;
         this.title = ko.isObservable(params.title) || ko.isComputed(params.title) ? params.title : ko.observable(params.title);
         this.isExpanded = ko.isObservable(params.expanded) ? params.expanded : ko.observable(params.expanded || false);
         this.data = params.data;
@@ -85,5 +87,15 @@ export class ExpanderModel {
 
     toggleExpanded() {
         this.isExpanded(!this.isExpanded());
+    }
+
+    private _getTemplateNodes(params: IExpanderParams) {
+        if(params.templateId)
+            return Utils.getNodesFromScriptElement(params.templateId);
+
+        if(params.templateFile)
+            return Utils.getNodesFromFile(params.templateFile);
+
+        return null;
     }
 }
