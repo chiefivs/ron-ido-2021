@@ -47,23 +47,23 @@ namespace Ron.Ido.BM.Services
                     {
                         case ApplyFormEnum.Mail:
                             if ( newStatusEnum == ApplyStatusEnum.GIVEN_DOCS_IN_NIC )
-                                return Yes(apply, pars);
+                                return Yes(apply, statusId, pars);
                             else
                                 return Miscondition;
                         case ApplyFormEnum.Online:
                             if ( _checker.IsFullSet(apply) )
                                 if ( newStatusEnum == ApplyStatusEnum.WAIT_DOCUMENTS )
-                                    return Yes(apply, pars);
+                                    return Yes(apply, statusId, pars);
                                 else
                                     return Miscondition;
                             else
                                 if ( newStatusEnum == ApplyStatusEnum.GIVEN_DOCS_IN_NIC )
-                                return Yes(apply, pars);
+                                return Yes(apply, statusId, pars);
                             else
                                 return Miscondition;
                         case ApplyFormEnum.Personal:
                             if ( newStatusEnum == ApplyStatusEnum.GIVEN )
-                                return Yes(apply, pars);
+                                return Yes(apply, statusId, pars);
                             else
                                 return Miscondition;
                         default:
@@ -78,18 +78,18 @@ namespace Ron.Ido.BM.Services
                         case ApplyFormEnum.Online:
                             if ( _checker.IsFullSet(apply) )
                                 if ( newStatusEnum == ApplyStatusEnum.WAIT_DOCUMENTS )
-                                    return Yes(apply, pars);
+                                    return Yes(apply, statusId, pars);
                                 else
                                     return Miscondition;
                             else
                                 if ( newStatusEnum == ApplyStatusEnum.READY_TO_GIVE )
-                                return Yes(apply, pars);
+                                return Yes(apply, statusId, pars);
                             else
                                 return Miscondition;
                         case ApplyFormEnum.Mail:
                         case ApplyFormEnum.Personal:
                             if ( newStatusEnum == ApplyStatusEnum.READY_TO_GIVE )
-                                return Yes(apply, pars);
+                                return Yes(apply, statusId, pars);
                             else
                                 return Miscondition;
                         default:
@@ -126,25 +126,25 @@ namespace Ron.Ido.BM.Services
                             var ceResult = _checker.ContainsErrors(apply);
                             if ( ceResult == ContainErrorsEnum.Email )
                                 if ( newStatusEnum == ApplyStatusEnum.UNDERMANNED )
-                                    return Yes(apply, pars);
+                                    return Yes(apply, statusId, pars);
                                 else
                                     return Miscondition;
 
                             if ( ceResult == ContainErrorsEnum.Online )
                                 if ( newStatusEnum == ApplyStatusEnum.HAS_ERRORS )
-                                    return Yes(apply, pars);
+                                    return Yes(apply, statusId, pars);
                                 else
                                     return Miscondition;
 
                             // ContainErrorsEnum.No
                             if (_checker.ContainsDouble(apply))
                                 if ( newStatusEnum == ApplyStatusEnum.SECOND_REQUEST)
-                                    return Yes(apply, pars);
+                                    return Yes(apply, statusId, pars);
                                 else
                                     return Miscondition;
 
                             if ( newStatusEnum == ApplyStatusEnum.APPROVED )
-                                return Yes(apply, pars);
+                                return Yes(apply, statusId, pars);
                             else
                                 return Miscondition;
                         }
@@ -155,19 +155,19 @@ namespace Ron.Ido.BM.Services
                         {
                             if ( _checker.IsReturn(apply) )
                                 if ( newStatusEnum == ApplyStatusEnum.DELETED )
-                                    return Yes(apply, pars);
+                                    return Yes(apply, statusId, pars);
                                 else
                                     return Miscondition;
 
                             // Не возврат
                             if ( _checker.FullPackageSent(apply))
                                 if ( newStatusEnum == ApplyStatusEnum.APPROVED )
-                                    return Yes(apply, pars);
+                                    return Yes(apply, statusId, pars);
                                 else
                                     return Miscondition;
 
                             if ( newStatusEnum == ApplyStatusEnum.UNDERMANNED )
-                                return Yes(apply, pars);
+                                return Yes(apply, statusId, pars);
                             else
                                 return Miscondition;
                         }
@@ -176,7 +176,7 @@ namespace Ron.Ido.BM.Services
                     #region Содержит ошибки
                     case ApplyStatusEnum.HAS_ERRORS:
                         if ( newStatusEnum == ApplyStatusEnum.FIXED_BY_USER )
-                            return Yes(apply, pars);
+                            return Yes(apply, statusId, pars);
                         else
                             return Miscondition;
                     #endregion
@@ -186,12 +186,12 @@ namespace Ron.Ido.BM.Services
                         {
                             if ( _checker.ContainsDouble(apply) )
                                 if ( newStatusEnum == ApplyStatusEnum.SECOND_REQUEST )
-                                    return Yes(apply, pars);
+                                    return Yes(apply, statusId, pars);
                                 else
                                     return Miscondition;
 
                             if ( newStatusEnum == ApplyStatusEnum.APPROVED )
-                                return Yes(apply, pars);
+                                return Yes(apply, statusId, pars);
                             else
                                 return Miscondition;
                         }
@@ -200,7 +200,7 @@ namespace Ron.Ido.BM.Services
                     #region Заявление принято
                     case ApplyStatusEnum.APPROVED:
                         if ( newStatusEnum == ApplyStatusEnum.ON_EXPERTIZE )
-                            return Yes(apply, pars);
+                            return Yes(apply, statusId, pars);
                         else
                             return Miscondition;
                     #endregion
@@ -209,12 +209,12 @@ namespace Ron.Ido.BM.Services
                     case ApplyStatusEnum.ON_EXPERTIZE:
                         if (_checker.IsProcedure(apply))
                             if ( newStatusEnum == ApplyStatusEnum.ON_RESEARCH )
-                                return Yes(apply, pars);
+                                return Yes(apply, statusId, pars);
                             else
                                 return Miscondition;
 
                         if ( newStatusEnum == ApplyStatusEnum.INFO_LETTER )
-                            return Yes(apply, pars);
+                            return Yes(apply, statusId, pars);
                         else
                             return Miscondition;
                     #endregion
@@ -222,7 +222,7 @@ namespace Ron.Ido.BM.Services
                     #region Информационное письмо
                     case ApplyStatusEnum.INFO_LETTER:
                         if ( newStatusEnum == ApplyStatusEnum.ON_RESEARCH_END )
-                            return Yes(apply, pars);
+                            return Yes(apply, statusId, pars);
                         else
                             return Miscondition;
                     #endregion
@@ -231,12 +231,12 @@ namespace Ron.Ido.BM.Services
                     case ApplyStatusEnum.ON_RESEARCH:
                         if ( !_checker.RequestRequired(apply))
                             if ( newStatusEnum == ApplyStatusEnum.ON_RESEARCH_END )
-                                return Yes(apply, pars);
+                                return Yes(apply, statusId, pars);
                             else
                                 return Miscondition;
 
                         if ( newStatusEnum == ApplyStatusEnum.SUSPENDED )
-                            return Yes(apply, pars);
+                            return Yes(apply, statusId, pars);
                         else
                             return Miscondition;
 
@@ -246,12 +246,12 @@ namespace Ron.Ido.BM.Services
                     case ApplyStatusEnum.SUSPENDED:
                         if ( _checker.ResponseReceived(apply))
                             if ( newStatusEnum == ApplyStatusEnum.ON_RESEARCH_END )
-                                return Yes(apply, pars);
+                                return Yes(apply, statusId, pars);
                             else
                                 return Miscondition;
 
                         if ( newStatusEnum == ApplyStatusEnum.SECOND_REQUEST )
-                            return Yes(apply, pars);
+                            return Yes(apply, statusId, pars);
                         else
                             return Miscondition;
 
@@ -261,7 +261,7 @@ namespace Ron.Ido.BM.Services
                     case ApplyStatusEnum.SECOND_REQUEST:
 
                         if ( newStatusEnum == ApplyStatusEnum.ON_RESEARCH_END)
-                            return Yes(apply, pars);
+                            return Yes(apply, statusId, pars);
                         else
                             return Miscondition;
 
@@ -272,18 +272,18 @@ namespace Ron.Ido.BM.Services
 
                         if ( _checker.ErrorsInExpertise(apply) )
                             if ( newStatusEnum == ApplyStatusEnum.ON_RESEARCH )
-                                return Yes(apply, pars);
+                                return Yes(apply, statusId, pars);
                             else
                                 return Miscondition;
 
                         if ( !_checker.IsPublicService(apply) )
                             if ( newStatusEnum == ApplyStatusEnum.READY_TO_GIVE_INFOLETTER ) // Готов к выдаче, информационное письмо
-                                return Yes(apply, pars);
+                                return Yes(apply, statusId, pars);
                             else
                                 return Miscondition;
                         else
                             if ( newStatusEnum == ApplyStatusEnum.DECISION_PREPARATION ) 
-                                return Yes(apply, pars);
+                                return Yes(apply, statusId, pars);
                             else
                                 return Miscondition;
 
@@ -293,7 +293,7 @@ namespace Ron.Ido.BM.Services
                     case ApplyStatusEnum.READY_TO_GIVE_INFOLETTER:
 
                         if ( newStatusEnum == ApplyStatusEnum.INFOLETTER_GIVEN )
-                            return Yes(apply, pars);
+                            return Yes(apply, statusId, pars);
                         else
                             return Miscondition;
 
@@ -303,7 +303,7 @@ namespace Ron.Ido.BM.Services
                     case ApplyStatusEnum.DECISION_PREPARATION:
 
                         if ( newStatusEnum == ApplyStatusEnum.DECISION_ACT )
-                            return Yes(apply, pars);
+                            return Yes(apply, statusId, pars);
                         else
                             return Miscondition;
 
@@ -313,7 +313,7 @@ namespace Ron.Ido.BM.Services
                     case ApplyStatusEnum.DECISION_ACT:
 
                         if ( newStatusEnum == ApplyStatusEnum.SIGNING_POSTED )
-                            return Yes(apply, pars);
+                            return Yes(apply, statusId, pars);
                         else
                             return Miscondition;
 
@@ -324,19 +324,19 @@ namespace Ron.Ido.BM.Services
 
                         if ( _checker.ErrorsInExpertOpinion(apply) )
                             if ( newStatusEnum == ApplyStatusEnum.DECISION_PREPARATION )
-                                return Yes(apply, pars);
+                                return Yes(apply, statusId, pars);
                             else
                                 return Miscondition;
 
                         if ( !_checker.IsResultCertificate(apply) )
                             if ( newStatusEnum == ApplyStatusEnum.REFUSAL_READY_TO_GIVE )
-                                return Yes(apply, pars);
+                                return Yes(apply, statusId, pars);
                             else
                                 return Miscondition;
 
                         if ( !_checker.IsPaymentReceived(apply) )
                             if ( newStatusEnum == ApplyStatusEnum.WAIT_PAYMENT )
-                                return Yes(apply, pars);
+                                return Yes(apply, statusId, pars);
                             else
                                 return Miscondition;
 
@@ -355,12 +355,12 @@ namespace Ron.Ido.BM.Services
                     case ApplyStatusEnum.WAIT_DOCUMENTS:
                         if ( _checker.DigitalCertificate(apply) )
                             if ( newStatusEnum == ApplyStatusEnum.READY_TO_GIVE )
-                                return Yes(apply, pars);
+                                return Yes(apply, statusId, pars);
                             else
                                 return Miscondition;
                         else
                             if ( newStatusEnum == ApplyStatusEnum.GIVEN_DOCS_IN_NIC )
-                            return Yes(apply, pars);
+                            return Yes(apply, statusId, pars);
                         else
                             return Miscondition;
 
@@ -372,12 +372,12 @@ namespace Ron.Ido.BM.Services
                         switch ( _checker.Transport(apply) ) {
                             case ReceiveMethodEnum.Email:
                                 if ( newStatusEnum == ApplyStatusEnum.PREPARE_TO_GIVE )
-                                    return Yes(apply, pars);
+                                    return Yes(apply, statusId, pars);
                                 else
                                     return Miscondition;
                             case ReceiveMethodEnum.Personal:
                                 if ( newStatusEnum == ApplyStatusEnum.GIVEN )
-                                    return Yes(apply, pars);
+                                    return Yes(apply, statusId, pars);
                                 else
                                     return Miscondition;
                             default:
@@ -387,16 +387,18 @@ namespace Ron.Ido.BM.Services
 
                     #region Варианты без доп. проверок
                     default:
-                        return Yes(apply, pars);
+                        return Yes(apply, statusId, pars);
                     #endregion
                 }
 
-            return Yes(apply, pars);
+            return Yes(apply, statusId, pars);
         }
 
-        private string Yes(Apply app, string pars)
+        private string Yes(Apply apply, long status, string pars)
         {
-            var newDossier = new Dossier { Apply = app };
+            apply.StatusId = status;
+            var newDossier = new Dossier { Apply = apply };
+            _appDbContext.Applies.Update(apply);
             _appDbContext.Dossiers.Add(newDossier);
             _appDbContext.SaveChanges();
             _mediator.Publish(new ApplyStatusChangedEvent(newDossier, pars));
