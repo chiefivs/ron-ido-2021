@@ -5,4 +5,29 @@ cmp-filter {
     cmp-textbox {
         width: 100%;
     }
+
+    .date-between {
+        display: table;
+        &>div {
+            display: table-row;
+            &>div {
+                display: table-cell;
+                width: 50%;
+
+                &.date-left {
+                    .form-control {
+                        padding-left:0;
+                        padding-right:0;
+                    }
+                }
+
+                &.date-right {
+                    .form-control {
+                        padding-left:0;
+                        padding-right:0;
+                    }
+                }
+            }
+        }
+    }
 }

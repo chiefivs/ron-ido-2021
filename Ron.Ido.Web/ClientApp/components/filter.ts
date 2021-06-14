@@ -101,16 +101,10 @@ class FilterModel {
             '<cmp-textbox params="value:value1"></cmp-textbox>');
         this._setTemplate(ODataFilterTypeEnum.In, 'number',
             '<cmp-multiselect params="values:values, options:options, title:title"></cmp-multiselect>');
-        this._setTemplate(ODataFilterTypeEnum.BetweenNone, 'date',
-            `<div class="date-between">
-                <div>
-                    <cmp-datepicker params="value:value1"></cmp-datepicker>
-                    <cmp-datepicker params="value:value2"></cmp-datepicker>
-                </div>
-             </div>`);
-        this._setTemplate(ODataFilterTypeEnum.BetweenLeft, 'date', '');
-        this._setTemplate(ODataFilterTypeEnum.BetweenRight, 'date', '');
-        this._setTemplate(ODataFilterTypeEnum.BetweenAll, 'date', '');
+        this._setTemplate(ODataFilterTypeEnum.BetweenNone, 'date', this._dateBetweenTemplate);
+        this._setTemplate(ODataFilterTypeEnum.BetweenLeft, 'date', this._dateBetweenTemplate);
+        this._setTemplate(ODataFilterTypeEnum.BetweenRight, 'date', this._dateBetweenTemplate);
+        this._setTemplate(ODataFilterTypeEnum.BetweenAll, 'date', this._dateBetweenTemplate);
         this._setTemplate(ODataFilterTypeEnum.Equals, 'boolean',
             `<div>
                 <input type="radio" name="${this._name}" value="true" data-bind="checked:value1" /><span>да</span>
@@ -121,6 +115,14 @@ class FilterModel {
         this.value1.subscribe(this._updateValues.bind(this));
         this.value2.subscribe(this._updateValues.bind(this));
     }
+
+    _dateBetweenTemplate =
+        `<div class="date-between">
+            <div>
+                <div class="date-left"><cmp-datepicker params="value:value1"></cmp-datepicker></div>
+                <div class="date-right"><cmp-datepicker params="value:value2"></cmp-datepicker></div>
+            </div>
+        </div>`;
 
     private _setTemplate(filterType:ODataFilterTypeEnum, valueType:FilterValueType, template:string):void {
         if(!this._templates[filterType])

@@ -81,16 +81,26 @@ namespace Ron.Ido.BM.Services
 
         public IEnumerable<ODataOption> GetOptions<TEntity>(string textPropName, string valuePropName, Func<IQueryable<TEntity>, IQueryable<TEntity>> optionsFilter = null) where TEntity : class
         {
-            return GetOptions(textPropName, valuePropName, null, optionsFilter);
+            return GetOptions(textPropName, valuePropName, null, null, optionsFilter);
+        }
+
+        public IEnumerable<ODataOption> GetOptions<TEntity>(string textPropName, string valuePropName, DateTime? date, Func<IQueryable<TEntity>, IQueryable<TEntity>> optionsFilter = null) where TEntity : class
+        {
+            return GetOptions(textPropName, valuePropName, null, date, optionsFilter);
         }
 
         public IEnumerable<ODataOption> GetOptions<TEntity>(string textPropName, string valuePropName, string parentPropName, Func<IQueryable<TEntity>, IQueryable<TEntity>> optionsFilter = null) where TEntity : class
         {
+            return GetOptions(textPropName, valuePropName, parentPropName, null, optionsFilter);
+        }
+
+        public IEnumerable<ODataOption> GetOptions<TEntity>(string textPropName, string valuePropName, string parentPropName, DateTime? date = null, Func<IQueryable<TEntity>, IQueryable<TEntity>> optionsFilter = null) where TEntity : class
+        {
             var query = _appDbContext.Set<TEntity>().AsQueryable();
-            if (typeof(IDateDependent).IsAssignableFrom(typeof(TEntity)))
+            if (typeof(IDateDependent).IsAssignableFrom(typeof(TEntity)) && date.HasValue)
                 query = query.Where(i => (
-               (DateTime.Now >= ((IDateDependent)i).BeginDate) || ((IDateDependent)i).BeginDate == null)
-               && ((DateTime.Now <= ((IDateDependent)i).EndDate) || ((IDateDependent)i).EndDate == null));
+               (date >= ((IDateDependent)i).BeginDate) || ((IDateDependent)i).BeginDate == null)
+               && ((date <= ((IDateDependent)i).EndDate) || ((IDateDependent)i).EndDate == null));
 
             if (optionsFilter != null)
                 query = optionsFilter(query);
