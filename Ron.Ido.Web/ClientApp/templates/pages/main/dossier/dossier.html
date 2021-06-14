@@ -1,5 +1,5 @@
 <div data-bind="foreach:sortedParts" class="dossier-main">
     <div data-bind="style:{left:left($index()), width:width()}">
-        <div class="panel panel-default" data-bind="template:{nodes:templateNodes, data:$data}"></div>
+        <div class="panel panel-default" data-bind="template:{nodes:templateNodes, data:$data, afterRender:afterRender.bind($data)}"></div>
     </div>
 </div>

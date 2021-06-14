@@ -21,6 +21,10 @@ export abstract class DossierPartBase extends Control {
         this._owner = params.owner;
     }
 
+    afterRender(nodes:Node[]) {
+        // этот метод можно переопределять в наследниках
+    }
+
     close(): boolean {
         this._owner.parts.remove(this);
         return true;

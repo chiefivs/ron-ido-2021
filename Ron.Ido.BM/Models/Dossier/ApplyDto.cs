@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Ron.Ido.BM.Models.Dossier
 {
-    public class ApplyDto
+    public class ApplyDto: IValidatableObject
     {
         public long Id { get; set; }
 
@@ -280,6 +280,15 @@ namespace Ron.Ido.BM.Models.Dossier
         /// филиал Ростов
         /// </summary>
         public bool IsRostovFilial { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (string.IsNullOrWhiteSpace(CreatorSurname) && !IsCreatorSurnameAbsent)
+                yield return new ValidationResult("Поле обязательно к заполнению", new[] { nameof(CreatorSurname) });
+
+            if (string.IsNullOrWhiteSpace(CreatorFirstName) && !IsCreatorFirstNameAbsent)
+                yield return new ValidationResult("Поле обязательно к заполнению", new[] { nameof(CreatorFirstName) });
+        }
         #endregion
     }
 }

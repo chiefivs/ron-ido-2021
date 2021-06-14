@@ -30,6 +30,7 @@ export interface IExpanderParams {
     templateFile?: string;
     expanded?: boolean | ko.Observable<boolean>;
     fixed?: boolean | ko.Observable<boolean>;
+    afterExpand?: () => void;
 }
 
 export class ExpanderModel {
@@ -41,6 +42,8 @@ export class ExpanderModel {
     isFixed: ko.Observable<boolean>;
     contentElement: JQuery<Node[]> = null;
 
+    private _afterExpand: () => void;
+
     constructor(params: IExpanderParams, componentInfo: any) {
         this.templateNodes = this._getTemplateNodes(params) || componentInfo.templateNodes;
         this.title = ko.isObservable(params.title) || ko.isComputed(params.title) ? params.title : ko.observable(params.title);
@@ -50,13 +53,18 @@ export class ExpanderModel {
         this.isFixable = params.fixed !== undefined;
         this.isFixed = ko.isObservable(params.fixed) ? params.fixed : ko.observable(params.fixed || false);
 
+        this._afterExpand = params.afterExpand;
+
         this.isExpanded.subscribe(expanded => {
             if(this.isFixed()) {
                 return;
             }
 
             if(expanded) {
-                this.contentElement.slideDown();
+                this.contentElement.slideDown('fast', () => {
+                    if(this._afterExpand)
+                        this._afterExpand();
+                });
             } else {
                 this.contentElement.slideUp();
             }
