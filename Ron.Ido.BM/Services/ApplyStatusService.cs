@@ -147,6 +147,9 @@ namespace Ron.Ido.BM.Services
             if ( newStatus == null )
                 return StatusNotFound;
 
+            //if ( currentStatus.Id == newStatus.Id ) // Сам в себя
+            //    return Yes(apply, statusId, pars);
+
             if ( !currentStatus.CanJumpTo(newStatus) )
                 return NotAllowed;
 

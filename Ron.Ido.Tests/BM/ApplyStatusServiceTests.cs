@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MediatR;
 using Ron.Ido.BM;
+using Ron.Ido.EM.Enums;
 
 namespace Ron.Ido.Tests.BM
 {
@@ -65,7 +66,12 @@ namespace Ron.Ido.Tests.BM
             Assert.AreEqual(service.SetStatus(0L, 1L, "Hmm"), ApplyStatusService.ApplyNotFound);
             Assert.AreEqual(service.SetStatus(1L, 0L, "Hmm"), ApplyStatusService.StatusNotFound);
             Assert.AreEqual(service.SetStatus(1L, 5L, "Hmm"), string.Empty);
-            Assert.AreEqual(service.SetStatus(1L, 20L, "Hmm"), ApplyStatusService.Miscondition);
+            Assert.AreEqual(service.SetStatus(1L, 19L, "Hmm"), ApplyStatusService.NotAllowed);
+            //Assert.AreEqual(service.SetStatus(1L, 5L, "Hmm"), string.Empty);
+            var closed = _dbContext.ApplyStatuses.FirstOrDefault(stts => stts.StatusEnumValue == ApplyStatusEnum.DELETED.ToString("f"));
+            Assert.AreEqual(service.SetStatus(1L, closed.Id, "Close at any"), string.Empty);
+            Assert.AreEqual(service.RevertStatus(1L, "Undo"), ApplyStatusService.NoHistory);
+
 
         }
         private void FillStatus()
