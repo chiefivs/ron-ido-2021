@@ -1,6 +1,7 @@
 using MediatR;
 using Ron.Ido.BM.Events;
 using Ron.Ido.BM.Extensions.Entities;
+using Ron.Ido.BM.Interfaces;
 using Ron.Ido.Common.DependencyInjection;
 using Ron.Ido.EM;
 using Ron.Ido.EM.Entities;
@@ -14,6 +15,7 @@ namespace Ron.Ido.BM.Services
     public class ApplyStatusService : IDependency
     {
         protected AppDbContext _appDbContext;
+        protected IIdentityService _identityService;
         private readonly IMediator _mediator;
         private readonly IStatusChecker _checker;
         public static ConcurrentDictionary<long, ApplyStatus> _prefetch = new ConcurrentDictionary<long, ApplyStatus>();
@@ -25,11 +27,12 @@ namespace Ron.Ido.BM.Services
         public const string Miscondition = "Неподходящие условия";
         public const string NoHistory = "Статус не менялся";
 
-        public ApplyStatusService(AppDbContext appDbContext, IMediator mediator, IStatusChecker checker) 
+        public ApplyStatusService(AppDbContext appDbContext, IMediator mediator, IStatusChecker checker, IIdentityService identityService) 
         {
             _appDbContext = appDbContext;
             _mediator = mediator;
             _checker = checker;
+            _identityService = identityService;
         }
 
         /// <summary>
@@ -448,7 +451,7 @@ namespace Ron.Ido.BM.Services
                 prevRecord.EndTime = DateTime.UtcNow;
                 _appDbContext.ApplyStatusHistories.Update(prevRecord);
             }
-            var historyRecord = new ApplyStatusHistory { Apply = apply, PrevStatus = apply.Status, StatusId = status, ChangeTime = DateTime.UtcNow };
+            var historyRecord = new ApplyStatusHistory { Apply = apply, PrevStatus = apply.Status, StatusId = status, ChangeTime = DateTime.UtcNow, UserId = _identityService?.Identity?.Id };
             _appDbContext.ApplyStatusHistories.Add(historyRecord);
             apply.StatusId = status;
             var newDossier = new Dossier { Apply = apply };

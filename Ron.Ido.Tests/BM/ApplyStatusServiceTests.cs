@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Ron.Ido.BM;
 using Ron.Ido.EM.Enums;
+using Ron.Ido.BM.Interfaces;
 
 namespace Ron.Ido.Tests.BM
 {
@@ -56,24 +57,28 @@ namespace Ron.Ido.Tests.BM
             IServiceCollection collection = new ServiceCollection();
             collection.AddTransient(typeof(AppDbContext), provider => _dbContext);
             collection.AddTransient(typeof(IStatusChecker), provider => new MockStatusChecker(_dbContext));
+            collection.AddTransient<IIdentityService,MockIdentityService>();
             collection.AddMediatR(typeof(IAssemblyMarker));
             collection.AddTransient<ApplyStatusService>();
             var services = collection.BuildServiceProvider();
 
             var service = services.GetService<ApplyStatusService>();
-
+            var me = services.GetService<IIdentityService>()?.Identity;
 
             Assert.AreEqual(service.RevertStatus(1L, "Undo"), ApplyStatusService.NoHistory);
+
             Assert.AreEqual(service.SetStatus(0L, 1L, "Hmm"), ApplyStatusService.ApplyNotFound);
             Assert.AreEqual(service.SetStatus(1L, 0L, "Hmm"), ApplyStatusService.StatusNotFound);
             Assert.AreEqual(service.SetStatus(1L, 5L, "Hmm"), string.Empty);
             Assert.AreEqual(service.SetStatus(1L, 19L, "Hmm"), ApplyStatusService.NotAllowed);
-            //Assert.AreEqual(service.SetStatus(1L, 5L, "Hmm"), string.Empty);
+
             var closed = _dbContext.ApplyStatuses.FirstOrDefault(stts => stts.StatusEnumValue == ApplyStatusEnum.DELETED.ToString("f"));
             Assert.AreEqual(service.SetStatus(1L, closed.Id, "Close at any"), string.Empty);
+
             Assert.AreEqual(service.RevertStatus(1L, "Undo"), string.Empty);
             var apply = _dbContext.Applies.Find(1L);
             Assert.AreEqual(apply.StatusId, 5L);
+            Assert.AreEqual(apply.StatusHistories.Last().UserId, me?.Id);
 
 
         }

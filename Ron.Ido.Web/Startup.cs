@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Ron.Ido.BM.Interfaces;
 using Ron.Ido.BM.Models.OData;
 using Ron.Ido.BM.Services;
 using Ron.Ido.Common;
@@ -23,6 +24,7 @@ using Ron.Ido.DbStorage;
 using Ron.Ido.EM;
 using Ron.Ido.FileStorage;
 using Ron.Ido.Web.Authorization;
+using Ron.Ido.Web.Services;
 using System;
 using System.IO;
 using System.Net;
@@ -85,6 +87,7 @@ namespace ForeignDocsRec2020.Web
                 .AddFileStorage<Ron.Ido.EM.Entities.FileInfo>()
                 .AddMediatR(typeof(Ron.Ido.BM.IAssemblyMarker), typeof(Startup))
                 .AddTransient<IStatusChecker,StatusChecker>( )
+                .AddTransient<IIdentityService, IdentityService>( )
                 .AddDependencies(typeof(Ron.Ido.BM.IAssemblyMarker), typeof(Startup))
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options => {
