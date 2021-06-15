@@ -453,6 +453,8 @@ namespace Ron.Ido.BM.Services
             }
             var historyRecord = new ApplyStatusHistory { Apply = apply, PrevStatus = apply.Status, StatusId = status, ChangeTime = DateTime.UtcNow, UserId = _identityService?.Identity?.Id };
             _appDbContext.ApplyStatusHistories.Add(historyRecord);
+            //var applyComment = historyRecord.ToComment();
+            //apply.ApplyComments.Add(applyComment);
             apply.StatusId = status;
             var newDossier = new Dossier { Apply = apply };
             _appDbContext.Applies.Update(apply);
