@@ -152,6 +152,10 @@ namespace Ron.Ido.BM.Services
 
             var newStatusEnum = newStatus.EnumStatus();
 
+            // Закрыть можно из любого статуса
+            if ( newStatusEnum == ApplyStatusEnum.DELETED )
+                return Yes(apply, statusId, pars);
+
             if ( !string.IsNullOrEmpty(currentStatus.StatusEnumValue ))
                 switch( currentStatus.EnumStatus()  )
                 {
