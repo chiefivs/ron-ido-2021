@@ -5,6 +5,7 @@ using Ron.Ido.Common.DependencyInjection;
 using Ron.Ido.EM;
 using Ron.Ido.EM.Entities;
 using Ron.Ido.EM.Enums;
+using System;
 using System.Collections.Concurrent;
 using System.Linq;
 
@@ -62,7 +63,7 @@ namespace Ron.Ido.BM.Services
             if ( !(last?.PrevStatusId.HasValue ?? false))
                 return NoHistory;
 
-            apply.StatusId = last.PrevStatusId.GetValueOrDefault();
+            apply.StatusId = last.PrevStatusId.Value;
             var newDossier = new Dossier { Apply = apply };
             _appDbContext.Applies.Update(apply);
             _appDbContext.Dossiers.Add(newDossier);
@@ -438,6 +439,17 @@ namespace Ron.Ido.BM.Services
 
         private string Yes(Apply apply, long status, string pars)
         {
+            var prevRecord = _appDbContext.ApplyStatusHistories
+                .Where(css => css.ApplyId == apply.Id)
+                .OrderByDescending(cr => cr.ChangeTime)
+                .FirstOrDefault();
+            if ( prevRecord != null )
+            {
+                prevRecord.EndTime = DateTime.UtcNow;
+                _appDbContext.ApplyStatusHistories.Update(prevRecord);
+            }
+            var historyRecord = new ApplyStatusHistory { Apply = apply, PrevStatus = apply.Status, StatusId = status, ChangeTime = DateTime.UtcNow };
+            _appDbContext.ApplyStatusHistories.Add(historyRecord);
             apply.StatusId = status;
             var newDossier = new Dossier { Apply = apply };
             _appDbContext.Applies.Update(apply);
