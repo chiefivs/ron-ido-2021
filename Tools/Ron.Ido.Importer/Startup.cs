@@ -25,11 +25,6 @@ namespace Ron.Ido.Importer
 			string basepath = Environment.GetEnvironmentVariable(Common.Constants.ConfigFolderPath)
 				  ?? Environment.GetEnvironmentVariable(Common.Constants.ConfigFolderPath, EnvironmentVariableTarget.Machine);
 
-            if ( basepath == null )
-            {
-                Console.WriteLine("App Settings path is null");
-                basepath = @"c:\work\it-task\N21\ron-ido-2021\AppSettings";
-            }
             var builder = new ConfigurationBuilder();
 
 			if (!string.IsNullOrEmpty(basepath))

@@ -86,8 +86,8 @@ namespace ForeignDocsRec2020.Web
                 .AddHttpContextAccessor()
                 .AddFileStorage<Ron.Ido.EM.Entities.FileInfo>()
                 .AddMediatR(typeof(Ron.Ido.BM.IAssemblyMarker), typeof(Startup))
-                .AddTransient<IStatusChecker,StatusChecker>( )
-                .AddTransient<IIdentityService, IdentityService>( )
+                //.AddTransient<IStatusChecker,StatusChecker>( )
+                //.AddTransient<IIdentityService, IdentityService>( )
                 .AddDependencies(typeof(Ron.Ido.BM.IAssemblyMarker), typeof(Startup))
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options => {

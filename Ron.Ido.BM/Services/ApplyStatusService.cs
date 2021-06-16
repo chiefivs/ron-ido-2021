@@ -18,7 +18,8 @@ namespace Ron.Ido.BM.Services
         protected IIdentityService _identityService;
         private readonly IMediator _mediator;
         private readonly IStatusChecker _checker;
-        public static ConcurrentDictionary<long, ApplyStatus> _prefetch = new ConcurrentDictionary<long, ApplyStatus>();
+        protected static ConcurrentDictionary<long, ApplyStatus> _prefetch = new ConcurrentDictionary<long, ApplyStatus>();
+        protected static ConcurrentDictionary<ApplyStatusEnum,ApplyStatus> _prefetchdIds = new ConcurrentDictionary<ApplyStatusEnum, ApplyStatus>();
 
         public const string ApplyNotFound = "Заявка не найдена";
         public const string StatusNotFound = "Статус не найден";
@@ -38,7 +39,7 @@ namespace Ron.Ido.BM.Services
         /// <summary>
         /// Проверяет на наличие заявок в указанном статусе
         /// </summary>
-        /// <param name="applyStatusId"></param>
+        /// <param name="applyStatusId">Id статуса</param>
         /// <returns>результат проверки</returns>
         public bool DenyDelete(long applyStatusId)
         {
@@ -47,11 +48,11 @@ namespace Ron.Ido.BM.Services
         }
 
         /// <summary>
-        /// Откатиться к предыдущему статусу
+        /// Вернуться к предыдущему статусу
         /// </summary>
-        /// <param name="applyId"></param>
-        /// <param name="pars"></param>
-        /// <returns></returns>
+        /// <param name="applyId">Id заявки</param>
+        /// <param name="pars">Необязательные параметры</param>
+        /// <returns>Пустая строка в случае успеха или сообщение об ошибке</returns>
         public string RevertStatus(long applyId, string pars)
         {
             var apply = _appDbContext.Applies.Find(applyId);
@@ -70,11 +71,37 @@ namespace Ron.Ido.BM.Services
             var newDossier = new Dossier { Apply = apply };
             _appDbContext.Applies.Update(apply);
             _appDbContext.Dossiers.Add(newDossier);
+
+            // TODO: Добавить в комментарий запись об откате статуса
+
             _appDbContext.SaveChanges();
             _mediator.Publish(new ApplyStatusRollbackEvent(newDossier, pars));
             return string.Empty;
         }
 
+        /// <summary>
+        /// Установить новый статус у заявки
+        /// </summary>
+        /// <param name="applyId">Id заявки</param>
+        /// <param name="newStatus">Новый статус</param>
+        /// <param name="pars">Необязательные параметры</param>
+        /// <returns>Пустая строка в случае успеха или сообщение об ошибке</returns>
+        public string SetStatusEnum(long applyId, ApplyStatusEnum newStatus, string pars = null)
+        {
+            var status = _prefetchdIds.GetOrAdd(newStatus, _appDbContext.ApplyStatuses.FirstOrDefault(st => st.StatusEnumValue == newStatus.ToString("f")));
+            if ( status == null )
+                return StatusNotFound;
+
+            return SetStatus(applyId, status.Id, pars);
+
+        }
+        /// <summary>
+        /// Установить новый статус у заявки
+        /// </summary>
+        /// <param name="applyId">Id заявки</param>
+        /// <param name="statusId">Id статуса</param>
+        /// <param name="pars">Необязательные параметры</param>
+        /// <returns>Пустая строка в случае успеха или сообщение об ошибке</returns>
         public string SetStatus(long applyId, long statusId, string pars = null)
         {
             #region Post-Payment processor
@@ -170,7 +197,7 @@ namespace Ron.Ido.BM.Services
                     case ApplyStatusEnum.NO_VALIDATED:
                         {
                             var ceResult = _checker.ContainsErrors(apply, pars);
-                            if ( ceResult == ContainErrorsEnum.Email )
+                            if ( ceResult == ContainErrorsEnum.Mail )
                                 if ( newStatusEnum == ApplyStatusEnum.UNDERMANNED )
                                     return Yes(apply, statusId, pars);
                                 else
@@ -453,6 +480,7 @@ namespace Ron.Ido.BM.Services
             }
             var historyRecord = new ApplyStatusHistory { Apply = apply, PrevStatus = apply.Status, StatusId = status, ChangeTime = DateTime.UtcNow, UserId = _identityService?.Identity?.Id };
             _appDbContext.ApplyStatusHistories.Add(historyRecord);
+            // TODO: Добавить в комментарий запись о смене статуса
             //var applyComment = historyRecord.ToComment();
             //apply.ApplyComments.Add(applyComment);
             apply.StatusId = status;
@@ -465,21 +493,54 @@ namespace Ron.Ido.BM.Services
         }
     }
 
+    /// <summary>
+    /// Результат проверки на наличие ошибок в заявке
+    /// </summary>
     public enum ContainErrorsEnum
     {
+        /// <summary>
+        /// Ошибок нет
+        /// </summary>
         No,
-        Email,
+        /// <summary>
+        /// Есть, подана по по почте
+        /// </summary>
+        Mail,
+        /// <summary>
+        /// Есть, подана онлайн
+        /// </summary>
         Online
     }
+    /// <summary>
+    /// Форма подачи заявки
+    /// </summary>
     public enum ApplyFormEnum
     {
+        /// <summary>
+        /// Лично
+        /// </summary>
         Personal,
+        /// <summary>
+        /// По почте
+        /// </summary>
         Mail,
+        /// <summary>
+        /// Онлайн
+        /// </summary>
         Online
     }
+    /// <summary>
+    /// Способ получения
+    /// </summary>
     public enum ReceiveMethodEnum
     {
+        /// <summary>
+        /// Лично
+        /// </summary>
         Personal,
+        /// <summary>
+        /// По почте
+        /// </summary>
         Email
     }
 }

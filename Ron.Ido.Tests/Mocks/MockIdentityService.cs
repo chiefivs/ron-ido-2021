@@ -5,6 +5,6 @@ namespace Ron.Ido.Tests.Mocks
 {
     public class MockIdentityService : IIdentityService
     {
-        public Identity Identity => new Identity { Id = 1, Login = "test", Name = "Test User" };
+        public Identity Identity => new() { Id = 1, Login = "test", Name = "Test User" };
     }
 }

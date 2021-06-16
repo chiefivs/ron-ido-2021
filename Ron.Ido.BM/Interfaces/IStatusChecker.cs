@@ -1,33 +1,41 @@
 ﻿using Ron.Ido.BM.Services;
+using Ron.Ido.Common.DependencyInjection;
 using Ron.Ido.EM.Entities;
 
 namespace Ron.Ido.BM.Interfaces
 {
-    public interface IStatusChecker
+    /// <summary>
+    /// Реализация проверки условий из статусной модели
+    /// </summary>
+    public interface IStatusChecker : IDependency
     {
         /// <summary>
-        /// Содержит ошибки
+        /// Содержит ли ошибки?
         /// </summary>
         /// <param name="apply">Заявка</param>
         /// <param name="pars">Дополнительные параметры</param>
         /// <returns>результат проверки</returns>
+        /// <seealso cref="ContainErrorsEnum"/>
         ContainErrorsEnum ContainsErrors(Apply apply, string pars);
+        
         /// <summary>
-        /// Возврат заявителю
+        /// Возврат заявителю?
         /// </summary>
         /// <param name="apply">Заявка</param>
         /// <param name="pars">Дополнительные параметры</param>
         /// <returns>результат проверки</returns>
         bool IsReturn(Apply apply, string pars);
+
         /// <summary>
-        /// Содержит дубликат
+        /// Содержит дубликат?
         /// </summary>
         /// <param name="apply">Заявка</param>
         /// <param name="pars">Дополнительные параметры</param>
         /// <returns>результат проверки</returns>
         bool ContainsDouble(Apply apply, string pars);
+
         /// <summary>
-        /// Дослали полный пакет
+        /// Дослали полный пакет?
         /// </summary>
         /// <param name="apply">Заявка</param>
         /// <param name="pars">Дополнительные параметры</param>
@@ -96,13 +104,16 @@ namespace Ron.Ido.BM.Interfaces
         /// <param name="pars">Дополнительные параметры</param>
         /// <returns>результат проверки</returns>
         bool DigitalCertificate(Apply apply, string pars);
+
         /// <summary>
         /// Форма приёма
         /// </summary>
         /// <param name="apply">Заявка</param>
         /// <param name="pars">Дополнительные параметры</param>
+        /// <seealso cref="AplyFormEnum" />
         /// <returns>результат проверки</returns>
         ApplyFormEnum AdmissionForm(Apply apply, string pars);
+
         /// <summary>
         /// Полный комплект?
         /// </summary>
@@ -116,6 +127,7 @@ namespace Ron.Ido.BM.Interfaces
         /// <param name="apply">Заявка</param>
         /// <param name="pars">Дополнительные параметры</param>
         /// <returns>результат проверки</returns>
+        /// <seealso cref="ReceiveMethodEnum" />
         ReceiveMethodEnum Transport(Apply apply, string pars);
     }
 
