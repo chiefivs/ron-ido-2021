@@ -94,7 +94,7 @@ export class App {
         let page = ko.utils.arrayFirst(this.mainPages(), page => page.pageKey === pageKey);
         if(!page) {
             const type = require(`@pages/main/${path}`).default;
-            page = <IMainPage>(new type());
+            page = <IMainPage>(new type(key));
             page.pageKey = pageKey;
             this.mainPages().unshift(page);
             this.mainPages.valueHasMutated();

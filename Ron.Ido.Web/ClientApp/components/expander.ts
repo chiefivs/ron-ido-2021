@@ -26,8 +26,11 @@ export function init(){
 export interface IExpanderParams {
     title: string | ko.Observable<string> | ko.Computed<string>;
     data: any;
+    templateId?: string;
+    templateFile?: string;
     expanded?: boolean | ko.Observable<boolean>;
     fixed?: boolean | ko.Observable<boolean>;
+    afterExpand?: () => void;
 }
 
 export class ExpanderModel {
@@ -39,8 +42,10 @@ export class ExpanderModel {
     isFixed: ko.Observable<boolean>;
     contentElement: JQuery<Node[]> = null;
 
+    private _afterExpand: () => void;
+
     constructor(params: IExpanderParams, componentInfo: any) {
-        this.templateNodes = componentInfo.templateNodes;
+        this.templateNodes = this._getTemplateNodes(params) || componentInfo.templateNodes;
         this.title = ko.isObservable(params.title) || ko.isComputed(params.title) ? params.title : ko.observable(params.title);
         this.isExpanded = ko.isObservable(params.expanded) ? params.expanded : ko.observable(params.expanded || false);
         this.data = params.data;
@@ -48,13 +53,18 @@ export class ExpanderModel {
         this.isFixable = params.fixed !== undefined;
         this.isFixed = ko.isObservable(params.fixed) ? params.fixed : ko.observable(params.fixed || false);
 
+        this._afterExpand = params.afterExpand;
+
         this.isExpanded.subscribe(expanded => {
             if(this.isFixed()) {
                 return;
             }
 
             if(expanded) {
-                this.contentElement.slideDown();
+                this.contentElement.slideDown('fast', () => {
+                    if(this._afterExpand)
+                        this._afterExpand();
+                });
             } else {
                 this.contentElement.slideUp();
             }
@@ -85,5 +95,15 @@ export class ExpanderModel {
 
     toggleExpanded() {
         this.isExpanded(!this.isExpanded());
+    }
+
+    private _getTemplateNodes(params: IExpanderParams) {
+        if(params.templateId)
+            return Utils.getNodesFromScriptElement(params.templateId);
+
+        if(params.templateFile)
+            return Utils.getNodesFromFile(params.templateFile);
+
+        return null;
     }
 }

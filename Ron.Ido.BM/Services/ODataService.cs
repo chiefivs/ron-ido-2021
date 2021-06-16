@@ -16,11 +16,11 @@ namespace Ron.Ido.BM.Services
 
 	public class ODataService: IDependency
     {
-        protected AppDbContext _appDbContext;
+        protected AppDbContext AppDbContext;
 
         public ODataService(AppDbContext appDbContext)
         {
-            _appDbContext = appDbContext;
+            AppDbContext = appDbContext;
         }
 
         public ODataPage<TDto> GetPage<TEntity, TDto>(
@@ -48,7 +48,7 @@ namespace Ron.Ido.BM.Services
                 }
             });
             
-            var query = _appDbContext.Set<TEntity>().AsQueryable();
+            var query = AppDbContext.Set<TEntity>().AsQueryable();
             query = ApplyFilters(query, request.Filters, customFilters);
             query = ApplyOrders(query, request.Orders);
             var items = query.Skip(request.Skip).Take(request.Take).ProjectTo<TDto>(mapperConfig);
@@ -66,7 +66,7 @@ namespace Ron.Ido.BM.Services
             ODataRequest request,
             IEnumerable<Func<IQueryable<TEntity>, IQueryable<TEntity>>> customFilters = null) where TEntity : class
         {
-            var query = _appDbContext.Set<TEntity>().AsQueryable();
+            var query = AppDbContext.Set<TEntity>().AsQueryable();
             query = ApplyFilters(query, request.Filters, customFilters);
             var items = query.Skip(request.Skip).Take(request.Take);
 
@@ -96,7 +96,7 @@ namespace Ron.Ido.BM.Services
 
         public IEnumerable<ODataOption> GetOptions<TEntity>(string textPropName, string valuePropName, string parentPropName, DateTime? date = null, Func<IQueryable<TEntity>, IQueryable<TEntity>> optionsFilter = null) where TEntity : class
         {
-            var query = _appDbContext.Set<TEntity>().AsQueryable();
+            var query = AppDbContext.Set<TEntity>().AsQueryable();
             if (typeof(IDateDependent).IsAssignableFrom(typeof(TEntity)) && date.HasValue)
                 query = query.Where(i => (
                (date >= ((IDateDependent)i).BeginDate) || ((IDateDependent)i).BeginDate == null)
@@ -126,7 +126,7 @@ namespace Ron.Ido.BM.Services
             long id,
             IEnumerable<ODataMapMemberConfig<TEntity, TDto>> memberConfigs = null) where TEntity:class, new()
         {
-            var entity = _appDbContext.Find<TEntity>(id) ?? new TEntity();
+            var entity = AppDbContext.Find<TEntity>(id) ?? new TEntity();
 
             var mapperConfig = new MapperConfiguration(cfg =>
             {
@@ -159,7 +159,7 @@ namespace Ron.Ido.BM.Services
                 dtoValidationResults.AddRange(validable.Validate(context));
 
             if (validationInDb != null)
-                dtoValidationResults.AddRange(validationInDb(dto, _appDbContext));
+                dtoValidationResults.AddRange(validationInDb(dto, AppDbContext));
 
             var results = new Dictionary<string, List<string>>();
             foreach(var dtoRes in dtoValidationResults)
@@ -192,11 +192,11 @@ namespace Ron.Ido.BM.Services
         {
             var keyNames = _getKeyNames(typeof(TEntity));
             var keys = keyNames.Select(key => dto.GetPropertyValue(key)).ToArray();
-            var entity = _appDbContext.Find<TEntity>(keys);
+            var entity = AppDbContext.Find<TEntity>(keys);
             if(entity == null)
             {
                 entity = new TEntity();
-                _appDbContext.Add(entity);
+                AppDbContext.Add(entity);
             }
 
             var mapperConfig = new MapperConfiguration(cfg =>
@@ -219,9 +219,9 @@ namespace Ron.Ido.BM.Services
             var mapper = new Mapper(mapperConfig);
             mapper.Map(dto, entity);
             if (customize != null)
-                customize(dto, entity, _appDbContext);
+                customize(dto, entity, AppDbContext);
 
-            _appDbContext.SaveChanges();
+            AppDbContext.SaveChanges();
         }
 
         private IQueryable<TEntity> ApplyFilters<TEntity>(
@@ -366,12 +366,12 @@ namespace Ron.Ido.BM.Services
                 return new[] { keyProp.Name };
             }
 
-            return _appDbContext.Model.FindEntityType(entityType.FullName).FindPrimaryKey().Properties.Select(p => p.Name);
+            return AppDbContext.Model.FindEntityType(entityType.FullName).FindPrimaryKey().Properties.Select(p => p.Name);
         }
 
         protected string _getMtMOtherKeyName(Type entityType, string propName)
         {
-            var entityDbType = _appDbContext.Model.FindEntityType(entityType.FullName);
+            var entityDbType = AppDbContext.Model.FindEntityType(entityType.FullName);
             var propDbType = entityDbType.FindNavigation(propName);
             var relDbType = propDbType.ForeignKey.DeclaringEntityType;
             var keys = relDbType.GetForeignKeys().Where(k => k.PrincipalEntityType != entityDbType);
