@@ -38,6 +38,7 @@ export class Apply extends DossierPartBase implements IApplyFieldBlockHolder {
         const checkboxRight = Utils.getNodesFromFile(`${path}checkbox-field-right.html`);
         const select = Utils.getNodesFromFile(`${path}select-field.html`);
         const radiobox = Utils.getNodesFromFile(`${path}radiobox-field.html`);
+        const multicheckbox = Utils.getNodesFromFile(`${path}multicheckbox-field.html`);
 
         const blocks: IApplyFieldsBlockParams[] = [
             {
@@ -93,47 +94,92 @@ export class Apply extends DossierPartBase implements IApplyFieldBlockHolder {
                     this._getApplyField('Квартира (111)', this.form.item.creatorFlat, textbox),
                     this._getApplyField('Корпус (1-А)', this.form.item.creatorCorpus, textbox),
                     this._getApplyField('Строение (2)', this.form.item.creatorBuilding, textbox),
-                    this._getApplyField('Телефоны * (89200000000)', this.form.item.creatorPhone, textbox),
+                    this._getApplyField('Телефоны (89200000000)', this.form.item.creatorPhone, textbox),
                     this._getApplyField('Электронная почта (van_1985@gmail.com)', this.form.item.creatorEmail, textbox),
-                    this._getApplyField('Форма получения результата', this.form.item.deliveryFormId, radiobox),
-
                 ],
                 blocks: [
                     {
+                        title: 'Форма получения результата',
+                        fields: [
+                            this._getApplyField('', this.form.item.deliveryFormId, radiobox)
+                        ]
+                    },
+                    {
                         title: 'Форма получения электронного свидетельства',
-                        fields: [],
-                        blocks: []
+                        fields: [
+                            this._getApplyField('', this.form.item.certificateDeliveryForms, multicheckbox)
+                        ]
                     },
                     {
                         title: 'Форма получения оригиналов документов',
-                        fields: [],
-                        blocks: []
+                        fields: [
+                            this._getApplyField('', this.form.item.returnOriginalsFormId, radiobox)
+                        ]
                     }
                 ]
             },
             {
                 title: 'Обладатель документа',
-                fields: [],
-                blocks: []
+                fields: [
+                    this._getApplyField('Фамилия (Хоу)', this.form.item.ownerSurname, textbox),
+                    this._getApplyField('фамилия отсутствует', this.form.item.isOwnerSurnameAbsent, checkboxRight),
+                    this._getApplyField('Имя (Юйсин)', this.form.item.ownerFirstName, textbox),
+                    this._getApplyField('имя отсутствует', this.form.item.isOwnerFirstNameAbsent, checkboxRight),
+                    this._getApplyField('Отчество (-)', this.form.item.ownerLastName, textbox),
+                    this._getApplyField('отчество отсутствует', this.form.item.isOwnerLastNameAbsent, checkboxRight),
+                    this._getApplyField('Дата рождения (11.12.1987)', this.form.item.ownerBirthDate, datepicker),
+                    this._getApplyField('Место рождения', this.form.item.ownerBirthPlace, textbox),
+                    this._getApplyField('Страна жительства (КНР)', this.form.item.ownerCountryId, select),
+                    this._getApplyField('Индекс (131231)', this.form.item.ownerMailIndex, textbox),
+                    this._getApplyField('Область, район, населенный пункт', this.form.item.ownerCityName, textbox),
+                    this._getApplyField('Улица (ул.Маркстская)', this.form.item.ownerStreet, textbox),
+                    this._getApplyField('Дом (113-А)', this.form.item.ownerBlock, textbox),
+                    this._getApplyField('Квартира (111)', this.form.item.ownerFlat, textbox),
+                    this._getApplyField('Корпус (1-А)', this.form.item.ownerCorpus, textbox),
+                    this._getApplyField('Строение (2)', this.form.item.ownerBuilding, textbox),
+                    this._getApplyField('Телефоны (89200000000)', this.form.item.ownerPhone, textbox),
+                    this._getApplyField('Электронная почта (van_1985@gmail.com)', this.form.item.ownerEmail, textbox),
+                    this._getApplyField('Гражданство (КНР)', this.form.item.ownerCitizenshipId, select),
+                    this._getApplyField('Тип документа (Код типа документа)', this.form.item.ownerPassportTypeId, select),
+                    this._getApplyField('Реквизиты документа (ВА123131)', this.form.item.ownerPassportReq, textbox),
+                ]
             },
             {
                 title: 'Документ представленный к признанию',
-                fields: [],
+                fields: [
+                    this._getApplyField('Страна выдачи (КНР)', this.form.item.docCountryId, select),
+                    this._getApplyField('Документ (Документ об основном общем образовании)', this.form.item.docTypeId, select),
+                    this._getApplyField('Описание документа', this.form.item.docDescription, textbox),
+                    this._getApplyField('Бланк: серия, номер (АВС 123123)', this.form.item.docBlankNum, textbox),
+                    this._getApplyField('Рег. номер (-)', this.form.item.docRegNum, textbox),
+                    this._getApplyField('Дата выдачи (28.06.2005)', this.form.item.docDate, textbox),
+                    this._getApplyField('Приложение, на листах', this.form.item.docAttachmentsCount, textbox),
+                    this._getApplyField('ФИО по документу (Козлов Владимир Владимирович )', this.form.item.docFullName, textbox),
+                ],
                 blocks: [
                     {
                         title: 'Учебное заведение, выдавшее документ',
-                        fields: [],
-                        blocks: []
+                        fields: [
+                            this._getApplyField('Страна учебного заведения (КНР)', this.form.item.schoolCountryId, select),
+                            this._getApplyField('Наименование (Школа иностранных языков "Синьшицзи"', this.form.item.schoolName, textbox),
+                            this._getApplyField('Тип учебного заведения', this.form.item.schoolTypeId, select),
+                        ]
                     },
                     {
                         title: 'Адрес учебного заведения',
-                        fields: [],
-                        blocks: []
+                        fields: [
+                            this._getApplyField('Почтовый индекс (9991)', this.form.item.schoolPostIndex, textbox),
+                            this._getApplyField('Город (Чэнду)', this.form.item.schoolCityName, textbox),
+                            this._getApplyField('Улица, дом (-)', this.form.item.schoolAddress, textbox),
+                        ]
                     },
                     {
                         title: 'Контактные данные учебного заведения',
-                        fields: [],
-                        blocks: []
+                        fields: [
+                            this._getApplyField('Телефон', this.form.item.schoolPhone, textbox),
+                            this._getApplyField('Факс', this.form.item.schoolFax, textbox),
+                            this._getApplyField('Электронная почта', this.form.item.schoolEmail, textbox),
+                        ]
                     },
                 ]
             },
@@ -164,9 +210,46 @@ export class Apply extends DossierPartBase implements IApplyFieldBlockHolder {
                 ]
             },
             {
+                title: 'Сведения о полученном образовании',
+                blocks: [
+                    {
+                        title: 'Период обучения по общеобразовательной программе (аттестат)',
+                        fields: [
+                            this._getApplyField('С', this.form.item.baseLearnDateBegin, datepicker),
+                            this._getApplyField('По', this.form.item.baseLearnDateEnd, datepicker),
+                        ]
+                    },
+                    {
+                        title: 'Период обучения по программе(ам) профессионального образования',
+                        fields: [
+                            this._getApplyField('С', this.form.item.specialLearnDateBegin, datepicker),
+                            this._getApplyField('По', this.form.item.specialLearnDateEnd, datepicker),
+                        ]
+                    },
+                    {
+                        title: 'Сведения',
+                        fields: [
+                            this._getApplyField('Направление (специализация)', this.form.item.fixedLearnSpecialityName, textbox),
+                            this._getApplyField('Форма обучения', this.form.item.specialLearnFormId, select),
+                        ]
+                    },
+                    {
+                        title: 'Цель признания',
+                        fields: [
+                            this._getApplyField('Цель', this.form.item.aimId, select),
+                            this._getApplyField('Организация, запросившая признание', this.form.item.orgCreator, textbox),
+                            this._getApplyField('Подробнее...', this.form.item.other, textbox),
+                        ]
+                    },
+                ]
+            },
+            {
                 title: 'Форма приема',
-                fields: [],
-                blocks: []
+                fields: [
+                    this._getApplyField('Форма приема заявления', this.form.item.entryFormId, select),
+                    this._getApplyField('ЮВ Украины', this.form.item.isNovorossia, checkbox),
+                    this._getApplyField('филиал Ростов', this.form.item.isRostovFilial, checkbox),
+                ]
             },
             {
                 title: 'Документы по делу',
@@ -186,8 +269,20 @@ export class Apply extends DossierPartBase implements IApplyFieldBlockHolder {
             formItem.warrantReq.visible(val);
             formItem.warrantDate.visible(val);
             formItem.warrantTerm.visible(val);
+
+            var ownerBlock = formItem.ownerSurname.block;
+            if(val) {
+                ko.utils.arrayForEach(ownerBlock.fields, f => f.visible(true));
+            } else {
+                ko.utils.arrayForEach(ownerBlock.fields, f => this.isVisible(false));
+            }
         });
         formItem.byWarrant.value.valueHasMutated();
+    }
+
+    private _hideField(field:IApplyFormField) {
+        field.visible(false);
+        field.value(null);
     }
 
     private _getApplyField(title: string, field: IFormField, templateNodes: Node[]): IApplyFormField {
@@ -223,12 +318,16 @@ interface IApplyFormField extends IFormField {
 
 interface IApplyFieldBlockHolder {
     blocks: ko.ObservableArray<ApplyFieldsBlock>;
+    parent?: IApplyFieldBlockHolder;
+    openNextBlock?: () => boolean;
+    //focusNextField(field: IApplyFormField);
 }
 
 interface IApplyFieldsBlockParams {
     title: string;
     fields?: IApplyFormField[];
     blocks?: IApplyFieldsBlockParams[];
+    containerOnly?: boolean;
 }
 
 class ApplyFieldsBlock implements IApplyFieldBlockHolder {
@@ -239,15 +338,18 @@ class ApplyFieldsBlock implements IApplyFieldBlockHolder {
     isExpanded = ko.observable(false);
     isVisible: ko.Computed<boolean>;
     afterExpand: () => void;
+    containerOnly: boolean;
 
     constructor(params: IApplyFieldsBlockParams, parent: IApplyFieldBlockHolder) {
         this.parent = parent;
         this.title = params.title;
+        this.containerOnly = params.containerOnly || false;
         this.fields = ko.utils.arrayMap(params.fields || [], f => {
             f.block = this;
             f.keyDown = (data:IApplyFormField, event:JQuery.Event) => {
+                console.log(data, event.key);
                 if(event.key === 'Tab') {
-                    this._focusNextField(f);
+                    this.focusNextField(f);
                     return false;
                 }
     
@@ -286,24 +388,46 @@ class ApplyFieldsBlock implements IApplyFieldBlockHolder {
         ko.utils.arrayForEach(blocks, g => g.isExpanded(false));
     }
 
-    private _focusNextField(field: IApplyFormField) {
-        field.hasFocus(false);
-        const fieldIndex = ko.utils.arrayIndexOf(this.fields, field);
-        if(fieldIndex < this.fields.length - 1) {
-            this.fields[fieldIndex + 1].hasFocus(true);
-            return;
+    getVisibleFields() {
+        return ko.utils.arrayFilter(this.fields, f => f.visible());
+    }
+
+    focusNextField(field: IApplyFormField = null): boolean {
+        if(field)
+            field.hasFocus(false);
+        
+        const visibleFields = this.getVisibleFields();
+        const fieldIndex = ko.utils.arrayIndexOf(visibleFields, field);
+        if(fieldIndex < visibleFields.length - 1) {
+            //  есть следующее поле
+            this.isExpanded(true);
+            visibleFields[fieldIndex + 1].hasFocus(true);
+            return true;
         }
 
-        const blockIndex = ko.utils.arrayIndexOf(this.parent.blocks(), this);
-        if(blockIndex < this.parent.blocks().length - 1) {
-            const block = this.parent.blocks()[blockIndex + 1];
-            block.isExpanded(true);
-            if(block.fields.length)
-                block.fields[0].hasFocus(true);
+        const visibleChildBlocks = ko.utils.arrayFilter(this.blocks(), b => b.isVisible());
+        if(visibleChildBlocks.length && visibleChildBlocks[0].focusNextField())
+            return true;
 
-            return;
-        }
+        if(this.openNextBlock())
+            return true;
 
-        return;
+        return false;
+    }
+
+    openNextBlock() {
+        if(!this.parent)
+            return false;
+
+        const parentBlock = this.parent;
+        const visibleSiblingBlocks = ko.utils.arrayFilter(parentBlock.blocks(), b => b.isVisible());
+        const blockIndex = ko.utils.arrayIndexOf(visibleSiblingBlocks, this);
+        if(blockIndex < visibleSiblingBlocks.length - 1 && visibleSiblingBlocks[blockIndex + 1].focusNextField())
+            return true;
+
+        if(this.parent.openNextBlock && this.parent.openNextBlock())
+            return true;
+    
+        return false;
     }
 }

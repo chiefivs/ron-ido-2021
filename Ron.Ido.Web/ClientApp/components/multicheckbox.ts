@@ -2,10 +2,10 @@ import * as ko from 'knockout';
 import { Utils } from '../modules/utils';
 
 export function init(){
-    ko.components.register('cmp-radiobox', {
+    ko.components.register('cmp-multicheckbox', {
         viewModel: {
-            createViewModel: function(params:IRadioBoxParams, componentInfo) {
-                return new RadioBoxModel(params, componentInfo);
+            createViewModel: function(params:IMultiCheckBoxParams, componentInfo) {
+                return new MultiCheckBoxModel(params, componentInfo);
             }
         },
         template: `
@@ -14,7 +14,7 @@ export function init(){
                     <tr>
                         <td><span data-bind="html:text"></span></td>
                         <td style="text-align:right;">
-                            <input type="radio" data-bind="value:value, checked:$parent.value, attr:{name:$parent.name}, hasFocus:hasFocus, event:{keydown:keyDown}" />
+                            <input type="checkbox" data-bind="value:value, checked:$parent.value, hasFocus:hasFocus, event:{keydown:keyDown}" />
                         </td>
                     </tr>
                 </table>
@@ -22,8 +22,8 @@ export function init(){
     });
 }
 
-export interface IRadioBoxParams {
-    value:ko.Observable<any>;
+export interface IMultiCheckBoxParams {
+    value:ko.ObservableArray<any>;
     options: any[] | ko.ObservableArray<any>;
     disabledOptions?: any[] | ko.ObservableArray<any>;
     optionsText?: string;
@@ -34,25 +34,22 @@ export interface IRadioBoxParams {
     keyDown?: (data:any, event:JQuery.Event) => boolean;
 }
 
-class RadioBoxModel {
+class MultiCheckBoxModel {
     value: ko.Observable<any>;
-    options: ko.Computed<RadioBoxOption[]>;
+    options: ko.Computed<MultiCheckBoxOption[]>;
     disabledOptions: ko.ObservableArray<any>;
     readonly: ko.Observable<boolean> | ko.Computed<boolean>;
     disable: ko.Observable<boolean> | ko.Computed<boolean>;
     hasFocus: ko.Observable<boolean>;
-    name: string;
 
+    private _keyDown: (data:any, event:JQuery.Event) => boolean;
 
-
-    //private _keyDown: (data:any, event:JQuery.Event) => boolean;
-
-    constructor(params:IRadioBoxParams, componentInfo:any) {
+    constructor(params:IMultiCheckBoxParams, componentInfo:any) {
         this.value = params.value;
         this.disabledOptions = ko.isObservable(params.disabledOptions) ? params.disabledOptions : ko.observableArray(params.disabledOptions || []);
         this.options = ko.computed(() => {
             const options = ko.unwrap(params.options);
-            return ko.utils.arrayMap(options, o => new RadioBoxOption(o, params));
+            return ko.utils.arrayMap(options, o => new MultiCheckBoxOption(o, params, this));
         });
 
         this.readonly = ko.isObservable(params.readonly) || ko.isComputed(params.readonly)
@@ -63,7 +60,7 @@ class RadioBoxModel {
             : ko.observable(<boolean>params.disable || false);
         this.hasFocus = params.hasFocus || ko.observable(false);
         this.hasFocus.subscribe(focused => {
-            const options = this.options();
+            const options = ko.utils.arrayFilter(this.options(), o => !o.disabled());
             if(!options.length)
                 return;
 
@@ -79,20 +76,27 @@ class RadioBoxModel {
             }
         });
 
-        //this._keyDown = params.keyDown;
-        this.name = Utils.randomString(12);
+        this._keyDown = params.keyDown;
+    }
+
+    isLastOption(option: MultiCheckBoxOption):boolean {
+        const options = ko.utils.arrayFilter(this.options(), o => !o.disabled());
+        const index = ko.utils.arrayIndexOf(options, option);
+        return index >= options.length - 1;
     }
 }
 
-class RadioBoxOption {
+class MultiCheckBoxOption {
     value: any;
     text: string;
     hasFocus: ko.Observable<boolean>;
     disabled: ko.Computed<boolean>;
 
     private _keyDown: (data:any, event:JQuery.Event) => boolean;
+    private _parent: MultiCheckBoxModel;
 
-    constructor(option:any, params:IRadioBoxParams) {
+    constructor(option:any, params:IMultiCheckBoxParams, parent:MultiCheckBoxModel) {
+        this._parent = parent;
         this.value = params.optionsValue ? option[params.optionsValue] : option;
         this.text = option[params.optionsText || 'text'];
         this.hasFocus = ko.observable(false);
@@ -109,7 +113,7 @@ class RadioBoxOption {
     }
         
     keyDown(data:any, event:JQuery.Event) {
-        if(this._keyDown)
+        if(this._keyDown && this._parent.isLastOption(this))
             return this._keyDown(data, event);
 
         return true;
