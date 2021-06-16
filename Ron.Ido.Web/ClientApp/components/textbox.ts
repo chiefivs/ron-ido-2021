@@ -23,11 +23,13 @@ export function init(){
 }
 
 export interface ITextBoxParams extends IEditBaseParams {
-    value: ko.Observable<any>;}
+    value: ko.Observable<any>;
+    placeholder?:string;
+}
 
 class TextBoxModel extends EditBaseModel {
     value: ko.Observable<any>;
-    placeholder?:string;
+    placeholder:string;
 
     constructor(params:ITextBoxParams, componentInfo:any) {
         super(params);
