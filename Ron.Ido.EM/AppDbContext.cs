@@ -16,6 +16,7 @@ namespace Ron.Ido.EM
         public virtual DbSet<ApplyDocType> ApplyDocTypes { get; set; }
         public virtual DbSet<ApplyEntryForm> ApplyEntryForms { get; set; }
         public virtual DbSet<ApplyLearnForm> ApplyLearnForms { get; set; }
+        public virtual DbSet<ApplyMessage> ApplyMessages { get; set; }
         public virtual DbSet<ApplyPassportType> ApplyPassportTypes { get; set; }
 
         public virtual DbSet<ApplyStatus> ApplyStatuses { get; set; }
@@ -27,6 +28,8 @@ namespace Ron.Ido.EM
         public virtual DbSet<Country> Countries { get; set; } 
 
         public virtual DbSet<Dossier> Dossiers { get; set; }
+        public virtual DbSet<DossierComment> DossierComments { get; set; }
+        public virtual DbSet<DossierCommentAttachment> DossierCommentAttachments { get; set; }
 
         public virtual DbSet<FileInfo> FileInfos { get; set; }
         public virtual DbSet<LearnLevel> LearnLevels { get; set; }
@@ -97,11 +100,25 @@ namespace Ron.Ido.EM
             //    .HasForeignKey(ac => ac.DeliveryFormId)
             //    .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<DossierCommentAttachment>().HasKey(a => new { a.CommentId, a.FileInfoUid });
+            modelBuilder.Entity<DossierCommentAttachment>()
+                .HasOne(a => a.FileInfo)
+                .WithMany()
+                .HasForeignKey(a => a.FileInfoUid)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<DossierCommentAttachment>()
+                .HasOne(a => a.Comment)
+                .WithMany(c => c.Attachments)
+                .HasForeignKey(c => c.CommentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<ApplyDocType>()
                 .HasOne(doctype => doctype.LearnLevel)
                 .WithMany(level => level.ApplyDocTypes)
                 .HasForeignKey(doctype => doctype.LearnLevelId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ApplyMessage>().HasKey(am => new { am.ApplyId, am.FieldName });
 
             modelBuilder.Entity<RolePermission>().HasKey(rp => new { rp.RoleId, rp.PermissionId });
             modelBuilder.Entity<RolePermission>()
