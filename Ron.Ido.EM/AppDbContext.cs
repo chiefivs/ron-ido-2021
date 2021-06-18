@@ -100,6 +100,14 @@ namespace Ron.Ido.EM
             //    .HasForeignKey(ac => ac.DeliveryFormId)
             //    .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<ApplyDocType>()
+                .HasOne(doctype => doctype.LearnLevel)
+                .WithMany(level => level.ApplyDocTypes)
+                .HasForeignKey(doctype => doctype.LearnLevelId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ApplyMessage>().HasKey(am => new { am.ApplyId, am.FieldName });
+
             modelBuilder.Entity<DossierCommentAttachment>().HasKey(a => new { a.CommentId, a.FileInfoUid });
             modelBuilder.Entity<DossierCommentAttachment>()
                 .HasOne(a => a.FileInfo)
@@ -111,14 +119,6 @@ namespace Ron.Ido.EM
                 .WithMany(c => c.Attachments)
                 .HasForeignKey(c => c.CommentId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<ApplyDocType>()
-                .HasOne(doctype => doctype.LearnLevel)
-                .WithMany(level => level.ApplyDocTypes)
-                .HasForeignKey(doctype => doctype.LearnLevelId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<ApplyMessage>().HasKey(am => new { am.ApplyId, am.FieldName });
 
             modelBuilder.Entity<RolePermission>().HasKey(rp => new { rp.RoleId, rp.PermissionId });
             modelBuilder.Entity<RolePermission>()

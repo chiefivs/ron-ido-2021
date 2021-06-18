@@ -1493,7 +1493,7 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
             modelBuilder.Entity("Ron.Ido.EM.Entities.DossierComment", b =>
                 {
                     b.HasOne("Ron.Ido.EM.Entities.Dossier", "Dossier")
-                        .WithMany()
+                        .WithMany("Comments")
                         .HasForeignKey("DossierId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1574,6 +1574,11 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Navigation("Dossiers");
 
                     b.Navigation("StatusHistories");
+                });
+
+            modelBuilder.Entity("Ron.Ido.EM.Entities.Dossier", b =>
+                {
+                    b.Navigation("Comments");
                 });
 
             modelBuilder.Entity("Ron.Ido.EM.Entities.DossierComment", b =>

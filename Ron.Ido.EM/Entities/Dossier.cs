@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Ron.Ido.EM.Entities
 {
@@ -10,5 +11,7 @@ namespace Ron.Ido.EM.Entities
         public long? ApplyId { get; set; }
 
         public virtual Apply Apply { get; set; }
+
+        public virtual List<DossierComment> Comments { get; set; } = new List<DossierComment>();
     }
 }
