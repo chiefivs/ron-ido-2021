@@ -2,7 +2,7 @@
 
 namespace Ron.Ido.BM.Models.Applies.Acceptance
 {
-    public class AppliesAcceptancePageItemDto
+    public class AcceptancePageItemDto
     {
         public long Id { get; set; }
 

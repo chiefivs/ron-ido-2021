@@ -20,6 +20,7 @@ export interface IMainPage extends IControl {
     activeLeftPage: ko.Observable<ILeftPage>;
     close: () => void;
     afterRender: (nodes:Node[]) => void;
+    afterActivate: () => void;
 }
 
 export interface IPageParams extends IControlParams {
@@ -68,6 +69,7 @@ export abstract class MainPageBase extends Control implements IMainPage {
 
         this.pageTitle = ko.isObservable(params.pageTitle) ? params.pageTitle : ko.observable(params.pageTitle);
         this.isActive = ko.computed(() => App.instance().activeMainPage() === this);
+        this.isActive.subscribe(active => {if(active) this.afterActivate();});
     }
 
     close(): void {
@@ -75,6 +77,8 @@ export abstract class MainPageBase extends Control implements IMainPage {
     }
 
     afterRender(nodes:Node[]) {}
+
+    afterActivate() {}
 }
 
 export namespace Popups {

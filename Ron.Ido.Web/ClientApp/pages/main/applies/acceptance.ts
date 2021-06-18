@@ -8,7 +8,7 @@ import { AppliesAcceptanceApi } from '../../../codegen/webapi/appliesAcceptanceA
 import { IODataOrder } from '../../../codegen/webapi/odata';
 
 export default class AcceptanceMainPage extends MainPageBase {
-    applies = ko.observableArray<AppliesAcceptanceApi.IAppliesAcceptancePageItemDto>([]);
+    applies = ko.observableArray<AppliesAcceptanceApi.IAcceptancePageItemDto>([]);
     tableTotalCount = ko.observable(0);
     pagerState = ko.observable<ITablePagerState>({
         skipCount: 0,
@@ -23,7 +23,6 @@ export default class AcceptanceMainPage extends MainPageBase {
             templatePath: 'pages/main/applies/acceptance.html'
         });
 
-        this.isActive.subscribe(active => {if(active) this.onActivated();});
         this.pagerState.subscribe(() => this.update());
 
         this.leftPages = ko.observableArray([]);
@@ -35,7 +34,7 @@ export default class AcceptanceMainPage extends MainPageBase {
         this._searchPage.filterStates.subscribe(() => this.update());
     }
 
-    onActivated() {
+    afterActivate() {
         this.update();
     }
 
@@ -49,12 +48,12 @@ export default class AcceptanceMainPage extends MainPageBase {
                 direct: sortingParts[1] === TableColumnOrderDirection.Asc ? ODataOrderTypeEnum.Asc : ODataOrderTypeEnum.Desc})
         }
 
-        //const filterStates = this._searchPage.filterStates();
+        const filterStates = this._searchPage.filterStates();
 
         AppliesAcceptanceApi.getAppliesPage({
             skip: state.skipCount,
             take: state.maxResultCount,
-            filters:[],//filterStates,
+            filters:filterStates,
             orders:orders
         }).done(page => {
             this.applies(page.items);
@@ -62,10 +61,10 @@ export default class AcceptanceMainPage extends MainPageBase {
         });
     }
 
-    open(item: AppliesAcceptanceApi.IAppliesAcceptancePageItemDto) {
+    open(item: AppliesAcceptanceApi.IAcceptancePageItemDto) {
         console.log(item);
         const page = <DossierMainPage>App.instance().openMainPage('dossier/dossier', item.dossierId.toString());
-        page.openApply(item.dossierId);
+        page.openApply();
     }
 
 }
@@ -74,12 +73,10 @@ class AcceptanceSearchLeftPage extends LeftPageBase{
     filters: IFilterParams[];
     filterStates: ko.ObservableArray<IODataFilter> = ko.observableArray([]);
 
-    // rolesOptions = ko.observableArray<IFilterOption>([]);
-
-    // private _fullNameFilter: IFilterParams = { title: 'ФИО', field:'surName', aliases:['firstName', 'lastName'], valueType:'string', filterType: ODataFilterTypeEnum.Contains };
-    // private _rolesFilter: IFilterParams = { title: 'Роли', field: 'roles', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.rolesOptions };
-    // private _blockedFilter: IFilterParams = { title: 'Блокирован', field: 'isBlocked', valueType: 'boolean', filterType: ODataFilterTypeEnum.Equals, initialValues: [''] };
-    // private _deletedFilter: IFilterParams = { title: 'Удален', field: 'isDeleted', valueType: 'boolean', filterType: ODataFilterTypeEnum.Equals, initialValues: [false] };
+    statusesOptions = ko.observableArray<IFilterOption>([]);
+    learnLevelOptions = ko.observableArray<IFilterOption>([]);
+    entryFormOptions = ko.observableArray<IFilterOption>([]);
+    stagesOptions = ko.observableArray<IFilterOption>([]);
 
     constructor(owner: AcceptanceMainPage) {
         super({
@@ -88,12 +85,33 @@ class AcceptanceSearchLeftPage extends LeftPageBase{
         });
 
         this.owner = owner;
-        //this.filters = [this._fullNameFilter, this._rolesFilter, this._blockedFilter, this._deletedFilter];
+        this.filters = [
+            { title: 'ФИО заявителя', field:'creatorSurname', aliases:['creatorFirstname', 'creatorLastname'], valueType:'string', filterType: ODataFilterTypeEnum.Contains },
+            { title: 'ФИО владельца', field:'ownerSurname', aliases:['ownerFirstName', 'ownerLastName'], valueType:'string', filterType: ODataFilterTypeEnum.Contains },
+            { title: 'Номер заявления', field:'barCode', aliases:['primaryBarCode'], valueType:'string', filterType: ODataFilterTypeEnum.Contains },
+            { title: 'Дата создания', field:'createTime', valueType:'date', filterType: ODataFilterTypeEnum.BetweenLeft },
+            { title: 'Статусы', field: 'statuses', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.statusesOptions },
+            { title: 'Уровень образования', field: 'learnLevel', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.learnLevelOptions },
+            { title: 'Форма приема', field: 'entryForm', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.entryFormOptions },
+            { title: 'Этапы', field: 'stages', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.stagesOptions }
+        ];
 
-        // AdminAccessApi.getUsersDictions().done(dictions => {
-        //     const roleOptionValues: IFilterOption[] = ko.utils.arrayMap(dictions.roles, role => 
-        //         <IFilterOption>{value: role.value.toString(), text: role.text});
-        //     this.rolesOptions(roleOptionValues);
-        // });
+        AppliesAcceptanceApi.getAcceptanceDictions().done(dictions => {
+            const statusOptionValues: IFilterOption[] = ko.utils.arrayMap(dictions.statuses, status => 
+                 <IFilterOption>{value: status.value.toString(), text: status.text});
+            this.statusesOptions(statusOptionValues);
+
+            const learnLevelOptionValues: IFilterOption[] = ko.utils.arrayMap(dictions.learnLevels, level => 
+                <IFilterOption>{value: level.value.toString(), text: level.text});
+            this.learnLevelOptions(learnLevelOptionValues);
+
+            const entryFormOptionValues: IFilterOption[] = ko.utils.arrayMap(dictions.entryForms, eForm => 
+                <IFilterOption>{value: eForm.value.toString(), text: eForm.text});
+            this.entryFormOptions(entryFormOptionValues);
+
+            const stagesOptionValues: IFilterOption[] = ko.utils.arrayMap(dictions.stages, stage => 
+                <IFilterOption>{value: stage.value.toString(), text: stage.text});
+            this.stagesOptions(stagesOptionValues);
+           });
     }
 }

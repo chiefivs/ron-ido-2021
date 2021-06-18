@@ -1,1 +1,32 @@
-<h4>Заявление</h4>
+<div data-bind="foreach:blocks">
+    <div data-bind="visible:isVisible">
+        <!-- ko ifnot:containerOnly -->
+        <cmp-expander params="title:title, templateId:'dossier-apply-block', data:$data, expanded:isExpanded, fixed:false, afterExpand:afterExpand"></cmp-expander>
+        <!-- /ko -->
+        <!-- ko if:containerOnly -->
+        <label data-bind="text:title"></label>
+        <div data-bind="foreach:fields">
+            <div data-bind="template:{nodes:templateNodes, data:$data}, visible:visible"></div>
+        </div>
+        <!-- /ko -->
+   </div>
+</div>
+
+<script type="text/html" id="dossier-apply-block">
+    <div style="padding-left:20px;" data-bind="foreach:fields">
+        <div data-bind="template:{nodes:templateNodes, data:$data}, visible:visible"></div>
+    </div>
+    <div style="padding-left:20px;" data-bind="foreach:blocks">
+        <div data-bind="visible:isVisible">
+            <!-- ko ifnot:containerOnly -->
+            <cmp-expander params="title:title, templateId:'dossier-apply-block', data:$data, expanded:isExpanded, fixed:false, afterExpand:afterExpand"></cmp-expander>
+            <!-- /ko -->
+            <!-- ko if:containerOnly -->
+            <label data-bind="text:title"></label>
+            <div data-bind="foreach:fields">
+                <div data-bind="template:{nodes:templateNodes, data:$data}, visible:visible"></div>
+            </div>
+            <!-- /ko -->
+        </div>
+    </div>
+</script>

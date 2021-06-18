@@ -1,29 +1,30 @@
 import * as ko from 'knockout';
+import { IEditBaseParams, EditBaseModel} from './edit-base';
 
 export function init(){
     ko.components.register('cmp-checkbox', {
         viewModel: {
             createViewModel: function(params:ICheckBoxParams, componentInfo) {
-                return new CheckboxModel(params);
+                return new CheckBoxModel(params, componentInfo);
             }
         },
         template: `
-        <label><input type="checkbox" class="form-control" data-bind="checked:value"></input><span data-bind="text:placeholder"></span></label>`
+            <input type="checkbox" data-bind="value:value, checked:checked, css:css, event:{keydown:keyDown}, disable:disable, attr:{readonly:readonly}, hasFocus:hasFocus"></input>`
     });
 }
 
-export class ICheckBoxParams {
-    value:ko.Observable<any>;
-    placeholder?:string;
+export interface ICheckBoxParams extends IEditBaseParams {
+    value: any;
+    checked: ko.Observable<any>;
 }
 
-class CheckboxModel {
+class CheckBoxModel extends EditBaseModel {
     value: ko.Observable<any>;
-    placeholder?:string;
+    checked: ko.Observable<any>;
 
-    constructor(params:ICheckBoxParams) {
+    constructor(params:ICheckBoxParams, componentInfo:any) {
+        super(params);
         this.value = params.value;
-        this.placeholder = params.placeholder || null;
+        this.checked = params.checked;
     }
-
 }

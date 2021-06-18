@@ -190,6 +190,7 @@ namespace Codegen
         
         private string NewLine = Environment.NewLine;
         private Dictionary<string, CodeModule> Modules;
+        private static Type BooleanType = typeof(bool);
         private static Type[] NumberTypes = new[] { typeof(Int16), typeof(Int32), typeof(Int64), typeof(UInt16), typeof(UInt32), typeof(UInt64), typeof(double) };
         private static Type[] StringTypes = new[] { typeof(DateTime), typeof(string) };
 
@@ -219,13 +220,15 @@ namespace Codegen
         {
             if (NumberTypes.Contains(type))
             {
-
                 return "number";
             }
             else if (StringTypes.Contains(type))
             {
-
                 return "string";
+            }
+            else if(type == BooleanType)
+            {
+                return "boolean";
             }
             else if (type.FullName == "System.Void")
             {

@@ -7,7 +7,8 @@ import { AdminAccessApi } from '../../../codegen/webapi/adminAccessApi';
 import { IODataOrder } from '../../../codegen/webapi/odata';
 import { Form } from '../../../modules/forms';
 
-export default class UsersMainPage extends MainPageBase {
+export default class UsersMainPage extends MainPageBase
+{
     users = ko.observableArray<AdminAccessApi.IUsersPageItemDto>([]);
     tableTotalCount = ko.observable(0);
     pagerState = ko.observable<ITablePagerState>({
@@ -29,7 +30,6 @@ export default class UsersMainPage extends MainPageBase {
         this.leftPages = ko.observableArray([]);
         this.activeLeftPage = ko.observable();
 
-        this.isActive.subscribe(active => {if(active) this.onActivated();});
         this.pagerState.subscribe(() => this.update());
 
         this._searchPage = new UsersSearchLeftPage(this);
@@ -39,7 +39,7 @@ export default class UsersMainPage extends MainPageBase {
         this._searchPage.filterStates.subscribe(() => this.update());
     }
 
-    onActivated() {
+    afterActivate() {
         this.update();
     }
 

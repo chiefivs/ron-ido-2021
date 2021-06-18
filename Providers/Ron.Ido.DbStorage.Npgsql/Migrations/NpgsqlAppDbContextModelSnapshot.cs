@@ -634,6 +634,23 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.ToTable("ApplyLearnForms");
                 });
 
+            modelBuilder.Entity("Ron.Ido.EM.Entities.ApplyMessage", b =>
+                {
+                    b.Property<long>("ApplyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("FieldName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Text")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.HasKey("ApplyId", "FieldName");
+
+                    b.ToTable("ApplyMessages");
+                });
+
             modelBuilder.Entity("Ron.Ido.EM.Entities.ApplyPassportType", b =>
                 {
                     b.Property<long>("Id")
@@ -909,6 +926,54 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.HasIndex("ApplyId");
 
                     b.ToTable("Dossiers");
+                });
+
+            modelBuilder.Entity("Ron.Ido.EM.Entities.DossierComment", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .UseIdentityByDefaultColumn();
+
+                    b.Property<DateTime>("CreateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<long>("DossierId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Text")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<long?>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DossierId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("DossierComments");
+                });
+
+            modelBuilder.Entity("Ron.Ido.EM.Entities.DossierCommentAttachment", b =>
+                {
+                    b.Property<long>("CommentId")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid>("FileInfoUid")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("CommentId", "FileInfoUid");
+
+                    b.HasIndex("FileInfoUid");
+
+                    b.ToTable("DossierCommentAttachments");
                 });
 
             modelBuilder.Entity("Ron.Ido.EM.Entities.FileInfo", b =>
@@ -1425,6 +1490,42 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Navigation("Apply");
                 });
 
+            modelBuilder.Entity("Ron.Ido.EM.Entities.DossierComment", b =>
+                {
+                    b.HasOne("Ron.Ido.EM.Entities.Dossier", "Dossier")
+                        .WithMany("Comments")
+                        .HasForeignKey("DossierId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Ron.Ido.EM.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Dossier");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Ron.Ido.EM.Entities.DossierCommentAttachment", b =>
+                {
+                    b.HasOne("Ron.Ido.EM.Entities.DossierComment", "Comment")
+                        .WithMany("Attachments")
+                        .HasForeignKey("CommentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Ron.Ido.EM.Entities.FileInfo", "FileInfo")
+                        .WithMany()
+                        .HasForeignKey("FileInfoUid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Comment");
+
+                    b.Navigation("FileInfo");
+                });
+
             modelBuilder.Entity("Ron.Ido.EM.Entities.FileInfo", b =>
                 {
                     b.HasOne("Ron.Ido.EM.Entities.User", "CreatedBy")
@@ -1473,6 +1574,16 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Navigation("Dossiers");
 
                     b.Navigation("StatusHistories");
+                });
+
+            modelBuilder.Entity("Ron.Ido.EM.Entities.Dossier", b =>
+                {
+                    b.Navigation("Comments");
+                });
+
+            modelBuilder.Entity("Ron.Ido.EM.Entities.DossierComment", b =>
+                {
+                    b.Navigation("Attachments");
                 });
 
             modelBuilder.Entity("Ron.Ido.EM.Entities.LearnLevel", b =>
