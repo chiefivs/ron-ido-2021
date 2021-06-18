@@ -254,6 +254,7 @@ namespace Ron.Ido.Importer
             var nApplies = _nostrContext.Applies
                 .Include(a => a.ApplyStatusHistories)
                 .Include(a => a.ApplyDocuments)
+                .Include(a => a.ApplyComments)
                 .OrderByDescending(a => a.CreateDate).Take(100).ToArray();
 
             foreach(var nApply in nApplies)
@@ -426,7 +427,85 @@ namespace Ron.Ido.Importer
                     _appContext.SaveChanges();
                 }
 
-                _appContext.Dossiers.Add(new Dossier { ApplyId = apply.Id });
+                var dossier = new Dossier { ApplyId = apply.Id };
+                _appContext.Dossiers.Add(dossier);
+                _appContext.SaveChanges();
+
+                foreach(var nComment in nApply.ApplyComments)
+                {
+                    var nUser = _nostrContext.Users.FirstOrDefault(u => u.Id == nComment.UserId);
+                    var comment = new DossierComment
+                    {
+                        DossierId = dossier.Id,
+                        CreateTime = nComment.CommentDate,
+                        Title = nComment.Title,
+                        Text = nComment.Body,
+                        UserId = nUser != null ? _appContext.Users.First(u => u.Login == nUser.Login)?.Id : null
+                    };
+                    dossier.Comments.Add(comment);
+
+                    var nAttachs = _nostrContext.ApplyCommentUploadedFiles.Where(uf => uf.ApplyCommentUploadedFileUploadedFileId == nComment.Id);
+                    foreach(var nAttach in nAttachs)
+                    {
+                        Guid uid = Guid.Empty;
+                        var nFile = _nostrContext.UploadedFiles.First(f => f.Id == nAttach.FilesId);
+                        var bytes = _nostrStorage.GetFileBytes(nFile);
+                        if (bytes != null)
+                        {
+                            uid = _appStorage.SaveFile(bytes);
+                            var nFileUser = nFile.UserId != null ? _nostrContext.Users.First(u => u.Id == nFile.UserId) : null;
+                            var login = nFileUser?.Login;
+                            var userId = login != null ? _appContext.Users.FirstOrDefault(u => u.Login == login)?.Id : null;
+
+                            var newFileInfo = new EM.Entities.FileInfo
+                            {
+                                Name = Path.GetFileName(nFile.FileName),
+                                ContentType = nFile.ContentType,
+                                CreateTime = nFile.UploadTime ?? DateTime.Now,
+                                Uid = uid,
+                                Size = bytes?.Length ?? 0,
+                                Source = nFile.Source,
+                                OldId = nFile.Id,
+                                CreatorEmail = nFile.CreatorEmail,
+                                CreatedById = userId
+                            };
+                            _appContext.Add(newFileInfo);
+                            _appContext.SaveChanges();
+                        }
+                    }
+                }
+
+                var fieldsMap = new Dictionary<string, string>
+                {
+                    { "AcceptDate", "AcceptTime" },
+                    { "CreatorCitizenship", "CreatorCitizenshipId" },
+                    { "CreatorPassportType", "CreatorPassportTypeId" },
+                    { "CreatorCountry", "CreatorCountryId" },
+                    { "OwnerCitizenship", "OwnerCitizenshipId" },
+                    { "OwnerCountry", "OwnerCountryId" },
+                    { "OwnerPassportType", "OwnerPassportTypeId" },
+                    { "DocCountry", "DocCountryId" },
+                    { "DocType", "DocTypeId" },
+                    { "DocAttachment", "DocAttachmentsCount" },
+                    { "SchoolCountry", "SchoolCountryId" },
+                    { "SchoolType", "SchoolTypeId" },
+                    { "SpecialLearnForm", "SpecialLearnFormId" },
+                    { "Aim", "AimId" },
+                    { "EntryForm", "EntryFormId" }
+                };
+                foreach(var nError in _nostrContext.ApplyErrors.Include(e => e.Field).Where(e => e.ApplyApplyErrorApplyErrorBarCode == nApply.BarCode))
+                {
+                    var fieldName = nError.Field.Name;
+                    if (fieldsMap.ContainsKey(fieldName))
+                        fieldName = fieldsMap[fieldName];
+
+                    _appContext.ApplyMessages.Add(new ApplyMessage
+                    {
+                        ApplyId = apply.Id,
+                        FieldName = fieldName,
+                        Text = nError.Text
+                    });
+                }
                 _appContext.SaveChanges();
             }
         }
