@@ -1,0 +1,34 @@
+<p>attachments</p>
+<div data-bind="foreach:value">
+    <div class="form-control" style="height: unset; margin-bottom:2px;">
+        <table style="width:100%;" data-bind="with:item">
+            <tr>
+                <td rowspan="2" style="width:120px; vertical-align: top;">
+                    <div data-bind="with:required">
+                        <cmp-checkbox params="value:true, checked:value"></cmp-checkbox>
+                        <label style="margin:0;">требуется</label>
+                    </div>
+                    <div data-bind="with:given">
+                        <cmp-checkbox params="value:true, checked:value"></cmp-checkbox>
+                        <label style="margin:0;">предоставлен</label>
+                    </div>
+                </td>
+                <td>
+                    <div data-bind="if:attachmentTypeId.value()">
+                        <span data-bind="text:attachmentTypeName.value()"></span>
+                    </div>
+                    <div data-bind="ifnot:attachmentTypeId.value()">
+                        <!-- ko with:description -->
+                        <cmp-textbox params="value:value"></cmp-textbox>
+                        <!-- /ko -->
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <cmp-fileupload params="uploadUrl:'', title:'upload', multiple:true, accept:['.png','.docx']"></cmp-fileupload>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

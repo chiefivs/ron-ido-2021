@@ -39,6 +39,7 @@ export class Apply extends DossierPartBase implements IApplyFieldBlockHolder {
         const select = Utils.getNodesFromFile(`${path}select-field.html`);
         const radiobox = Utils.getNodesFromFile(`${path}radiobox-field.html`);
         const multicheckbox = Utils.getNodesFromFile(`${path}multicheckbox-field.html`);
+        const attachments = Utils.getNodesFromFile(`${path}attachments-field.html`);
 
         const blocks: IApplyFieldsBlockParams[] = [
             {
@@ -253,7 +254,9 @@ export class Apply extends DossierPartBase implements IApplyFieldBlockHolder {
             },
             {
                 title: 'Документы по делу',
-                fields: [],
+                fields: [
+                    this._getApplyField('', this.form.item.attachments, attachments),
+                ],
                 blocks: []
             }
         ];
@@ -303,6 +306,36 @@ export class Apply extends DossierPartBase implements IApplyFieldBlockHolder {
 class ApplyForm extends Form<DossierApi.IApplyDto> {
     constructor(data: IODataForm<DossierApi.IApplyDto>) {
         super(data, DossierApi.saveApply, DossierApi.validateApply);
+        console.log(data);
+
+        const validate = (att: DossierApi.IApplyAttachmentDto) => {
+            this.item.attachments.value.valueHasMutated();
+            return jQuery.Deferred();
+        };
+
+        const save = (att: DossierApi.IApplyAttachmentDto) => {
+            return jQuery.Deferred();
+        };
+
+        this.item.attachments.value(ko.utils.arrayMap(<DossierApi.IApplyAttachmentDto[]>data.item.attachments, att => {
+            const formdata: IODataForm<DossierApi.IApplyAttachmentDto> = {
+                item: att,
+                options:{}
+            };
+            const form = new Form<DossierApi.IApplyAttachmentDto>(formdata, save, validate);
+            return form;
+        }));
+    }
+
+    get() {
+        var apply = super.get();
+        var attachments = ko.utils.arrayMap(this.item.attachments.value() as any[], attForm => {
+            var item = (attForm as Form<DossierApi.IApplyAttachmentDto>).get();
+            return item;
+        });
+
+        apply.attachments = attachments;
+        return apply;
     }
 }
 
@@ -347,7 +380,6 @@ class ApplyFieldsBlock implements IApplyFieldBlockHolder {
         this.fields = ko.utils.arrayMap(params.fields || [], f => {
             f.block = this;
             f.keyDown = (data:IApplyFormField, event:JQuery.Event) => {
-                console.log(data, event.key);
                 if(event.key === 'Tab') {
                     this.focusNextField(f);
                     return false;

@@ -130,10 +130,9 @@ export class Form<T> {
     private _validate() {
         this._validateTimeout = null;
         const data = this.get();
-        console.log('form validate', data);
         this._validateApi(data)
             .done(errors => {
-                console.log(errors);
+                console.log('form validate', data, errors);
                 this.errors(errors[''] || []);
                 for(const key in this._errors) {
                     const list = this._errors[key];

@@ -1,6 +1,6 @@
 //  Сгенерировано на основе серверного кода. Не изменять!!!
 import { WebApi } from '../../modules/webapi';
-import { IODataForm } from './odata';
+import { IODataForm, IFileInfoDto } from './odata';
 
 export namespace DossierApi {
     export function getDossier(id:number): JQueryPromise<IDossierDataDto> {
@@ -124,6 +124,19 @@ export namespace DossierApi {
         entryFormId:number;
         isNovorossia:boolean;
         isRostovFilial:boolean;
+        attachments:IApplyAttachmentDto[];
+    }
+
+    //  Ron.Ido.BM.Models.Dossier.ApplyAttachmentDto
+    export interface IApplyAttachmentDto {
+        id:number;
+        required:boolean;
+        given:boolean;
+        description:string;
+        error:string;
+        attachmentTypeId:number;
+        attachmentTypeName:string;
+        fileInfo:IFileInfoDto;
     }
 
 }
