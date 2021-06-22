@@ -3,6 +3,7 @@ using Ron.Ido.BM.Interfaces;
 using Ron.Ido.Common.Extensions;
 using Ron.Ido.EM;
 using Ron.Ido.EM.Entities;
+using Ron.Ido.EM.Enums;
 using System;
 using System.Linq;
 
@@ -16,8 +17,10 @@ namespace Ron.Ido.BM.Services
             _dbContext = dbContext;
         }
         AppDbContext _dbContext;
-        public ApplyFormEnum AdmissionForm(Apply apply, string pars)
+        public ApplyEntryFormEnum AdmissionForm(Apply apply, string pars)
         {
+            return (ApplyEntryFormEnum)apply.EntryFormId.GetValueOrDefault((long)ApplyEntryFormEnum.SELF);
+            /*
             if ( apply.DeliveryForm.Name.In("self", "courier") )
                 return ApplyFormEnum.Personal;
 
@@ -25,6 +28,7 @@ namespace Ron.Ido.BM.Services
                 return ApplyFormEnum.Mail;
 
             return ApplyFormEnum.Online;
+            */
         }
 
         public bool ContainsDouble(Apply apply, string pars)
@@ -113,10 +117,9 @@ namespace Ron.Ido.BM.Services
             throw new NotImplementedException();
         }
 
-        public ReceiveMethodEnum Transport(Apply apply, string pars)
+        public ApplyDeliveryFormEnum Transport(Apply apply, string pars)
         {
-            // TODO: Implement
-            throw new NotImplementedException();
+            return (ApplyDeliveryFormEnum)apply.DeliveryFormId.GetValueOrDefault((long)ApplyDeliveryFormEnum.SELF);
         }
     }
 

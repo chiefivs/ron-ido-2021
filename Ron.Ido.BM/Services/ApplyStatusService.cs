@@ -111,12 +111,13 @@ namespace Ron.Ido.BM.Services
                 {
                     switch ( _checker.AdmissionForm(apply, pars) )
                     {
-                        case ApplyFormEnum.Mail:
+                        case ApplyEntryFormEnum.MAIL:
                             if ( newStatusEnum == ApplyStatusEnum.GIVEN_DOCS_IN_NIC )
                                 return Yes(apply, statusId, pars);
                             else
                                 return Miscondition;
-                        case ApplyFormEnum.Online:
+                        case ApplyEntryFormEnum.ONLINE:
+                        case ApplyEntryFormEnum.EPGU:
                             if ( _checker.IsFullSet(apply, pars) )
                                 if ( newStatusEnum == ApplyStatusEnum.WAIT_DOCUMENTS )
                                     return Yes(apply, statusId, pars);
@@ -127,7 +128,7 @@ namespace Ron.Ido.BM.Services
                                 return Yes(apply, statusId, pars);
                             else
                                 return Miscondition;
-                        case ApplyFormEnum.Personal:
+                        case ApplyEntryFormEnum.SELF:
                             if ( newStatusEnum == ApplyStatusEnum.GIVEN )
                                 return Yes(apply, statusId, pars);
                             else
@@ -141,8 +142,9 @@ namespace Ron.Ido.BM.Services
                 {
                     switch ( _checker.AdmissionForm(apply, pars) )
                     {
-                        case ApplyFormEnum.Online:
-                            if ( _checker.IsFullSet(apply, pars) )
+                        case ApplyEntryFormEnum.ONLINE:
+                        case ApplyEntryFormEnum.EPGU:
+                            if ( !_checker.IsFullSet(apply, pars) )
                                 if ( newStatusEnum == ApplyStatusEnum.WAIT_DOCUMENTS )
                                     return Yes(apply, statusId, pars);
                                 else
@@ -152,8 +154,8 @@ namespace Ron.Ido.BM.Services
                                 return Yes(apply, statusId, pars);
                             else
                                 return Miscondition;
-                        case ApplyFormEnum.Mail:
-                        case ApplyFormEnum.Personal:
+                        case ApplyEntryFormEnum.MAIL:
+                        case ApplyEntryFormEnum.SELF:
                             if ( newStatusEnum == ApplyStatusEnum.READY_TO_GIVE )
                                 return Yes(apply, statusId, pars);
                             else
@@ -443,12 +445,13 @@ namespace Ron.Ido.BM.Services
                     case ApplyStatusEnum.READY_TO_GIVE:
                     case ApplyStatusEnum.GIVEN_DOCS_IN_NIC:
                         switch ( _checker.Transport(apply, pars) ) {
-                            case ReceiveMethodEnum.Email:
+                            case ApplyDeliveryFormEnum.POST:
                                 if ( newStatusEnum == ApplyStatusEnum.PREPARE_TO_GIVE )
                                     return Yes(apply, statusId, pars);
                                 else
                                     return Miscondition;
-                            case ReceiveMethodEnum.Personal:
+                            case ApplyDeliveryFormEnum.SELF:
+                            case ApplyDeliveryFormEnum.COURIER:
                                 if ( newStatusEnum == ApplyStatusEnum.GIVEN )
                                     return Yes(apply, statusId, pars);
                                 else
@@ -516,37 +519,5 @@ namespace Ron.Ido.BM.Services
         /// Есть, подана онлайн
         /// </summary>
         Online
-    }
-    /// <summary>
-    /// Форма подачи заявки
-    /// </summary>
-    public enum ApplyFormEnum
-    {
-        /// <summary>
-        /// Лично
-        /// </summary>
-        Personal,
-        /// <summary>
-        /// По почте
-        /// </summary>
-        Mail,
-        /// <summary>
-        /// Онлайн
-        /// </summary>
-        Online
-    }
-    /// <summary>
-    /// Способ получения
-    /// </summary>
-    public enum ReceiveMethodEnum
-    {
-        /// <summary>
-        /// Лично
-        /// </summary>
-        Personal,
-        /// <summary>
-        /// По почте
-        /// </summary>
-        Email
     }
 }

@@ -16,6 +16,7 @@ using MediatR;
 using Ron.Ido.BM;
 using Ron.Ido.EM.Enums;
 using Ron.Ido.BM.Interfaces;
+using Ron.Ido.Common.Extensions;
 
 namespace Ron.Ido.Tests.BM
 {
@@ -65,6 +66,8 @@ namespace Ron.Ido.Tests.BM
             collection.AddTransient(typeof(AppDbContext), provider => _dbContext);
             collection.AddMediatR(typeof(IAssemblyMarker));
             collection.AddTransient<ApplyStatusService>();
+            collection.AddTransient<IStatusChecker,MockStatusChecker>();
+            collection.AddTransient<IIdentityService,MockIdentityService>();
             var services = collection.BuildServiceProvider();
 
             var service = services.GetService<ApplyStatusService>();
@@ -74,7 +77,16 @@ namespace Ron.Ido.Tests.BM
 
             Assert.AreEqual(service.SetStatusEnum(0L, ApplyStatusEnum.NO_VALIDATED, "Hmm"), ApplyStatusService.ApplyNotFound);
             Assert.AreEqual(service.SetStatus(1L, 0L, "Hmm"), ApplyStatusService.StatusNotFound);
-            Assert.AreEqual(service.SetStatusEnum(1L, ApplyStatusEnum.APPROVED, "Hmm"), string.Empty);
+            // here
+
+            Assert.AreEqual(service.SetStatusEnum(1L, ApplyStatusEnum.UNDERMANNED, new ErrorTest { HasErrors = true, Form = ApplyEntryFormEnum.MAIL }.AsJson()), string.Empty);
+            Assert.AreEqual(service.RevertStatus(1L, "Undo"), string.Empty);
+
+            Assert.AreEqual(service.SetStatusEnum(1L, ApplyStatusEnum.HAS_ERRORS, new ErrorTest { HasErrors = true, Form = ApplyEntryFormEnum.ONLINE }.AsJson()), string.Empty);
+            Assert.AreEqual(service.RevertStatus(1L, "Undo"), string.Empty);
+
+            Assert.AreEqual(service.SetStatusEnum(1L, ApplyStatusEnum.APPROVED, new ErrorTest { HasErrors = false }.AsJson()), string.Empty);
+
             Assert.AreEqual(service.SetStatusEnum(1L, ApplyStatusEnum.GIVEN, "Hmm"), ApplyStatusService.NotAllowed);
 
             Assert.AreEqual(service.SetStatusEnum(1L, ApplyStatusEnum.DELETED, "Close at any"), string.Empty);
@@ -108,4 +120,5 @@ namespace Ron.Ido.Tests.BM
         }
 
     }
+
 }

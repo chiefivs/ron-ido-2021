@@ -1,6 +1,7 @@
 ﻿using Ron.Ido.BM.Services;
 using Ron.Ido.Common.DependencyInjection;
 using Ron.Ido.EM.Entities;
+using Ron.Ido.EM.Enums;
 
 namespace Ron.Ido.BM.Interfaces
 {
@@ -110,9 +111,9 @@ namespace Ron.Ido.BM.Interfaces
         /// </summary>
         /// <param name="apply">Заявка</param>
         /// <param name="pars">Дополнительные параметры</param>
-        /// <seealso cref="AplyFormEnum" />
+        /// <seealso cref="ApplyEntryFormEnum" />
         /// <returns>результат проверки</returns>
-        ApplyFormEnum AdmissionForm(Apply apply, string pars);
+        ApplyEntryFormEnum AdmissionForm(Apply apply, string pars);
 
         /// <summary>
         /// Полный комплект?
@@ -127,8 +128,8 @@ namespace Ron.Ido.BM.Interfaces
         /// <param name="apply">Заявка</param>
         /// <param name="pars">Дополнительные параметры</param>
         /// <returns>результат проверки</returns>
-        /// <seealso cref="ReceiveMethodEnum" />
-        ReceiveMethodEnum Transport(Apply apply, string pars);
+        /// <seealso cref="ApplyDeliveryFormEnum" />
+        ApplyDeliveryFormEnum Transport(Apply apply, string pars);
     }
 
 }
