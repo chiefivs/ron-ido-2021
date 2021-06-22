@@ -64,7 +64,7 @@ export default class SearchMainPage extends MainPageBase {
     open(item: AppliesSearchtApi.IAppliesSearchPageItemDto) {
         console.log(item);
         const page = <DossierMainPage>App.instance().openMainPage('dossier/dossier', item.dossierId.toString());
-        page.openApply(item.id);
+        page.openApply();
     }
 }
 
