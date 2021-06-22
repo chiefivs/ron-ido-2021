@@ -1,10 +1,13 @@
-<h1>Поиск по всем заявкам</h1>
-
-<a data-bind="click:toggle">click</a>
-<cmp-expander params="title:expanderTitle, data:$data, expanded:isExpanded, fixed:false">
-    <p>expander content</p>
-    <p>expander content</p>
-    <p>expander content</p>
-    <p>expander content</p>
-    <p>expander content</p>
-</cmp-expander>
+<cmp-table params="rows:applies, pagerState:pagerState, totalCount:tableTotalCount">
+    <cmp-table-column params="title:'Код', data:'barCode', orderable:true"></cmp-table-column>
+    <cmp-table-column params="title:'Дата', data:'createDate', orderable:true"></cmp-table-column>
+    <cmp-table-column params="title:'ФИО заявителя', data:'creatorFullName', orderable:true"></cmp-table-column>
+    <cmp-table-column params="title:'ФИО обладателя', data:'ownerFullName', orderable:true"></cmp-table-column>
+    <cmp-table-column params="title:'Статус', data:'status', orderable:true"></cmp-table-column>
+    <cmp-table-column params="priority:101, width:'40px'">
+        <div class="pull-right">
+            <a class="img img-size-20 img-edit"
+               data-bind="click:function(){$parents[4].open($parent);}"></a>
+        </div>
+    </cmp-table-column>
+</cmp-table>
