@@ -30,7 +30,6 @@ export default class UsersMainPage extends MainPageBase
         this.leftPages = ko.observableArray([]);
         this.activeLeftPage = ko.observable();
 
-        this.isActive.subscribe(active => {if(active) this.onActivated();});
         this.pagerState.subscribe(() => this.update());
 
         this._searchPage = new UsersSearchLeftPage(this);
@@ -40,7 +39,7 @@ export default class UsersMainPage extends MainPageBase
         this._searchPage.filterStates.subscribe(() => this.update());
     }
 
-    onActivated() {
+    afterActivate() {
         this.update();
     }
 

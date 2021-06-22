@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Ron.Ido.DbStorage.Npgsql;
@@ -9,9 +10,10 @@ using Ron.Ido.DbStorage.Npgsql;
 namespace Ron.Ido.DbStorage.Npgsql.Migrations
 {
     [DbContext(typeof(NpgsqlAppDbContext))]
-    partial class NpgsqlAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210617071024_DossierCommentsAndApplyMessagesAdded")]
+    partial class DossierCommentsAndApplyMessagesAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1493,7 +1495,7 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
             modelBuilder.Entity("Ron.Ido.EM.Entities.DossierComment", b =>
                 {
                     b.HasOne("Ron.Ido.EM.Entities.Dossier", "Dossier")
-                        .WithMany("Comments")
+                        .WithMany()
                         .HasForeignKey("DossierId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1574,11 +1576,6 @@ namespace Ron.Ido.DbStorage.Npgsql.Migrations
                     b.Navigation("Dossiers");
 
                     b.Navigation("StatusHistories");
-                });
-
-            modelBuilder.Entity("Ron.Ido.EM.Entities.Dossier", b =>
-                {
-                    b.Navigation("Comments");
                 });
 
             modelBuilder.Entity("Ron.Ido.EM.Entities.DossierComment", b =>

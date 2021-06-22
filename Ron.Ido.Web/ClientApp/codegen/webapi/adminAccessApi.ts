@@ -64,7 +64,7 @@ export namespace AdminAccessApi {
         id:number;
         fullName:string;
         login:string;
-        isBlocked:any;
+        isBlocked:boolean;
     }
 
     //  Ron.Ido.BM.Models.Admin.Access.UsersListDictions
@@ -82,7 +82,7 @@ export namespace AdminAccessApi {
         email:string;
         snils:string;
         remark:string;
-        isBlocked:any;
+        isBlocked:boolean;
         password:string;
         confirmPassword:string;
         roles:number[];
@@ -99,8 +99,8 @@ export namespace AdminAccessApi {
         id:number;
         name:string;
         description:string;
-        isDefault:any;
-        isAdmin:any;
+        isDefault:boolean;
+        isAdmin:boolean;
         rolePermissions:PermissionEnum[];
         viewStatuses:number[];
         stepStatuses:number[];

@@ -117,14 +117,14 @@ export function init(){
                     <div class="current-page-desc">
                         <span data-bind="text:skipCount() + 1"></span>
                         <span>-</span>
-                        <span data-bind="text:Math.min(skipCount() + maxResultCountValue().value, totalCount())"></span>
+                        <span data-bind="text:Math.min(skipCount() + maxResultCountValue(), totalCount())"></span>
                         <span>&nbsp;из&nbsp;</span>
                         <span data-bind="text:totalCount()"></span>
                     </div>
 
                     <div class="max-result-select pull-right">
                         <span class="title">строк на странице</span>
-                        <cmp-select params="value:maxResultCountValue, options:maxResultCountOptions"></cmp-select>
+                        <cmp-select params="value:maxResultCountValue, options:maxResultCountOptions, optionsValue:'value'"></cmp-select>
                     </div>
                 </div>
             `
@@ -378,7 +378,6 @@ class TableModel {
         for (let notChildrenCols = ko.utils.arrayFilter(largeCols, col => !col.isChild && col.priority < 100);
             notChildrenCols.length > maxColsCount;
             notChildrenCols = ko.utils.arrayFilter(largeCols, col => !col.isChild && col.priority < 100)) {
-            console.log('notChildrenCols', notChildrenCols);
             const minPriority = Math.min(...ko.utils.arrayMap(notChildrenCols, col => col.priority));
             const colsForDropdown = ko.utils.arrayFilter(notChildrenCols, col => col.priority === minPriority);
             if (colsForDropdown.length) {
@@ -466,7 +465,7 @@ class TableRow {
 
 class TablePager {
     skipCount = ko.observable(0);
-    maxResultCountValue: ko.Observable<ITablePagerOption>;
+    maxResultCountValue: ko.Observable<number>;
     maxResultCountOptions: ko.ObservableArray<ITablePagerOption>;
     totalCount = ko.observable(0);
     buttons = ko.observableArray<ITablePagerButton>([]);
@@ -495,7 +494,7 @@ class TablePager {
         this.totalCount = ko.isObservable(totalCount) ? totalCount : ko.observable(0);
 
         this.maxResultCountOptions = ko.observableArray(this.options);
-        this.maxResultCountValue = ko.observable(ko.utils.arrayFirst(this.options, opt => opt.value === this.state().maxResultCount) || this.options[0]);
+        this.maxResultCountValue = ko.observable((ko.utils.arrayFirst(this.options, opt => opt.value === this.state().maxResultCount) || this.options[0]).value);
 
         this.state.subscribe(() => this.updateState());
         this.totalCount.subscribe(() => {
@@ -518,13 +517,13 @@ class TablePager {
                 return;
             }
 
-            state().maxResultCount = val.value;
+            state().maxResultCount = val;
             state.valueHasMutated();
         });
 
-        this.currentPage = ko.computed(() => Math.floor(this.skipCount() / this.maxResultCountValue().value) + 1);
-        this.firstEnabled = ko.computed(() => Math.floor(this.skipCount() / this.maxResultCountValue().value) > 0);
-        this.lastEnabled = ko.computed(() => Math.floor(this.skipCount() / this.maxResultCountValue().value) < Math.ceil(this.totalCount() / this.maxResultCountValue().value - 1));
+        this.currentPage = ko.computed(() => Math.floor(this.skipCount() / this.maxResultCountValue()) + 1);
+        this.firstEnabled = ko.computed(() => Math.floor(this.skipCount() / this.maxResultCountValue()) > 0);
+        this.lastEnabled = ko.computed(() => Math.floor(this.skipCount() / this.maxResultCountValue()) < Math.ceil(this.totalCount() / this.maxResultCountValue() - 1));
     }
 
     setSorting(sorting: string) {
@@ -539,21 +538,21 @@ class TablePager {
     }
 
     prev() {
-        const activePageNum = Math.floor(this.skipCount() / this.maxResultCountValue().value);
-        const skipCount = Math.max(0, activePageNum - 1) * this.maxResultCountValue().value;
+        const activePageNum = Math.floor(this.skipCount() / this.maxResultCountValue());
+        const skipCount = Math.max(0, activePageNum - 1) * this.maxResultCountValue();
         this.skipCount(skipCount);
     }
 
     next() {
-        const activePageNum = Math.floor(this.skipCount() / this.maxResultCountValue().value);
-        const totalPagesCount = Math.ceil(this.totalCount() / this.maxResultCountValue().value);
-        const skipCount = Math.min(totalPagesCount - 1, activePageNum + 1) * this.maxResultCountValue().value;
+        const activePageNum = Math.floor(this.skipCount() / this.maxResultCountValue());
+        const totalPagesCount = Math.ceil(this.totalCount() / this.maxResultCountValue());
+        const skipCount = Math.min(totalPagesCount - 1, activePageNum + 1) * this.maxResultCountValue();
         this.skipCount(skipCount);
     }
 
     last() {
-        const totalPagesCount = Math.ceil(this.totalCount() / this.maxResultCountValue().value);
-        const skipCount = (totalPagesCount - 1) * this.maxResultCountValue().value;
+        const totalPagesCount = Math.ceil(this.totalCount() / this.maxResultCountValue());
+        const skipCount = (totalPagesCount - 1) * this.maxResultCountValue();
         this.skipCount(skipCount);
     }
 
@@ -564,7 +563,7 @@ class TablePager {
 
         this.isUpdating = true;
         this.skipCount(this.state().skipCount);
-        this.maxResultCountValue(ko.utils.arrayFirst(this.options, opt => opt.value === this.state().maxResultCount) || this.options[0]);
+        this.maxResultCountValue((ko.utils.arrayFirst(this.options, opt => opt.value === this.state().maxResultCount) || this.options[0]).value);
         this.updateButtons();
         this.isUpdating = false;
     }
@@ -583,16 +582,16 @@ class TablePager {
         }
 
         const optionVals = ko.utils.arrayMap(options, opt => opt.value);
-        if(!this.maxResultCountValue() || this.maxResultCountValue().value > Math.max(...optionVals)) {
-            this.maxResultCountValue(options[0]);
+        if(!this.maxResultCountValue() || this.maxResultCountValue() > Math.max(...optionVals)) {
+            this.maxResultCountValue(options[0].value);
         }
 
         this.maxResultCountOptions(options);
     }
 
     private updateButtons() {
-        const activePageNum = Math.floor(this.skipCount() / this.maxResultCountValue().value);
-        const totalPagesCount = Math.ceil(this.totalCount() / this.maxResultCountValue().value);
+        const activePageNum = Math.floor(this.skipCount() / this.maxResultCountValue());
+        const totalPagesCount = Math.ceil(this.totalCount() / this.maxResultCountValue());
         const buttons: ITablePagerButton[] = [];
 
         if (totalPagesCount < 8) {
