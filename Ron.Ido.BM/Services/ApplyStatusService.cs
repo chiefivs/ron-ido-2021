@@ -478,13 +478,19 @@ namespace Ron.Ido.BM.Services
                 prevRecord.EndTime = DateTime.UtcNow;
                 _appDbContext.ApplyStatusHistories.Update(prevRecord);
             }
+            var me = _appDbContext.Users.Find(_identityService?.Identity?.Id);
             var historyRecord = new ApplyStatusHistory { Apply = apply, PrevStatus = apply.Status, StatusId = status, ChangeTime = DateTime.UtcNow, UserId = _identityService?.Identity?.Id };
             _appDbContext.ApplyStatusHistories.Add(historyRecord);
-            // TODO: Добавить в комментарий запись о смене статуса
-            //var applyComment = historyRecord.ToComment();
-            //apply.ApplyComments.Add(applyComment);
             apply.StatusId = status;
+            var newStatus = _prefetch[status];
             var newDossier = new Dossier { Apply = apply };
+            newDossier.Comments.Add(new DossierComment
+            {
+                Dossier = newDossier,
+                UserId = _identityService?.Identity?.Id,
+                Title = "Статус изменён",
+                Text = $"Статус изменён {me?.FullName} с {apply?.Status?.Name} на {newStatus?.Name}"
+            });
             _appDbContext.Applies.Update(apply);
             _appDbContext.Dossiers.Add(newDossier);
             _appDbContext.SaveChanges();

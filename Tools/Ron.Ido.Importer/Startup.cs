@@ -25,7 +25,9 @@ namespace Ron.Ido.Importer
 			string basepath = Environment.GetEnvironmentVariable(Common.Constants.ConfigFolderPath)
 				  ?? Environment.GetEnvironmentVariable(Common.Constants.ConfigFolderPath, EnvironmentVariableTarget.Machine);
 
+            Console.WriteLine("Base config path {0}", basepath);
             var builder = new ConfigurationBuilder();
+
 
 			if (!string.IsNullOrEmpty(basepath))
 				builder.SetBasePath(basepath);

@@ -23,6 +23,8 @@ namespace Ron.Ido.EM.Entities
         
         [StringLength(200)]
         public string LastName { get; set; }
+        [NotMapped]
+        public string FullName { get => $"{FirstName} {LastName}"; }
 
         [Required]
         [StringLength(50)]
