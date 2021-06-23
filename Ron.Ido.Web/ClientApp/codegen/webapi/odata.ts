@@ -70,6 +70,5 @@
         uid:any;
         name:string;
         size:number;
-        contentType:string;
     }
 

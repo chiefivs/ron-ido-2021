@@ -1,6 +1,10 @@
+//  https://developer.mozilla.org/ru/docs/Web/API/File/Using_files_from_web_applications
+//  https://habr.com/ru/post/321250/
+//  https://developer.mozilla.org/ru/docs/Web/API/FormData/Using_FormData_Objects
 import * as ko from 'knockout';
 import { Utils } from '../modules/utils';
 import { IEditBaseParams, EditBaseModel} from './edit-base';
+import { IFileInfoDto } from '../codegen/webapi/odata';
 
 export function init(){
     ko.components.register('cmp-fileupload', {
@@ -18,21 +22,20 @@ export function init(){
 
 export interface IFileUploadParams extends IEditBaseParams {
     uploadUrl: string;
-    errorMessage: ko.Observable<string>;
-    files: ko.ObservableArray<IFileData>;
-    start: ko.Observable<() => JQueryPromise<any>>;
-    clear: ko.Observable<() => void>;
-    validate: (file: IFileSelect) => boolean;
-    progress: (data: IProgressData) => void;
+    //errorMessage: ko.Observable<string>;
+    files: ko.ObservableArray<IFileInfoDto>;
+    //start: ko.Observable<() => JQueryPromise<any>>;
+    //clear: ko.Observable<() => void>;
+    //validate: (file: IFileSelect) => boolean;
+    //progress: (data: IProgressData) => void;
     multiple?: boolean;
     accept?: string[];
 }
 
 class FileUploadModel extends EditBaseModel {
-    errorMessage: ko.Observable<string>;
-    files: ko.ObservableArray<IFileData>;
-    hasFocus = ko.observable(false);
-    elementData: IElementData;
+    //errorMessage: ko.Observable<string>;
+    files: ko.ObservableArray<IFileInfoDto>;
+    //elementData: IElementData;
     multiple: boolean;
     accept: string[];
 
@@ -58,22 +61,46 @@ class FileUploadModel extends EditBaseModel {
         }
 
         this.files = params.files || ko.observableArray([]);
-        this.validate = params.validate;
-        this.progress = params.progress;
+        //this.validate = params.validate;
+        //this.progress = params.progress;
         this.multiple = !!params.multiple;
         this.accept = params.accept || null;
 
-        this.errorMessage = ko.observable('');
+        //this.errorMessage = ko.observable('');
 
-        if (ko.isObservable(params.start)) {
-            params.start(this.start.bind(this));
-        }
-        if (ko.isObservable(params.clear)) {
-            params.clear(this.clear.bind(this));
-        }
+        // if (ko.isObservable(params.start)) {
+        //     params.start(this.start.bind(this));
+        // }
+        // if (ko.isObservable(params.clear)) {
+        //     params.clear(this.clear.bind(this));
+        // }
 
         this.input.on('change', (evt:any) => {
             console.log(evt.target.files);
+            const formData = new FormData();
+            formData.append('file', evt.target.files[0]);
+            const request = new XMLHttpRequest();
+
+            // request.addEventListener('progress', e => {
+            //     if(e.lengthComputable) {
+            //         console.log('upload progress', e.loaded, e.total);
+            //         //const percentage = Math.round((e.loaded * 100) / e.total);
+            //     }
+            // });
+
+            request.open('POST', 'api/storage/upload', true);
+            request.onprogress = progressEvt => {
+                console.log('upload progress', progressEvt);
+            };
+            request.onload = loadEvt => {
+                if(request.status === 200){
+                    const result = JSON.parse(request.response) as IFileInfoDto[];
+                    console.log('file upload success', result);
+                } else {
+                    console.log('file upload error', loadEvt);
+                }
+            };
+            request.send(formData);
         });
 
         // (this.input as any).fileupload({
@@ -99,61 +126,61 @@ class FileUploadModel extends EditBaseModel {
         // });
     }
 
-    delete(file: File) {
-        this.files.remove(file);
-    }
+    // delete(file: File) {
+    //     this.files.remove(file);
+    // }
 
-    onselect(select: IFileSelect): void {
-        var file = new File(select);
-        file.owner = this;
-        if (!this.multiple) {
-            this.clear();
-        } 
-        if (this.accept) {
-            const ext = file.name.split('.').pop();
-            const allowed = !!ko.utils.arrayFirst(this.accept, i => i === ext);
+    // onselect(select: IFileSelect): void {
+    //     var file = new File(select);
+    //     file.owner = this;
+    //     if (!this.multiple) {
+    //         this.clear();
+    //     } 
+    //     if (this.accept) {
+    //         const ext = file.name.split('.').pop();
+    //         const allowed = !!ko.utils.arrayFirst(this.accept, i => i === ext);
 
-             if (!allowed) {
-                this.errorMessage(this.accept + ' only files are allowed');
-                return ;
-            }
-            this.errorMessage('');
-        }
-        this.files.push(file);
-    }
+    //          if (!allowed) {
+    //             this.errorMessage(this.accept + ' only files are allowed');
+    //             return ;
+    //         }
+    //         this.errorMessage('');
+    //     }
+    //     this.files.push(file);
+    // }
 
-    onvalidate(file: IFileSelect): boolean {
-        if (ko.utils.arrayFilter(this.files(), f => !f.uid && f.name === file.name).length)
-            return false;
+    // onvalidate(file: IFileSelect): boolean {
+    //     if (ko.utils.arrayFilter(this.files(), f => !f.uid && f.name === file.name).length)
+    //         return false;
 
-        if (this.validate)
-            return this.validate(file);
+    //     if (this.validate)
+    //         return this.validate(file);
 
-        return true;
-    }
+    //     return true;
+    // }
 
-    ondone(result: IFileData[], status: string, promise: JQueryPromise<IFileData[]>): JQueryPromise<IFileData[]> {
-        ko.utils.arrayForEach(result, r => {
-            var file = ko.utils.arrayFirst(this.files(), f => !f.uid && f.name === r.name);
-            if (!file)
-                return;
+    // ondone(result: IFileData[], status: string, promise: JQueryPromise<IFileData[]>): JQueryPromise<IFileData[]> {
+    //     ko.utils.arrayForEach(result, r => {
+    //         var file = ko.utils.arrayFirst(this.files(), f => !f.uid && f.name === r.name);
+    //         if (!file)
+    //             return;
 
-            file.uid = r.uid;
-        });
+    //         file.uid = r.uid;
+    //     });
 
-        this.files.valueHasMutated();
-        return promise;
-    }
+    //     this.files.valueHasMutated();
+    //     return promise;
+    // }
 
-    clear(): void {
-        this.files.removeAll();
-    }
+    // clear(): void {
+    //     this.files.removeAll();
+    // }
 
-    start(): JQueryPromise<IFileData[]> {
-        var selected = ko.utils.arrayFilter(this.files(), f => (<File>f).fileSelect !== null);
-        this.elementData.files = ko.utils.arrayMap(selected, f => (<File>f).fileSelect);
-        return this.elementData.submit().then(this.ondone.bind(this));
-    }
+    // start(): JQueryPromise<IFileData[]> {
+    //     var selected = ko.utils.arrayFilter(this.files(), f => (<File>f).fileSelect !== null);
+    //     this.elementData.files = ko.utils.arrayMap(selected, f => (<File>f).fileSelect);
+    //     return this.elementData.submit().then(this.ondone.bind(this));
+    // }
 }
 
 
@@ -186,9 +213,9 @@ class File implements IFileData {
     }
 
     delete(): void {
-        if (this.owner) {
-            this.owner.delete(this);
-        }
+        // if (this.owner) {
+        //     this.owner.delete(this);
+        // }
     }
 
     private getSizeString(size: number): string {
@@ -198,11 +225,8 @@ class File implements IFileData {
     }
 }
 
-export interface IFileData {
-    uid: string;
-    size: number;
+export interface IFileData extends IFileInfoDto {
     sizeString: string;
-    name: string;
     delete(): void;
 }
 

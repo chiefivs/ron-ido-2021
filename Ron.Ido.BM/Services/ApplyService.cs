@@ -38,8 +38,7 @@ namespace Ron.Ido.BM.Services
                     {
                         Uid = att.FileInfo.Uid,
                         Name = att.FileInfo.Name,
-                        Size = att.FileInfo.Size,
-                        ContentType = att.FileInfo.ContentType
+                        Size = att.FileInfo.Size
                     }
                     : null));
             }));
