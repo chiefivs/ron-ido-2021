@@ -124,6 +124,9 @@ namespace Ron.Ido.EM
                 .HasForeignKey(c => c.CommentId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<DuplicateCertificateDeliveryForm>().HasKey(ac => new { ac.DuplicateId, ac.DeliveryFormId });
+
+
             modelBuilder.Entity<RolePermission>().HasKey(rp => new { rp.RoleId, rp.PermissionId });
             modelBuilder.Entity<RolePermission>()
                 .HasOne(p => p.Role)

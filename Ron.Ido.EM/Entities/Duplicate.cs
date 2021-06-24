@@ -26,7 +26,7 @@ namespace Ron.Ido.EM.Entities
 
         public bool IsEnglish { get; set; }
 
-        public int StatusId { get; set; }
+        public long StatusId { get; set; }
         public virtual DuplicateStatus Status { get; set; }
         public virtual List<DuplicateStatusHistory> StatusHistories { get; set; } = new List<DuplicateStatusHistory>();
         public virtual List<Dossier> Dossiers { get; set; } = new List<Dossier>();
@@ -37,7 +37,7 @@ namespace Ron.Ido.EM.Entities
         [StringLength(1000)]
         public string Storage { get; set; }
 
-        [StringLength(100)]
+        [StringLength(1000)]
         public string Note { get; set; }
         #endregion
 
@@ -45,45 +45,45 @@ namespace Ron.Ido.EM.Entities
         [StringLength(200)]
         public string FullName { get; set; }
 
-        [StringLength(100)]
+        [StringLength(200)]
         public string MailIndex { get; set; }
 
-        [StringLength(100)]
+        [StringLength(200)]
         public string CityName { get; set; }
 
-        [StringLength(100)]
+        [StringLength(200)]
         public string Street { get; set; }
 
-        [StringLength(100)]
+        [StringLength(200)]
         public string Block { get; set; }
 
-        [StringLength(100)]
+        [StringLength(200)]
         public string Flat { get; set; }
 
-        [StringLength(100)]
+        [StringLength(200)]
         public string Corpus { get; set; }
 
-        [StringLength(100)]
+        [StringLength(200)]
         public string Building { get; set; }
 
-        [StringLength(100)]
+        [StringLength(200)]
         public string Address { get; set; }
 
-        [StringLength(100)]
+        [StringLength(200)]
         public string Phones { get; set; }
 
-        [StringLength(100)]
+        [StringLength(200)]
         public string Email { get; set; }
 
         public long? CreatorCountryId { get; set; }
-        public Country CreatorCountry { get; set; }
+        public virtual Country CreatorCountry { get; set; }
         #endregion
 
         #region Документ
         [StringLength(200)]
         public string DocFullName { get; set; }
 
-        [StringLength(100)]
+        [StringLength(200)]
         public string SchoolName { get; set; }
 
         public long? DocCountryId { get; set; }
@@ -92,7 +92,7 @@ namespace Ron.Ido.EM.Entities
         public long? DocumentTypeId { get; set; }
         public virtual ApplyDocType DocumentType { get; set; }
 
-        [StringLength(100)]
+        [StringLength(200)]
         public string DocumentDate { get; set; }
         #endregion
 
