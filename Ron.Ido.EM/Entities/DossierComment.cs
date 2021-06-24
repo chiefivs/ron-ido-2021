@@ -12,7 +12,7 @@ namespace Ron.Ido.EM.Entities
         public long DossierId { get; set; }
         public virtual Dossier Dossier { get; set; }
 
-        public DateTime CreateTime { get; set; } = DateTime.UtcNow;
+        public DateTime CreateTime { get; set; } = DateTime.Now;
 
         [StringLength(200)]
         public string Title { get; set; }
