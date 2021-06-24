@@ -8,18 +8,18 @@ namespace Ron.Ido.EM.Entities
     [Index(nameof(Name))]
     [Index(nameof(NameEng))]
     [Index(nameof(OrderNum))]
-    public class ApplyAim: IOrdered
+    public class DuplicateStatus: IOrdered
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long Id { get; set; }
 
-        [StringLength(200)]
+        [StringLength(50)]
         public string Name { get; set; }
 
-        public int OrderNum { get; set; }
-
-        [StringLength(200)]
+        [StringLength(50)]
         public string NameEng { get; set; }
+
+        public int OrderNum { get; set; }
     }
 }

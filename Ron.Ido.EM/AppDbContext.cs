@@ -31,6 +31,10 @@ namespace Ron.Ido.EM
         public virtual DbSet<DossierComment> DossierComments { get; set; }
         public virtual DbSet<DossierCommentAttachment> DossierCommentAttachments { get; set; }
 
+        public virtual DbSet<Duplicate> Duplicates { get; set; }
+        public virtual DbSet<DuplicateStatus> DuplicateStatuses { get; set; }
+        public virtual DbSet<DuplicateStatusHistory> DuplicateStatusHistories { get; set; }
+
         public virtual DbSet<FileInfo> FileInfos { get; set; }
         public virtual DbSet<LearnLevel> LearnLevels { get; set; }
         public virtual DbSet<Legalization> Legalizations { get; set; }
