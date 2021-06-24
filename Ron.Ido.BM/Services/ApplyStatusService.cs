@@ -68,6 +68,7 @@ namespace Ron.Ido.BM.Services
                 return NoHistory;
 
             apply.StatusId = last.PrevStatusId.Value;
+            apply.StatusChangeTime = DateTime.UtcNow;
             var newDossier = new Dossier { Apply = apply };
             _appDbContext.Applies.Update(apply);
             _appDbContext.Dossiers.Add(newDossier);
