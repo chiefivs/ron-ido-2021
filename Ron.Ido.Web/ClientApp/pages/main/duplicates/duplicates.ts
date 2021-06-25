@@ -4,23 +4,23 @@ import { default as DossierMainPage } from '../dossier/dossier';
 import { ILeftPage, MainPageBase, LeftPageBase } from '../../../modules/content';
 import { IODataFilter, ODataFilterTypeEnum, ODataOrderTypeEnum } from '../../../codegen/webapi/odata';
 import { ITablePagerState, TableColumnOrderDirection, IFilterParams, IFilterOption, FilterValueType } from '../../../components/index';
-import { AppliesSearchApi } from '../../../codegen/webapi/appliesSearchApi';
+import { DuplicatesSearchApi } from '../../../codegen/webapi/duplicatesSearchApi';
 import { IODataOrder } from '../../../codegen/webapi/odata';
 
 export default class SearchMainPage extends MainPageBase {
-    applies = ko.observableArray<AppliesSearchApi.IAppliesSearchPageItemDto>([]);
+    applies = ko.observableArray<DuplicatesSearchApi.IDuplicatesSearchPageItemDto>([]);
     tableTotalCount = ko.observable(0);
     pagerState = ko.observable<ITablePagerState>({
         skipCount: 0,
         sorting: 'createDate desc',
         maxResultCount: 10,
     });
-    private _searchPage: AppliesSearchLeftPage;
+    private _searchPage: DuplicatesSearchLeftPage;
 
     constructor() {
         super({
             pageTitle: 'поиск',
-            templatePath: 'pages/main/applies/search.html'
+            templatePath: 'pages/main/duplicates/duplicates.html'
         });
 
         this.isActive.subscribe(active => { if (active) this.onActivated(); });
@@ -28,7 +28,7 @@ export default class SearchMainPage extends MainPageBase {
 
         this.leftPages = ko.observableArray([]);
         this.activeLeftPage = ko.observable();
-        this._searchPage = new AppliesSearchLeftPage(this);
+        this._searchPage = new DuplicatesSearchLeftPage(this);
         this.leftPages([<ILeftPage>this._searchPage]);
         this.activeLeftPage(this._searchPage);
 
@@ -50,7 +50,7 @@ export default class SearchMainPage extends MainPageBase {
 
         const filterStates = this._searchPage.filterStates();
 
-        AppliesSearchApi.getAppliesSearchPage({
+        DuplicatesSearchApi.getDuplicatesSearchPage({
             skip: state.skipCount,
             take: state.maxResultCount,
             filters: filterStates,
@@ -61,56 +61,39 @@ export default class SearchMainPage extends MainPageBase {
         });
     }
 
-    open(item: AppliesSearchApi.IAppliesSearchPageItemDto) {
+    open(item: DuplicatesSearchApi.IDuplicatesSearchPageItemDto) {
         console.log(item);
         const page = <DossierMainPage>App.instance().openMainPage('dossier/dossier', item.dossierId.toString());
         page.openApply();
     }
 }
 
-class AppliesSearchLeftPage extends LeftPageBase {
+class DuplicatesSearchLeftPage extends LeftPageBase {
     filters: IFilterParams[];
     filterStates: ko.ObservableArray<IODataFilter> = ko.observableArray([]);
 
     statusesOptions = ko.observableArray<IFilterOption>([]);
-    learnLevelOptions = ko.observableArray<IFilterOption>([]);
-    entryFormOptions = ko.observableArray<IFilterOption>([]);
-    stagesOptions = ko.observableArray<IFilterOption>([]);
 
     constructor(owner: SearchMainPage) {
         super({
             pageTitle: 'поиск',
-            templatePath: 'pages/left/applies-search.html'
+            templatePath: 'pages/left/duplicates-search.html'
         });
 
         this.owner = owner;
         this.filters = [
             { title: 'ФИО заявителя', field: 'creatorSurname', aliases: ['creatorFirstname', 'creatorLastname'], valueType: 'string', filterType: ODataFilterTypeEnum.Contains },
             { title: 'ФИО владельца', field: 'ownerSurname', aliases: ['ownerFirstName', 'ownerLastName'], valueType: 'string', filterType: ODataFilterTypeEnum.Contains },
-            { title: 'Номер заявления', field: 'barCode', aliases: ['primaryBarCode'], valueType: 'string', filterType: ODataFilterTypeEnum.Contains },
+            { title: 'Номер заявления', field: 'barCode', aliases: ['BarCode'], valueType: 'string', filterType: ODataFilterTypeEnum.Contains },
             { title: 'Дата создания', field: 'createTime', valueType: 'date', filterType: ODataFilterTypeEnum.BetweenLeft },
             { title: 'Статусы', field: 'statuses', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.statusesOptions },
-            { title: 'Уровень образования', field: 'learnLevel', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.learnLevelOptions },
-            { title: 'Форма приема', field: 'entryForm', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.entryFormOptions },
-            { title: 'Этапы', field: 'stages', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.stagesOptions }
         ];
 
-        AppliesSearchApi.getAppliesSearchDictions().done(dictions => {
+        DuplicatesSearchApi.getDuplicatesSearchDictions().done(dictions => {
             const statusOptionValues: IFilterOption[] = ko.utils.arrayMap(dictions.statuses, status =>
                 <IFilterOption>{ value: status.value.toString(), text: status.text });
             this.statusesOptions(statusOptionValues);
 
-            const learnLevelOptionValues: IFilterOption[] = ko.utils.arrayMap(dictions.learnLevels, level =>
-                <IFilterOption>{ value: level.value.toString(), text: level.text });
-            this.learnLevelOptions(learnLevelOptionValues);
-
-            const entryFormOptionValues: IFilterOption[] = ko.utils.arrayMap(dictions.entryForms, eForm =>
-                <IFilterOption>{ value: eForm.value.toString(), text: eForm.text });
-            this.entryFormOptions(entryFormOptionValues);
-
-            const stagesOptionValues: IFilterOption[] = ko.utils.arrayMap(dictions.stages, stage =>
-                <IFilterOption>{ value: stage.value.toString(), text: stage.text });
-            this.stagesOptions(stagesOptionValues);
         });
     }
 }

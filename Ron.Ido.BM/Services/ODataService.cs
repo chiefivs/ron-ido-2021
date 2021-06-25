@@ -51,12 +51,12 @@ namespace Ron.Ido.BM.Services
             var query = AppDbContext.Set<TEntity>().AsQueryable();
             query = ApplyFilters(query, request.Filters, customFilters);
             query = ApplyOrders(query, request.Orders);
-            var items = query.Skip(request.Skip).Take(request.Take).ProjectTo<TDto>(mapperConfig);
+            var items = query.Skip(request.Skip).Take(request.Take).ProjectTo<TDto>(mapperConfig).ToArray();
 
             return new ODataPage<TDto>
             {
-                Items = items.ToArray(),
-                Size = items.Count(),
+                Items = items,
+                Size = items.Length,
                 Skip = request.Skip,
                 Total = query.Count()
             };

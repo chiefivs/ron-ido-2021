@@ -1,4 +1,4 @@
-﻿using Ron.Ido.BM.Models.Account;
+using Ron.Ido.BM.Models.Account;
 using Ron.Ido.EM.Enums;
 
 namespace Ron.Ido.Web.Authorization
@@ -19,7 +19,8 @@ namespace Ron.Ido.Web.Authorization
             {
                 Submenu = new []
                 {
-                    new MenuItem("Прием заявлений", "applies/acceptance", PermissionEnum.APPLY_VIEW, PermissionEnum.APPLY_CREATE, PermissionEnum.APPLY_EDIT, PermissionEnum.APPLY_DEL)
+                    new MenuItem("Прием заявлений", "applies/acceptance", PermissionEnum.APPLY_VIEW, PermissionEnum.APPLY_CREATE, PermissionEnum.APPLY_EDIT, PermissionEnum.APPLY_DEL),
+                    new MenuItem("Дубликаты", "duplicates/duplicates", PermissionEnum.APPLY_VIEW),
                 }
             },
             new MenuItem("Доступ")
