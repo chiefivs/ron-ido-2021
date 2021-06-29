@@ -12,14 +12,14 @@ export default class SearchMainPage extends MainPageBase {
     tableTotalCount = ko.observable(0);
     pagerState = ko.observable<ITablePagerState>({
         skipCount: 0,
-        sorting: 'createDate desc',
+        sorting: 'Duplicate.createTime desc',
         maxResultCount: 10,
     });
     private _searchPage: DuplicatesSearchLeftPage;
 
     constructor() {
         super({
-            pageTitle: 'поиск',
+            pageTitle: 'дубликаты',
             templatePath: 'pages/main/duplicates/duplicates.html'
         });
 

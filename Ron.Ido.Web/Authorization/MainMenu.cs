@@ -20,7 +20,7 @@ namespace Ron.Ido.Web.Authorization
                 Submenu = new []
                 {
                     new MenuItem("Прием заявлений", "applies/acceptance", PermissionEnum.APPLY_VIEW, PermissionEnum.APPLY_CREATE, PermissionEnum.APPLY_EDIT, PermissionEnum.APPLY_DEL),
-                    new MenuItem("Дубликаты", "duplicates/duplicates", PermissionEnum.APPLY_VIEW),
+                    new MenuItem("Дубликаты", "duplicates/duplicates-registry", PermissionEnum.APPLY_VIEW),
                 }
             },
             new MenuItem("Доступ")
