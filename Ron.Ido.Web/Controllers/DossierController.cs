@@ -7,6 +7,7 @@ using Ron.Ido.BM.Models.OData;
 using Ron.Ido.EM.Enums;
 using Ron.Ido.Web.Authorization;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Ron.Ido.Web.Controllers

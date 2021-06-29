@@ -103,6 +103,7 @@ const { options } = require('less');
         resolve:{
             extensions:['.js', '.ts'],
             alias: {
+                'jquery-ui-widget': path.resolve(__dirname, 'node_modules/jquery.ui.widget/jquery.ui.widget.js'),
                 '@modules': path.resolve(__dirname, 'ClientApp/modules'),
                 '@templates': path.resolve(__dirname, 'ClientApp/templates'),
                 '@pages': path.resolve(__dirname, 'ClientApp/pages'),

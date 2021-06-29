@@ -290,5 +290,9 @@ namespace Ron.Ido.BM.Models.Dossier
                 yield return new ValidationResult("Поле обязательно к заполнению", new[] { nameof(CreatorFirstName) });
         }
         #endregion
+
+        #region Прилагаемые документы
+        public IEnumerable<ApplyAttachmentDto> Attachments { get; set; }
+        #endregion
     }
 }

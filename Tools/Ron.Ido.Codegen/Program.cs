@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Ron.Ido.Common.Attributes;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,7 +14,7 @@ namespace Codegen
         {
             var assembly = Assembly.GetAssembly(typeof(RonFde.WebInternal.Program));
             var controllers = assembly.GetTypes()
-                .Where(t => t.GetCustomAttribute<ApiControllerAttribute>() != null);
+                .Where(t => t.GetCustomAttribute<ApiControllerAttribute>() != null && t.GetCustomAttribute<NoCodegenAttribute>() == null);
 
             var webapiDir = @"ClientApp\codegen\webapi";
             var modules = new Dictionary<string, CodeModule>();
