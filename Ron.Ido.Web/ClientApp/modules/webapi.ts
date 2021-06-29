@@ -12,7 +12,7 @@ export namespace WebApi {
         return <JQueryPromise<TResponse>>request({
             method: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify(data),
+            data: JSON.stringify(data || {}),
             url: url
         });
     }

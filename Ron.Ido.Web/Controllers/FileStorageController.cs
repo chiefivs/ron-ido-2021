@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Ron.Ido.BM.Models.Storage;
+using Ron.Ido.BM.Models.FileStorage;
+using Ron.Ido.Common.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Ron.Ido.Web.Controllers
 {
-    [ApiController]
+    [ApiController, NoCodegen]
     public class FileStorageController : ControllerBase
     {
         [HttpPost]

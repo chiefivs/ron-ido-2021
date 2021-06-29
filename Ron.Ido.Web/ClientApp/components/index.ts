@@ -35,6 +35,7 @@ export function init() {
 export { ICheckBoxParams } from './checkbox';
 export { IDatepickerParams } from './datepicker';
 export { IExpanderParams } from './expander';
+export { FileData } from './fileupload';
 export { IFilterParams, FilterValueType, IFilterOption } from './filter';
 export { IFiltersPanelParams } from './filters-panel';
 export { IFormFieldParams } from './form-field';

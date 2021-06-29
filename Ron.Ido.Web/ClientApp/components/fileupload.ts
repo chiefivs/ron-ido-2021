@@ -21,34 +21,26 @@ export function init(){
 }
 
 export interface IFileUploadParams extends IEditBaseParams {
-    uploadUrl: string;
-    //errorMessage: ko.Observable<string>;
-    files: ko.ObservableArray<IFileInfoDto>;
-    //start: ko.Observable<() => JQueryPromise<any>>;
-    //clear: ko.Observable<() => void>;
-    //validate: (file: IFileSelect) => boolean;
-    //progress: (data: IProgressData) => void;
+    files: ko.ObservableArray<FileData>;
     multiple?: boolean;
     accept?: string[];
+    validate?: (files: FileData[]) => boolean;
 }
 
 class FileUploadModel extends EditBaseModel {
-    //errorMessage: ko.Observable<string>;
-    files: ko.ObservableArray<IFileInfoDto>;
-    //elementData: IElementData;
+    files: ko.ObservableArray<FileData>;
     multiple: boolean;
     accept: string[];
 
     private input: JQuery;
     private link: JQuery;
-    private validate: (file: IFileSelect) => boolean;
-    private progress: (data: IProgressData) => void;
+    private validate: (files: FileData[]) => boolean;
 
     constructor(params: IFileUploadParams, node: Node) {
         super(params);
         this.link = $('a.img-floppy', node);
         this.input = $('input[type=file]', node);
-        this.input.attr('data-url', params.uploadUrl).hide();
+        this.input.hide();
         if(params.multiple)
             this.input.attr('multiple', 'multiple');
         this.link.on('click', evt => {
@@ -60,162 +52,83 @@ class FileUploadModel extends EditBaseModel {
             this.input.attr('accept', params.accept.join(','));
         }
 
+        this.validate = params.validate || null;
+
         this.files = params.files || ko.observableArray([]);
-        //this.validate = params.validate;
-        //this.progress = params.progress;
         this.multiple = !!params.multiple;
         this.accept = params.accept || null;
 
-        //this.errorMessage = ko.observable('');
-
-        // if (ko.isObservable(params.start)) {
-        //     params.start(this.start.bind(this));
-        // }
-        // if (ko.isObservable(params.clear)) {
-        //     params.clear(this.clear.bind(this));
-        // }
-
         this.input.on('change', (evt:any) => {
-            console.log(evt.target.files);
-            const formData = new FormData();
-            formData.append('file', evt.target.files[0]);
-            const request = new XMLHttpRequest();
+            const selected = ko.utils.arrayMap(evt.target.files as File[], f => new FileData(f));
+            if(this.validate && ! this.validate(selected))
+                return;
 
-            // request.addEventListener('progress', e => {
-            //     if(e.lengthComputable) {
-            //         console.log('upload progress', e.loaded, e.total);
-            //         //const percentage = Math.round((e.loaded * 100) / e.total);
-            //     }
-            // });
+            const files = this.multiple ? this.files() : [];
+            ko.utils.arrayForEach(selected, file => files.push(file));
 
-            request.open('POST', 'api/storage/upload', true);
-            request.onprogress = progressEvt => {
-                console.log('upload progress', progressEvt);
-            };
-            request.onload = loadEvt => {
-                if(request.status === 200){
-                    const result = JSON.parse(request.response) as IFileInfoDto[];
-                    console.log('file upload success', result);
-                } else {
-                    console.log('file upload error', loadEvt);
-                }
-            };
-            request.send(formData);
+            this.files(files);
         });
-
-        // (this.input as any).fileupload({
-        //     dataType: 'json',
-        //     add: (e:any, data:IElementData) => {
-        //         var file = data.files[0];
-        //         if (!this.onvalidate(file))
-        //             return;
-
-        //         if (!this.elementData) {
-        //             this.elementData = data;
-        //             this.elementData.files = [];
-        //         }
-
-        //         this.onselect(file);
-        //     },
-        //     beforeSend: () => {
-        //     },
-        //     progressall: (e:any, data:IProgressData) => {
-        //         if (this.progress)
-        //             this.progress(data);
-        //     }
-        // });
     }
-
-    // delete(file: File) {
-    //     this.files.remove(file);
-    // }
-
-    // onselect(select: IFileSelect): void {
-    //     var file = new File(select);
-    //     file.owner = this;
-    //     if (!this.multiple) {
-    //         this.clear();
-    //     } 
-    //     if (this.accept) {
-    //         const ext = file.name.split('.').pop();
-    //         const allowed = !!ko.utils.arrayFirst(this.accept, i => i === ext);
-
-    //          if (!allowed) {
-    //             this.errorMessage(this.accept + ' only files are allowed');
-    //             return ;
-    //         }
-    //         this.errorMessage('');
-    //     }
-    //     this.files.push(file);
-    // }
-
-    // onvalidate(file: IFileSelect): boolean {
-    //     if (ko.utils.arrayFilter(this.files(), f => !f.uid && f.name === file.name).length)
-    //         return false;
-
-    //     if (this.validate)
-    //         return this.validate(file);
-
-    //     return true;
-    // }
-
-    // ondone(result: IFileData[], status: string, promise: JQueryPromise<IFileData[]>): JQueryPromise<IFileData[]> {
-    //     ko.utils.arrayForEach(result, r => {
-    //         var file = ko.utils.arrayFirst(this.files(), f => !f.uid && f.name === r.name);
-    //         if (!file)
-    //             return;
-
-    //         file.uid = r.uid;
-    //     });
-
-    //     this.files.valueHasMutated();
-    //     return promise;
-    // }
-
-    // clear(): void {
-    //     this.files.removeAll();
-    // }
-
-    // start(): JQueryPromise<IFileData[]> {
-    //     var selected = ko.utils.arrayFilter(this.files(), f => (<File>f).fileSelect !== null);
-    //     this.elementData.files = ko.utils.arrayMap(selected, f => (<File>f).fileSelect);
-    //     return this.elementData.submit().then(this.ondone.bind(this));
-    // }
 }
 
 
 
-class File implements IFileData {
+export class FileData implements IFileInfoDto {
     uid: string;
-    size: number;
-    sizeString: string;
     name: string;
-    fileSelect: IFileSelect;
+    size: number;
+    sizeString: string
+    selection: File;
 
-    owner: FileUploadModel;
-
-    constructor(data: IFileData | IFileSelect) {
-        if ((<IFileData>data).uid) {
-            var fdata = <IFileData>data;
-            this.uid = fdata.uid;
-            this.name = fdata.name;
-            this.size = fdata.size;
-            this.sizeString = this.getSizeString(fdata.size);
-            this.fileSelect = null;
-        } else {
-            var fsel = <IFileSelect>data;
+    constructor(data: IFileInfoDto | File) {
+        if(data instanceof File){
             this.uid = null;
-            this.name = fsel.name;
-            this.size = fsel.size;
-            this.sizeString = this.getSizeString(fsel.size);
-            this.fileSelect = fsel;
+            this.name = data.name;
+            this.size = data.size;
+            this.sizeString = this.getSizeString(data.size);
+            this.selection = data;
+        } else {
+            this.uid = data.uid;
+            this.name = data.name;
+            this.size = data.size;
+            this.sizeString = this.getSizeString(data.size);
         }
     }
 
-    delete(): void {
-        // if (this.owner) {
-        //     this.owner.delete(this);
-        // }
+    getFileInfo(): IFileInfoDto {
+        return {
+            name: this.name,
+            size: this.size,
+            uid: this.uid
+        };
+    }
+
+    upload(url:string):JQueryPromise<IFileInfoDto[]> {    //  'api/storage/upload'
+        if(!this.selection)
+            return;
+
+        const deferred = $.Deferred<IFileInfoDto[]>();
+
+        const formData = new FormData();
+        formData.append('file', this.selection);
+        const request = new XMLHttpRequest();
+
+        request.open('POST', url, true);
+        request.onprogress = progressEvt => {
+            console.log('upload progress', progressEvt);
+        };
+        request.onload = loadEvt => {
+            if(request.status === 200){
+                const result = JSON.parse(request.response) as IFileInfoDto[];
+                deferred.resolve(result);
+            } else {
+                console.log('file upload error', loadEvt);
+                deferred.reject();
+            }
+        };
+        request.send(formData);
+
+        return deferred.promise();
     }
 
     private getSizeString(size: number): string {
@@ -225,28 +138,14 @@ class File implements IFileData {
     }
 }
 
-export interface IFileData extends IFileInfoDto {
-    sizeString: string;
-    delete(): void;
-}
+// export interface IFileSelect {
+//     name: string;
+//     size: number;
+//     type: string;
+//     content?: string;
+// }
 
-export interface IFileSelect {
-    name: string;
-    size: number;
-    type: string;
-    content?: string;
-}
-
-export interface IProgressData {
-    loaded: number;
-    total: number;
-}
-
-export interface IElementData {
-    files: IFileSelect[];
-    loaded: number;
-    total: number;
-    result: any;
-    submit: () => JQueryPromise<IFileData[]>;
-    abort: () => void;
-}
+// export interface IProgressData {
+//     loaded: number;
+//     total: number;
+// }

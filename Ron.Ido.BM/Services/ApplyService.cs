@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Ron.Ido.BM.Models.Dossier;
+using Ron.Ido.BM.Models.FileStorage;
 using Ron.Ido.BM.Models.OData;
-using Ron.Ido.BM.Models.Storage;
 using Ron.Ido.EM;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,13 +34,16 @@ namespace Ron.Ido.BM.Services
             {
                 cfg.CreateMap<EM.Entities.ApplyAttachment, ApplyAttachmentDto>()
                 .ForMember(dto => dto.FileInfo, expr => expr.MapFrom(att => att.FileInfo != null
-                    ? new FileInfoDto
-                    {
-                        Uid = att.FileInfo.Uid,
-                        Name = att.FileInfo.Name,
-                        Size = att.FileInfo.Size
-                    }
-                    : null));
+                    ? new []
+                        {
+                            new FileInfoDto
+                            {
+                                Uid = att.FileInfo.Uid,
+                                Name = att.FileInfo.Name,
+                                Size = att.FileInfo.Size
+                            }
+                        }
+                    : new FileInfoDto[] { }));
             }));
             foreach(var type in attachmentTypes)
             {

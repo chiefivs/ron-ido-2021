@@ -136,7 +136,7 @@ export namespace DossierApi {
         error:string;
         attachmentTypeId:number;
         attachmentTypeName:string;
-        fileInfo:IFileInfoDto;
+        fileInfo:IFileInfoDto[];
     }
 
 }

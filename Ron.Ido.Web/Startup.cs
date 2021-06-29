@@ -137,6 +137,12 @@ namespace ForeignDocsRec2020.Web
 
             //app.UseResponseCompression();
 
+            //app.Use(async (context, next) => {
+            //    //  если нужно повторно читать Request.Body где-то в коде (для отладки), раскомментировать этот метод
+            //    context.Request.EnableBuffering();
+            //    await next();
+            //});
+
             app.Use(async (context, next) =>
             {
                 await next();
