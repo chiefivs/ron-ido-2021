@@ -81,7 +81,7 @@ class AcceptanceSearchLeftPage extends LeftPageBase{
     constructor(owner: AcceptanceMainPage) {
         super({
             pageTitle: 'поиск',
-            templatePath: 'pages/left/applies-acceptance-search.html'
+            templatePath: 'pages/left/applies-search.html'
         });
 
         this.owner = owner;

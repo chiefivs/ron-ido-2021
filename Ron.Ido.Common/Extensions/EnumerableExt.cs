@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Ron.Ido.Common.Extensions
@@ -9,5 +10,11 @@ namespace Ron.Ido.Common.Extensions
 		{
 			return items == null || !items.Any();
 		}
-	}
+
+        public static bool In<T>(this T instance, params T[] pars) where T : IComparable
+        {
+            return pars.Contains(instance);
+        }
+
+    }
 }

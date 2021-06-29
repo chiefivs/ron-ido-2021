@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -122,6 +123,15 @@ namespace Ron.Ido.Common.Extensions
                 return (bool)obj ? "Да" : "Нет";
 
             return obj.ToString();
+        }
+
+        public static string AsJson(this object obj, int depth=128)
+        {
+            return JsonConvert.SerializeObject(obj, new JsonSerializerSettings { MaxDepth = depth });
+        }
+
+        public static T FromJson<T>(this string json) {
+            return JsonConvert.DeserializeObject<T>(json);
         }
     }
 }

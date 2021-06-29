@@ -26,6 +26,8 @@ namespace Ron.Ido.Migrator.Tasks
             UpdateLegalizations(context);
             UpdateCertificateDeliveryForms(context);
             UpdateReglamentEtaps(context);
+
+            UpdateDuplicateStatuses(context);
         }
 
         private void UpdateApplyAims(AppDbContext context)
@@ -278,5 +280,21 @@ namespace Ron.Ido.Migrator.Tasks
                 context.AddEntityIfNotExists(item, entity => entity.Id == item.Id);
         }
 
+        private void UpdateDuplicateStatuses(AppDbContext context)
+        {
+            var list = new[]
+            {
+                new DuplicateStatus { Id = (long)DuplicateStatusEnum.DUPLICATE_CREATED, OrderNum = 1, Name = "Заявление создано", NameEng = ""},
+                new DuplicateStatus { Id = (long)DuplicateStatusEnum.DUPLICATE_APPROVED, OrderNum = 2, Name = "Заявление принято", NameEng = ""},
+                new DuplicateStatus { Id = (long)DuplicateStatusEnum.DECISION_PREPARATION, OrderNum = 3, Name = "Подготовка решения", NameEng = ""},
+                new DuplicateStatus { Id = (long)DuplicateStatusEnum.WAITING_PAYMENT, OrderNum = 4, Name = "Ожидание оплаты", NameEng = ""},
+                new DuplicateStatus { Id = (long)DuplicateStatusEnum.READY_TO_GIVE, OrderNum = 5, Name = "Готов к выдаче", NameEng = ""},
+                new DuplicateStatus { Id = (long)DuplicateStatusEnum.DECLINED_TO_GIVE, OrderNum = 6, Name = "Отказ в выдаче дубликата", NameEng = ""},
+                new DuplicateStatus { Id = (long)DuplicateStatusEnum.GIVEN, OrderNum = 7, Name = "Выдан", NameEng = ""},
+            };
+
+            foreach (var item in list)
+                context.AddEntityIfNotExists(item, entity => entity.Id == item.Id);
+        }
     }
 }
