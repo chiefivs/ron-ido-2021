@@ -76,6 +76,11 @@
         SECOND_REQUEST = 18,
 
         /// <summary>
+        /// Готов к выдаче, информационное письмо (новый)
+        /// </summary>
+        READY_TO_GIVE_INFOLETTER = 22,
+
+        /// <summary>
         /// готов к выдаче
         /// </summary>
         READY_TO_GIVE = 23,
@@ -96,9 +101,24 @@
         WAIT_DOCUMENTS = 33,
 
         /// <summary>
+        /// Отказ готов к выдаче (новый)
+        /// </summary>
+        REFUSAL_READY_TO_GIVE = 36,
+
+        /// <summary>
+        /// Выдано, документы в ГЭЦ (новый)
+        /// </summary>
+        GIVEN_DOCS_IN_NIC = 39,
+
+        /// <summary>
+        /// выдано информационное письмо (новый)
+        /// </summary>
+        INFOLETTER_GIVEN = 40,
+        /// <summary>
         /// выдан
         /// </summary>
         GIVEN = 41,
+
 
         /// <summary>
         /// дело прекращено
