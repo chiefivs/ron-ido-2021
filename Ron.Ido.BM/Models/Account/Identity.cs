@@ -13,8 +13,6 @@ namespace Ron.Ido.BM.Models.Account
 
         public string Name { get; set; }
 
-        public string Token { get; set; }
-
         public IEnumerable<PermissionEnum> Permissions { get; set; }
 
         public Identity()
