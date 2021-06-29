@@ -41,9 +41,17 @@ export class Apply extends DossierPartBase implements IApplyFieldBlockHolder {
 
         //const files:FileData[] = ko.utils.arrayMap(attachs, att => att.item.fileInfo.value()[0]);
 
-        const sendFile = () => {
+        const saveApply = () => {
+            const data = this.form().get();
+            console.log('save apply', data);
+            DossierApi.saveApply(data)
+                .done(() => console.log('apply is saved'))
+                .fail(() => console.log('apply is not saved'))
+        };
+
+        const saveFile = () => {
             if(!attachs.length) {
-                console.log('save', this.form().get());
+                saveApply();
                 return;
             }
 
@@ -52,11 +60,11 @@ export class Apply extends DossierPartBase implements IApplyFieldBlockHolder {
             file.upload('api/storage/upload')
                 .done(res => {
                     attach.item.fileInfo.value([new FileData(res[0])]);
-                    sendFile();
+                    saveFile();
                 });
         };
 
-        sendFile();
+        saveFile();
     }
 
     private _setBlocks() {
@@ -348,6 +356,7 @@ class ApplyForm extends Form<DossierApi.IApplyDto> {
                 };
 
                 const valueArr = ko.observableArray(ko.utils.arrayMap(<DossierApi.IApplyAttachmentDto[]>data.item.attachments, att => {
+                    att.fileInfo = ko.utils.arrayMap(att.fileInfo, fi => new FileData(fi));
                     const formdata: IODataForm<DossierApi.IApplyAttachmentDto> = {
                         item: att,
                         options:{}

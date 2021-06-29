@@ -19,8 +19,7 @@ namespace Ron.Ido.BM.Commands.Dossier.Apply
     }
     public class SaveApplyCommandHandler : ApplyHandlerBase, IRequestHandler<SaveApplyCommand>
     {
-
-        public SaveApplyCommandHandler(ODataService service) : base(service)
+        public SaveApplyCommandHandler(ApplyService service) : base(service)
         {
         }
 
@@ -30,17 +29,7 @@ namespace Ron.Ido.BM.Commands.Dossier.Apply
             if (errors.Any())
                 throw new ODataValidationException(errors);
 
-            Service.SaveDto(request.Apply,
-                new[] {
-                    new ODataMapMemberConfig<ApplyDto, EM.Entities.Apply>(
-                        apply => apply.CertificateDeliveryForms,
-                        expr => expr.Ignore()
-                    )
-                },
-                (dto, apply, context) =>
-                {
-                });
-
+            Service.SaveApplyDto(request.Apply);
             return Task.FromResult(Unit.Value);
         }
     }

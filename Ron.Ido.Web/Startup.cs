@@ -72,6 +72,7 @@ namespace ForeignDocsRec2020.Web
             });
 
             var authSettings = Configuration.GetSettings<AuthOptionSettings>();
+            var fileStorageSettings = Configuration.GetSettings<FileStorageSettings>();
             AuthOptions.SetSettings(authSettings);
 
             services.AddMvcCore();
@@ -84,7 +85,7 @@ namespace ForeignDocsRec2020.Web
             });
             services
                 .AddHttpContextAccessor()
-                .AddFileStorage<Ron.Ido.EM.Entities.FileInfo>()
+                .AddFileStorage<Ron.Ido.EM.Entities.FileInfo>(fileStorageSettings)
                 .AddMediatR(typeof(Ron.Ido.BM.IAssemblyMarker), typeof(Startup))
                 //.AddTransient<IStatusChecker,StatusChecker>( )
                 //.AddTransient<IIdentityService, IdentityService>( )

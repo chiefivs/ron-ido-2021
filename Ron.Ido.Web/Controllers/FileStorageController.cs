@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Ron.Ido.BM.Models.FileStorage;
 using Ron.Ido.Common.Attributes;
 using System;
@@ -11,23 +12,18 @@ namespace Ron.Ido.Web.Controllers
     [ApiController, NoCodegen]
     public class FileStorageController : ControllerBase
     {
+        private IMediator _mediator;
+
+        public FileStorageController(IMediator mediator)
+        {
+            _mediator = mediator;
+        }
+
         [HttpPost]
         [Route("api/storage/upload")]
         public async Task<IEnumerable<FileInfoDto>> Upload()
         {
-            //            var result = await _mediator.Send(new UploadCommand(Request.Form.Files));
-            var file = Request.Form.Files.First();
-
-            var bytes = new byte[file.Length];
-            file.OpenReadStream().Read(bytes, 0, (int)file.Length);
-            return new FileInfoDto[] {
-                new FileInfoDto
-                {
-                    Name = file.FileName,
-                    Size = (int)file.Length,
-                    Uid = Guid.NewGuid()
-                }
-            };
+            return await _mediator.Send(new UploadFilesCommand(Request.Form.Files));
         }
     }
 }

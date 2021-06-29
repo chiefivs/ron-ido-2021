@@ -20,7 +20,7 @@ namespace Ron.Ido.BM.Commands.Dossier.Apply
     public class ValidateApplyCommandHandler : ApplyHandlerBase, IRequestHandler<ValidateApplyCommand, Dictionary<string, List<string>>>
     {
 
-        public ValidateApplyCommandHandler(ODataService service) : base(service)
+        public ValidateApplyCommandHandler(ApplyService service) : base(service)
         {
         }
 
