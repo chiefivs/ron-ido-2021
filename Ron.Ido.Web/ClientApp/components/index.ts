@@ -1,6 +1,7 @@
 import * as CheckBoxComponent from './checkbox';
 import * as DatepickerComponent from './datepicker';
 import * as ExpanderComponent from './expander';
+import * as FileUploadComponent from './fileupload';
 import * as FilterComponent from './filter';
 import * as FiltersPanelComponent from './filters-panel';
 import * as FormFieldComponent from './form-field';
@@ -17,6 +18,7 @@ export function init() {
     CheckBoxComponent.init();
     DatepickerComponent.init();
     ExpanderComponent.init();
+    FileUploadComponent.init();
     FilterComponent.init();
     FiltersPanelComponent.init();
     FormFieldComponent.init();
@@ -33,6 +35,7 @@ export function init() {
 export { ICheckBoxParams } from './checkbox';
 export { IDatepickerParams } from './datepicker';
 export { IExpanderParams } from './expander';
+export { FileData } from './fileupload';
 export { IFilterParams, FilterValueType, IFilterOption } from './filter';
 export { IFiltersPanelParams } from './filters-panel';
 export { IFormFieldParams } from './form-field';

@@ -13,7 +13,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Ron.Ido.BM.Interfaces;
 using Ron.Ido.BM.Models.OData;
+using Ron.Ido.BM.Services;
 using Ron.Ido.Common;
 using Ron.Ido.Common.DependencyInjection;
 using Ron.Ido.Common.Extensions;
@@ -22,6 +24,7 @@ using Ron.Ido.DbStorage;
 using Ron.Ido.EM;
 using Ron.Ido.FileStorage;
 using Ron.Ido.Web.Authorization;
+using Ron.Ido.Web.Services;
 using System;
 using System.IO;
 using System.Net;
@@ -57,10 +60,10 @@ namespace ForeignDocsRec2020.Web
             var dbContextSettings = Configuration.GetSettings<AppDbContextSettings>();
             services.AddAppDbContext(dbContextSettings, (provider, context) => {
                 var httpcontext = provider.GetRequiredService<IHttpContextAccessor>()?.HttpContext;
-                //  если это httprequest, то при создании контекста сразу открываем транзакцию
-                //  (при завершении запроса закроем)
+                //  РµСЃР»Рё СЌС‚Рѕ httprequest, С‚Рѕ РїСЂРё СЃРѕР·РґР°РЅРёРё РєРѕРЅС‚РµРєСЃС‚Р° СЃСЂР°Р·Сѓ РѕС‚РєСЂС‹РІР°РµРј С‚СЂР°РЅР·Р°РєС†РёСЋ
+                //  (РїСЂРё Р·Р°РІРµСЂС€РµРЅРёРё Р·Р°РїСЂРѕСЃР° Р·Р°РєСЂРѕРµРј)
 
-                //  (при завершении запроса закроем)
+                //  (РїСЂРё Р·Р°РІРµСЂС€РµРЅРёРё Р·Р°РїСЂРѕСЃР° Р·Р°РєСЂРѕРµРј)
                 if (httpcontext != null)
                 {
                     httpcontext.Items.Add(DBCONTEXT_CREATED, true);
@@ -83,25 +86,27 @@ namespace ForeignDocsRec2020.Web
                 .AddHttpContextAccessor()
                 .AddFileStorage<Ron.Ido.EM.Entities.FileInfo>()
                 .AddMediatR(typeof(Ron.Ido.BM.IAssemblyMarker), typeof(Startup))
+                //.AddTransient<IStatusChecker,StatusChecker>( )
+                //.AddTransient<IIdentityService, IdentityService>( )
                 .AddDependencies(typeof(Ron.Ido.BM.IAssemblyMarker), typeof(Startup))
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options => {
                     options.RequireHttpsMetadata = false;
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        // указывает, будет ли валидироваться издатель при валидации токена
+                        // СѓРєР°Р·С‹РІР°РµС‚, Р±СѓРґРµС‚ Р»Рё РІР°Р»РёРґРёСЂРѕРІР°С‚СЊСЃСЏ РёР·РґР°С‚РµР»СЊ РїСЂРё РІР°Р»РёРґР°С†РёРё С‚РѕРєРµРЅР°
                         ValidateIssuer = false,
-                        // строка, представляющая издателя
+                        // СЃС‚СЂРѕРєР°, РїСЂРµРґСЃС‚Р°РІР»СЏСЋС‰Р°СЏ РёР·РґР°С‚РµР»СЏ
                         ValidIssuer = AuthOptions.ISSUER,
-                        // будет ли валидироваться потребитель токена
+                        // Р±СѓРґРµС‚ Р»Рё РІР°Р»РёРґРёСЂРѕРІР°С‚СЊСЃСЏ РїРѕС‚СЂРµР±РёС‚РµР»СЊ С‚РѕРєРµРЅР°
                         ValidateAudience = false,
-                        // установка потребителя токена
+                        // СѓСЃС‚Р°РЅРѕРІРєР° РїРѕС‚СЂРµР±РёС‚РµР»СЏ С‚РѕРєРµРЅР°
                         ValidAudience = AuthOptions.AUDIENCE,
-                        // будет ли валидироваться время существования
+                        // Р±СѓРґРµС‚ Р»Рё РІР°Р»РёРґРёСЂРѕРІР°С‚СЊСЃСЏ РІСЂРµРјСЏ СЃСѓС‰РµСЃС‚РІРѕРІР°РЅРёСЏ
                         ValidateLifetime = false,
-                        // установка ключа безопасности
+                        // СѓСЃС‚Р°РЅРѕРІРєР° РєР»СЋС‡Р° Р±РµР·РѕРїР°СЃРЅРѕСЃС‚Рё
                         IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
-                        // валидация ключа безопасности
+                        // РІР°Р»РёРґР°С†РёСЏ РєР»СЋС‡Р° Р±РµР·РѕРїР°СЃРЅРѕСЃС‚Рё
                         ValidateIssuerSigningKey = false,
                     };
                 });
@@ -137,26 +142,32 @@ namespace ForeignDocsRec2020.Web
 
             //app.UseResponseCompression();
 
+            //app.Use(async (context, next) => {
+            //    //  если нужно повторно читать Request.Body где-то в коде (для отладки), раскомментировать этот метод
+            //    context.Request.EnableBuffering();
+            //    await next();
+            //});
+
             app.Use(async (context, next) =>
             {
                 await next();
-                //  это аналог endrequest
-                //  если в процессе обработки запроса создавался AppDbContext, то нужно закрыть транзакцию
+                //  СЌС‚Рѕ Р°РЅР°Р»РѕРі endrequest
+                //  РµСЃР»Рё РІ РїСЂРѕС†РµСЃСЃРµ РѕР±СЂР°Р±РѕС‚РєРё Р·Р°РїСЂРѕСЃР° СЃРѕР·РґР°РІР°Р»СЃСЏ AppDbContext, С‚Рѕ РЅСѓР¶РЅРѕ Р·Р°РєСЂС‹С‚СЊ С‚СЂР°РЅР·Р°РєС†РёСЋ
                 if (context.Items.ContainsKey(DBCONTEXT_CREATED))
                 {
                     var dbcontext = context.RequestServices.GetService<AppDbContext>();
                     if (context.Response.StatusCode == (int)HttpStatusCode.OK)
-                        //  при успешном результате коммитим изменения в БД
+                        //  РїСЂРё СѓСЃРїРµС€РЅРѕРј СЂРµР·СѓР»СЊС‚Р°С‚Рµ РєРѕРјРјРёС‚РёРј РёР·РјРµРЅРµРЅРёСЏ РІ Р‘Р”
                         dbcontext?.Commit();
                     else
-                        //  иначе отменяем их
+                        //  РёРЅР°С‡Рµ РѕС‚РјРµРЅСЏРµРј РёС…
                         dbcontext?.Rollback();
                 }
             });
 
             app.Use(async (context, next) =>
             {
-                //  обработка ошибок при выполнении запросов
+                //  РѕР±СЂР°Р±РѕС‚РєР° РѕС€РёР±РѕРє РїСЂРё РІС‹РїРѕР»РЅРµРЅРёРё Р·Р°РїСЂРѕСЃРѕРІ
                 try
                 {
                     await next();
@@ -234,7 +245,7 @@ namespace ForeignDocsRec2020.Web
             string exceptionMessage = context.Exception.Message;
             context.Result = new ContentResult
             {
-                Content = $"В методе {actionName} возникло исключение: \n {exceptionMessage} \n {exceptionStack}"
+                Content = $"Р’ РјРµС‚РѕРґРµ {actionName} РІРѕР·РЅРёРєР»Рѕ РёСЃРєР»СЋС‡РµРЅРёРµ: \n {exceptionMessage} \n {exceptionStack}"
             };
             context.ExceptionHandled = true;
         }

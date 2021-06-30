@@ -1,0 +1,36 @@
+<p>attachments</p>
+<div data-bind="foreach:value">
+    <div class="form-control" style="height: unset; margin-bottom:2px;">
+        <table style="width:100%;" data-bind="with:item">
+            <tr>
+                <td rowspan="2" style="width:120px; vertical-align: top;">
+                    <div data-bind="with:required">
+                        <cmp-checkbox params="value:true, checked:value"></cmp-checkbox>
+                        <label style="margin:0;">требуется</label>
+                    </div>
+                    <div data-bind="with:given">
+                        <cmp-checkbox params="value:true, checked:value"></cmp-checkbox>
+                        <label style="margin:0;">предоставлен</label>
+                    </div>
+                </td>
+                <td>
+                    <div data-bind="if:attachmentTypeId.value()">
+                        <span data-bind="text:attachmentTypeName.value()"></span>
+                    </div>
+                    <div data-bind="ifnot:attachmentTypeId.value()">
+                        <!-- ko with:description -->
+                        <cmp-textbox params="value:value"></cmp-textbox>
+                        <!-- /ko -->
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td data-bind="with:fileInfo">
+                    <cmp-fileupload params="files:value, accept:$parents[1].acceptFilesExt, validate:$parents[1].validateSelection.bind($parents[1])"></cmp-fileupload>
+                    <span data-bind="text:$parents[1].fileDesc()"></span>
+                    <a class="glyphicon glyphicon-remove pull-right" style="color:red;" data-bind="click:$parents[1].deleteFile.bind($parents[1]), visible:value().length"></a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

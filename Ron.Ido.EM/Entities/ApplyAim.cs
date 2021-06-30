@@ -7,6 +7,7 @@ namespace Ron.Ido.EM.Entities
 {
     [Index(nameof(Name))]
     [Index(nameof(NameEng))]
+    [Index(nameof(OrderNum))]
     public class ApplyAim: IOrdered
     {
         [Key]

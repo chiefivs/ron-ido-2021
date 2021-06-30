@@ -158,14 +158,16 @@ namespace Codegen
             var parBodyInfo = descriptor.MethodInfo.GetParameters()
                 .FirstOrDefault(pi => pi.GetCustomAttribute<FromBodyAttribute>() != null);
 
-            var parBody = $"{parBodyInfo.Name}:{GenerateType(parBodyInfo.ParameterType)}";
+            var parBody = parBodyInfo != null ? $"{parBodyInfo.Name}:{GenerateType(parBodyInfo.ParameterType)}" : "";
             var returnType = GenerateType(descriptor.MethodInfo.ReturnType);
             var segments = descriptor.Segments.Select(s => $"'{s}'");
 
             var builder = new StringBuilder();
             builder.AppendLine($"\texport function {descriptor.MethodName.ToCamel()}({parBody}): JQueryPromise<{returnType}>" + " {");
             builder.AppendLine($"\t\tconst segments = [{string.Join(", ", segments)}];");
-            builder.AppendLine($"\t\treturn WebApi.post(segments.join('/'), {parBodyInfo.Name});");
+            builder.AppendLine(parBodyInfo != null
+                ? $"\t\treturn WebApi.post(segments.join('/'), {parBodyInfo.Name});"
+                : $"\t\treturn WebApi.post(segments.join('/'));");
             builder.AppendLine("\t}");
 
             EntryPoints.Add(builder.ToString());
