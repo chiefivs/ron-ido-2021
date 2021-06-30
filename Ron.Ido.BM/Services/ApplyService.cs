@@ -72,7 +72,7 @@ namespace Ron.Ido.BM.Services
             return applyDto;
         }
 
-        public void SaveApplyDto(ApplyDto applyDto)
+        public long SaveApplyDto(ApplyDto applyDto)
         {
             var applyMapper = new Mapper(new MapperConfiguration(cfg =>
             {
@@ -169,6 +169,7 @@ namespace Ron.Ido.BM.Services
             }
 
             AppDbContext.SaveChanges();
+            return apply.Id;
         }
 
         private void _removeFile(Guid uid)

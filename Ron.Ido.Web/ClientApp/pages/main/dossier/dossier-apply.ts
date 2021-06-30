@@ -20,10 +20,7 @@ export class Apply extends DossierPartBase implements IApplyFieldBlockHolder {
         });
 
         this.priority = 0;
-        this._getApplyPromise = DossierApi.getApply(id).done(data => {
-            this.form(new ApplyForm(data));
-            this._setBlocks();
-        });
+        this._getApplyPromise = this._loadApply(id);
     }
 
     afterRender() {
@@ -45,8 +42,11 @@ export class Apply extends DossierPartBase implements IApplyFieldBlockHolder {
             const data = this.form().get();
             console.log('save apply', data);
             DossierApi.saveApply(data)
-                .done(() => console.log('apply is saved'))
-                .fail(() => console.log('apply is not saved'))
+                .done(id => {
+                    Popups.Alert.open('сохранение заявки', 'Заявка успешно сохранена');
+                    this._loadApply(id);
+                })
+                .fail(() => Popups.Alert.open('ошибка сохранения заявки', 'Не удалось сохранить заявку'))
         };
 
         const saveFile = () => {
@@ -65,6 +65,13 @@ export class Apply extends DossierPartBase implements IApplyFieldBlockHolder {
         };
 
         saveFile();
+    }
+
+    private _loadApply(id:number) {
+        return DossierApi.getApply(id).done(data => {
+            this.form(new ApplyForm(data));
+            this._setBlocks();
+        });
     }
 
     private _setBlocks() {
@@ -444,6 +451,7 @@ interface IApplyFormField extends IFormField {
 interface IApplyFieldBlockHolder {
     blocks: ko.ObservableArray<ApplyFieldsBlock>;
     parent?: IApplyFieldBlockHolder;
+    openPrevBlock?: () => boolean;
     openNextBlock?: () => boolean;
     //focusNextField(field: IApplyFormField);
 }
@@ -473,7 +481,12 @@ class ApplyFieldsBlock implements IApplyFieldBlockHolder {
             f.block = this;
             f.keyDown = (data:IApplyFormField, event:JQuery.Event) => {
                 if(event.key === 'Tab') {
-                    this.focusNextField(f);
+                    if(event.shiftKey){
+                        this.focusPrevField(f);
+                    } else {
+                        this.focusNextField(f);
+                    }
+
                     return false;
                 }
     
@@ -516,6 +529,29 @@ class ApplyFieldsBlock implements IApplyFieldBlockHolder {
         return ko.utils.arrayFilter(this.fields, f => f.visible());
     }
 
+    focusPrevField(field: IApplyFormField = null): boolean {
+        if(field)
+            field.hasFocus(false);
+        
+        const visibleFields = this.getVisibleFields();
+        const fieldIndex = ko.utils.arrayIndexOf(visibleFields, field);
+        if(fieldIndex > 0) {
+            //  есть предыдущее поле
+            this.isExpanded(true);
+            visibleFields[fieldIndex - 1].hasFocus(true);
+            return true;
+        }
+
+        // const visibleChildBlocks = ko.utils.arrayFilter(this.blocks(), b => b.isVisible());
+        // if(visibleChildBlocks.length && visibleChildBlocks[0].focusNextField())
+        //     return true;
+
+        if(this.openPrevBlock())
+            return true;
+
+        return false;
+    }
+
     focusNextField(field: IApplyFormField = null): boolean {
         if(field)
             field.hasFocus(false);
@@ -536,6 +572,40 @@ class ApplyFieldsBlock implements IApplyFieldBlockHolder {
         if(this.openNextBlock())
             return true;
 
+        return false;
+    }
+
+    focusLastField(): boolean {
+        const visibleFields = this.getVisibleFields();
+        if(visibleFields.length){
+            this.isExpanded(true);
+            visibleFields[visibleFields.length - 1].hasFocus(true);
+            return true;
+        }
+
+        const visibleChildBlocks = ko.utils.arrayFilter(this.blocks(), b => b.isVisible());
+        if(visibleChildBlocks.length && visibleChildBlocks[visibleChildBlocks.length - 1].focusLastField())
+            return true;
+
+        if(this.openPrevBlock())
+            return true;
+
+        return false;
+    }
+
+    openPrevBlock() {
+        if(!this.parent)
+            return false;
+
+        const parentBlock = this.parent;
+        const visibleSiblingBlocks = ko.utils.arrayFilter(parentBlock.blocks(), b => b.isVisible());
+        const blockIndex = ko.utils.arrayIndexOf(visibleSiblingBlocks, this);
+        if(blockIndex > 0 && visibleSiblingBlocks[blockIndex - 1].focusLastField())
+            return true;
+
+        if(this.parent.openPrevBlock && this.parent.openPrevBlock())
+            return true;
+    
         return false;
     }
 
