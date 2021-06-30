@@ -7,9 +7,9 @@ namespace Ron.Ido.BM.Commands.Dossier.Apply
 {
     public abstract class ApplyHandlerBase
     {
-        protected ODataService Service;
+        protected ApplyService Service;
 
-        public ApplyHandlerBase(ODataService service)
+        public ApplyHandlerBase(ApplyService service)
         {
             Service = service;
         }

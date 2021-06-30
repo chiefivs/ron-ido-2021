@@ -65,7 +65,7 @@
         options:{[key:string]:IODataOption[]};
     }
 
-    //  Ron.Ido.BM.Models.Storage.FileInfoDto
+    //  Ron.Ido.BM.Models.FileStorage.FileInfoDto
     export interface IFileInfoDto {
         uid:any;
         name:string;

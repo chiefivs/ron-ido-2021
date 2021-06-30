@@ -1,5 +1,6 @@
 ﻿using Ron.Ido.BM.Models.FileStorage;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Ron.Ido.BM.Models.Dossier
 {
@@ -20,5 +21,10 @@ namespace Ron.Ido.BM.Models.Dossier
         public string AttachmentTypeName { get; set; }
 
         public IEnumerable<FileInfoDto> FileInfo{ get; set; }
+
+        public bool IsNotEmpty()
+        {
+            return Required || Given || !string.IsNullOrEmpty(Description) || FileInfo != null && FileInfo.Any();
+        }
     }
 }

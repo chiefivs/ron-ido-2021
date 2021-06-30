@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
+using Ron.Ido.BM.Interfaces;
 using Ron.Ido.Common.Interfaces;
 using Ron.Ido.EM;
 using System;
@@ -26,13 +27,13 @@ namespace Ron.Ido.BM.Models.FileStorage
         {
             private IFileStorageService _storage;
             private AppDbContext _context;
-            //private IIdentityService _identity;
+            private IIdentityService _identity;
 
-            public UploadFilesCommandHandler(IFileStorageService storage, AppDbContext context/*, IIdentityService identity*/)
+            public UploadFilesCommandHandler(IFileStorageService storage, AppDbContext context, IIdentityService identity)
             {
                 _storage = storage;
                 _context = context;
-                //_identity = identity;
+                _identity = identity;
             }
 
             public Task<IEnumerable<FileInfoDto>> Handle(UploadFilesCommand request, CancellationToken cancellationToken)
@@ -53,6 +54,7 @@ namespace Ron.Ido.BM.Models.FileStorage
                             Size = fileInfo.Size,
                             ContentType = fileInfo.ContentType,
                             CreateTime = DateTime.Now,
+                            CreatedById = _identity?.Identity?.Id,
                             Source = "N",
                             
                         });

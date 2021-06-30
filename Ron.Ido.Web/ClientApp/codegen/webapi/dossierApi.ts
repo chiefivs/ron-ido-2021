@@ -18,7 +18,7 @@ export namespace DossierApi {
         return WebApi.post(segments.join('/'), apply);
     }
 
-    export function saveApply(apply:IApplyDto): JQueryPromise<any> {
+    export function saveApply(apply:IApplyDto): JQueryPromise<number> {
         const segments = ['api', 'dossier', 'apply', 'save'];
         return WebApi.post(segments.join('/'), apply);
     }
