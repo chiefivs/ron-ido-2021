@@ -31,13 +31,15 @@ namespace Ron.Ido.BM.Commands.Applies.AppliesSearch
                 var levels = _odataService.GetOptions<LearnLevel>("Name", "Id");
                 var entryForms = _odataService.GetOptions<ApplyEntryForm>("Name", "Id");
                 var stages = _odataService.GetOptions<ReglamentEtap>("Name", "Id");
+                var countries = _odataService.GetOptions<Country>("Name", "Id");
 
                 return new AppliesSearchDictions
                 {
                     Statuses = statuses,
                     LearnLevels = levels,
                     EntryForms = entryForms,
-                    Stages = stages
+                    Stages = stages,
+                    Countries = countries
                 };
             });
         }
