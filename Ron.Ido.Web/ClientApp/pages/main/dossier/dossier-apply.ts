@@ -323,7 +323,7 @@ export class Apply extends DossierPartBase implements IApplyFieldBlockHolder {
             if(val) {
                 ko.utils.arrayForEach(ownerBlock.fields(), f => f.visible(true));
             } else {
-                ko.utils.arrayForEach(ownerBlock.fields(), f => this.isVisible(false));
+                ko.utils.arrayForEach(ownerBlock.fields(), f => f.visible(false));
             }
         });
         formItem.byWarrant.value.valueHasMutated();
@@ -464,18 +464,21 @@ interface IApplyFieldsBlockParams {
 }
 
 class ApplyFieldsBlock implements IApplyFieldBlockHolder {
-    title: string;
+    title: ko.Computed<string>;
     fields = ko.observableArray<IApplyFormField>();
     blocks = ko.observableArray<ApplyFieldsBlock>();
     parent: IApplyFieldBlockHolder;
     isExpanded = ko.observable(false);
-    isVisible: ko.Computed<boolean>;
+    isVisible = ko.observable(true);
+    hasErrors: ko.Computed<boolean>;
     afterExpand: () => void;
     containerOnly: boolean;
 
+    private _title: string;
+
     constructor(params: IApplyFieldsBlockParams, parent: IApplyFieldBlockHolder) {
         this.parent = parent;
-        this.title = params.title;
+        this._title = params.title;
         this.containerOnly = params.containerOnly || false;
         this.fields(ko.utils.arrayMap(params.fields || [], f => {
             f.block = this;
@@ -496,16 +499,15 @@ class ApplyFieldsBlock implements IApplyFieldBlockHolder {
             f.readonly = ko.observable(false);
             f.hasFocus = ko.observable(false);
             f.visible = ko.observable(true);
-            f.visible.subscribe(() => this.fields.valueHasMutated());
+            f.visible.subscribe(() => this.updateVisible());
             f.hasFocus.subscribe(has => { if(has) this.isExpanded(true); });
             return f;
         }));
-        this.blocks(ko.utils.arrayMap(params.blocks || [], b => new ApplyFieldsBlock(b, this)));
-
-        this.isVisible = ko.computed(() => {
-            console.log('block isVisible compute');
-            return !!ko.utils.arrayFirst(this.fields(), f => f.visible()) || !!ko.utils.arrayFirst(this.blocks(), b => b.isVisible());
-        });
+        this.blocks(ko.utils.arrayMap(params.blocks || [], b => {
+            const block = new ApplyFieldsBlock(b, this);
+            block.isVisible.subscribe(() => this.updateVisible());
+            return block;
+        }));
 
         this.isExpanded.subscribe(expanded => {
             if(expanded) {
@@ -522,6 +524,26 @@ class ApplyFieldsBlock implements IApplyFieldBlockHolder {
         this.afterExpand = () => {
             ko.utils.arrayForEach(this.fields(), f => f.hasFocus.valueHasMutated());
         };
+
+        this.hasErrors = ko.computed(() => !!ko.utils.arrayFirst(this.fields(), f => !!f.errors().length) || !!ko.utils.arrayFirst(this.blocks(), b => b.hasErrors()));
+
+        this.title = ko.computed(() => {
+            if(!this.hasErrors())
+                return this._title;
+
+            return `<span style="color:red;">${this._title}</span>`;
+        });
+    }
+
+    private updateVisibleTimeout = null;
+    private updateVisible() {
+        if(this.updateVisibleTimeout)
+            clearTimeout(this.updateVisibleTimeout);
+
+        this.updateVisibleTimeout = setTimeout(() => {
+            const visible = !!ko.utils.arrayFirst(this.fields(), f => f.visible()) || !!ko.utils.arrayFirst(this.blocks(), b => b.isVisible());
+            this.isVisible(visible);
+        }, 100);
     }
 
     private closeBlocksExcludingThis() {
