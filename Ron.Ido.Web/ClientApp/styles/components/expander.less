@@ -14,22 +14,39 @@ cmp-expander {
             text-decoration: none;
         }
 
-        a.expander-pin {
-            display: inline-block;
-            padding: 2px;
-            border: 2px solid transparent;
-            border-style: inset;
-
-            &.fixed {
-                border-color:@panel-bg;
-            }
-        }
-
         a.expander-title {
             font-weight: bold;
 
             &:hover {
                 text-decoration: underline;
+            }
+
+            .has-errors {
+                color:@red-base;
+                background-color: transparent;
+            }
+        }
+
+        &.fixable {
+            position: relative;
+
+            a.expander-pin {
+                position: absolute;
+                top:2px;
+                left:2px;
+                display: block;
+                padding: 2px;
+                border: 2px solid transparent;
+                border-style: inset;
+
+                &.fixed {
+                    border-color:@panel-bg;
+                }
+            }
+
+            a.expander-title {
+                display: block;
+                margin-left: 24px;
             }
         }
 

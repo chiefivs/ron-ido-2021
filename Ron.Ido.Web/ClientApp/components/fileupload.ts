@@ -77,7 +77,8 @@ export class FileData implements IFileInfoDto {
     uid: string;
     name: string;
     size: number;
-    sizeString: string
+    contentType: string;
+    sizeString: string;
     selection: File;
 
     constructor(data: IFileInfoDto | File) {
@@ -85,12 +86,14 @@ export class FileData implements IFileInfoDto {
             this.uid = null;
             this.name = data.name;
             this.size = data.size;
+            this.contentType = data.type;
             this.sizeString = this.getSizeString(data.size);
             this.selection = data;
         } else {
             this.uid = data.uid;
             this.name = data.name;
             this.size = data.size;
+            this.contentType = data.contentType;
             this.sizeString = this.getSizeString(data.size);
         }
     }
@@ -99,7 +102,8 @@ export class FileData implements IFileInfoDto {
         return {
             name: this.name,
             size: this.size,
-            uid: this.uid
+            uid: this.uid,
+            contentType: this.contentType
         };
     }
 

@@ -27,6 +27,7 @@ export interface IFilterOption {
 export interface IFilterParams{
     title: string | ko.Observable<string>;
     field: string;
+    values?: ko.ObservableArray<any>;
     aliases?: string[];
     valueType: FilterValueType;
     filterType: ODataFilterTypeEnum;
@@ -35,13 +36,19 @@ export interface IFilterParams{
     state?: ko.Observable<IODataFilter>;
 }
 
+export function getFilterStateValues(values:any[]){
+    const res = [];
+    ko.utils.arrayForEach(values, v => res.push(v !== null ? v.toString() : null));
+    return res;
+}
+
 const ValueTypesDic = {
     FilterValueType: ''
 };
 
 class FilterModel {
     templateNodes: Node[];
-    values = ko.observableArray([]);
+    values: ko.ObservableArray<any>;
     value1 = ko.observable(null);
     value2 = ko.observable(null);
     title: ko.Observable<string>;
@@ -50,15 +57,19 @@ class FilterModel {
 
     private _templates:object = {};
     private _name:string;
+    private _initialValues:any[];
 
     constructor(params:IFilterParams) {
         this._name = Utils.randomString(20);
+        this._initialValues = params.initialValues || [];
         this._defineAllTemplates();
         this.templateNodes = this._getTemplate(params.filterType, params.valueType);
 
+        this.values = params.values || ko.observableArray([]);
+
         this.state = params.state || ko.observable(null);
-        if(params.initialValues)
-            this.state({ field: params.field, aliases: params.aliases || [], type: params.filterType, values:this._getStateValues(params.initialValues || [])});
+        if(this._initialValues.length)
+            this.state({ field: params.field, aliases: params.aliases || [], type: params.filterType, values:getFilterStateValues(params.initialValues)});
 
         this.title = ko.isObservable(params.title) ? params.title : ko.observable(params.title || '');
         this.options = ko.isObservable(params.options) ? params.options : ko.observableArray(params.options || []);
@@ -74,6 +85,9 @@ class FilterModel {
         }
 
         this.values.subscribe(values => {
+            this.value1(this.values().length ? this.values()[0] : null);
+            this.value2(this.values().length > 1 ? this.values()[1] : null);
+
             if(!values.length) {
                 this.state(null);
             } else {
@@ -109,7 +123,7 @@ class FilterModel {
             `<div>
                 <input type="radio" name="${this._name}" value="true" data-bind="checked:value1" /><span>да</span>
                 <input type="radio" name="${this._name}" value="false" data-bind="checked:value1" /><span>нет</span>
-                <input type="radio" name="${this._name}" value="" data-bind="checked:value1" /><span>не определен</span>
+                <input type="radio" name="${this._name}" data-bind="checked:value1, value:null" /><span>не определен</span>
             </div>`);
 
         this.value1.subscribe(this._updateValues.bind(this));
@@ -145,12 +159,6 @@ class FilterModel {
             return null;
 
         return Utils.getNodesFromHtml(html);
-    }
-
-    private _getStateValues(values:any[]){
-        const res = [];
-        ko.utils.arrayForEach(values, v => res.push(v.toString()));
-        return res;
     }
 
     _updateValues() {

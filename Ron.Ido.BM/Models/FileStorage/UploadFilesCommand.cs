@@ -69,7 +69,8 @@ namespace Ron.Ido.BM.Models.FileStorage
                     list.Add(new FileInfoDto { 
                         Uid = fileInfo.Uid,
                         Name = fileInfo.Name,
-                        Size = fileInfo.Size
+                        Size = fileInfo.Size,
+                        ContentType = fileInfo.ContentType
                     });
                 }
 

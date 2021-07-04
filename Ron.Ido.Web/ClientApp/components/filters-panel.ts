@@ -1,6 +1,5 @@
 import * as ko from 'knockout';
-import { ILeftPanelParams } from './left-panel';
-import { IFilterParams } from './filter';
+import { IFilterParams, getFilterStateValues } from './filter';
 import { IODataFilter } from '../codegen/webapi/odata';
 
 export function init(){
@@ -13,10 +12,11 @@ export function init(){
         template: `
             <form class="filters-panel" data-bind="submit:search">
                 <div data-bind="foreach:filters">
-                    <div><cmp-filter params="title:title, field:field, aliases:aliases, options:options, initialValues:initialValues, state:state, filterType:filterType, valueType:valueType"></cmp-filter></div>
+                    <div><cmp-filter params="title:title, field:field, aliases:aliases, options:options, values:values, initialValues:initialValues, state:state, filterType:filterType, valueType:valueType"></cmp-filter></div>
                 </div>
                 <div>
                     <button class="btn btn-primary pull-right">ПОИСК</div>
+                    <a class="btn btn-secondary pull-right" data-bind="click:reset">СБРОС</a>
                 </div>
             </form>`
     });
@@ -34,9 +34,11 @@ class FiltersPanelModel {
     constructor(params: IFiltersPanelParams) {
         this.states = params.states;
 
+        ko.utils.arrayForEach(ko.unwrap(params.filters), f => f.values = ko.observableArray(f.initialValues || []));
         this.filters = ko.isObservableArray(params.filters)
             ? this.filters
             : ko.observableArray<IFilterParams>(<IFilterParams[]>params.filters || []);
+
 
         this.filters.subscribe(filters => {
             ko.utils.arrayForEach(filters, f => {
@@ -59,5 +61,14 @@ class FiltersPanelModel {
     search() {
         const filters = ko.utils.arrayFilter(this.filters(), f => !!f.state());
         this.states(ko.utils.arrayMap(filters, f => f.state()));
+    }
+
+    reset() {
+        ko.utils.arrayForEach(this.filters(), f => {
+            f.values(f.initialValues || []);
+            // f.state(f.initialValues 
+            //     ? { field: f.field, aliases: f.aliases || [], type: f.filterType, values:getFilterStateValues(f.initialValues)}
+            //     : null);
+        });
     }
 }
