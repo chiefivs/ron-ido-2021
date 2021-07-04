@@ -13,22 +13,26 @@
                     </div>
                 </td>
                 <td>
-                    <div data-bind="if:attachmentTypeId.value()">
-                        <i class="img img-error img-size-20" data-bind="visible:$parent.errors().length, attr: { title:$parent.errors().join('\n') }"></i>
-                        <span data-bind="text:attachmentTypeName.value()"></span>
-                    </div>
-                    <div data-bind="ifnot:attachmentTypeId.value()">
-                        <table style="width:100%;">
-                            <tr>
-                                <td data-bind="with:description">
-                                    <cmp-textbox params="value:value"></cmp-textbox>
-                                </td>
-                                <td data-bind="with:$parent">
-                                    <a class="glyphicon glyphicon-remove pull-right" style="color:red;" data-bind="click:deleteAttachment"></a>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
+                    <table style="width: 100%;">
+                        <tr>
+                            <td data-bind="visible:$parent.errors().length">
+                                <i class="img img-error img-size-20" data-bind="attr: { title:$parent.errors().join('\n') }"></i>
+                            </td>
+                            <td data-bind="if:attachmentTypeId.value()">
+                                <span data-bind="text:attachmentTypeName.value()"></span>
+                            </td>
+                            <td data-bind="ifnot:attachmentTypeId.value()">
+                                <!-- ko with:description -->
+                                <cmp-textbox params="value:value"></cmp-textbox>
+                                <!-- /ko -->
+                            </td>
+                            <td data-bind="ifnot:attachmentTypeId.value()">
+                                <!-- ko with:$parent -->
+                                <a class="glyphicon glyphicon-remove pull-right" style="color:red;" data-bind="click:deleteAttachment"></a>
+                                <!-- /ko -->
+                            </td>
+                        </tr>
+                    </table>
                 </td>
             </tr>
             <tr>

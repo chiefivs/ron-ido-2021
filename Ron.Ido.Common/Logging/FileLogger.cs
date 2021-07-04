@@ -48,7 +48,8 @@ namespace Ron.Ido.Common.Logging
 
                 File.WriteAllText(Path.Combine(_folderPath, $"{logLevel}_{eventId.Name}.log"), json);
             }
-            catch(Exception ex) {
+            catch
+            {
                 
             }
         }
