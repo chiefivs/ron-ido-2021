@@ -15,12 +15,12 @@ namespace Ron.Ido.BM.Services
     public class ApplyService: ODataService
     {
         private IFileStorageService _storage;
-        private IIdentityService _identity;
+        private FileStorageHelper _helper;
 
-        public ApplyService(AppDbContext context, IFileStorageService storage, IIdentityService identity): base(context)
+        public ApplyService(AppDbContext context, IFileStorageService storage, FileStorageHelper helper): base(context)
         {
             _storage = storage;
-            _identity = identity;
+            _helper = helper;
         }
 
         public ApplyDto GetApplyDto(long id)
@@ -49,7 +49,8 @@ namespace Ron.Ido.BM.Services
                             {
                                 Uid = att.FileInfo.Uid,
                                 Name = att.FileInfo.Name,
-                                Size = att.FileInfo.Size
+                                Size = att.FileInfo.Size,
+                                ContentType = att.FileInfo.ContentType
                             }
                         }
                     : new FileInfoDto[] { }));
@@ -101,6 +102,9 @@ namespace Ron.Ido.BM.Services
             var notEmptyList = applyDto.Attachments.Where(a => a.IsNotEmpty());
             var emptyList = applyDto.Attachments.Where(a => !a.IsNotEmpty());
 
+            var uidsForRemove = new List<Guid>();
+            var uidsForSave = new List<Guid>();
+
             foreach (var attachDto in emptyList)
             {
                 var attach = AppDbContext.ApplyAttachments.Find(attachDto.Id);
@@ -109,11 +113,13 @@ namespace Ron.Ido.BM.Services
 
                 if(attach.FileInfo?.Uid != null)
                 {
-                    _removeFile(attach.FileInfo.Uid);
+                    uidsForRemove.Add(attach.FileInfo.Uid);
+                    //_removeFile(attach.FileInfo.Uid);
                 }
 
                 AppDbContext.ApplyAttachments.Remove(attach);
             }
+            AppDbContext.SaveChanges();
 
             foreach(var attachDto in notEmptyList)
             {
@@ -137,38 +143,44 @@ namespace Ron.Ido.BM.Services
                 attach.Error = attachDto.Error;
                 attach.Given = attachDto.Given;
                 attach.Required = attachDto.Required;
+                AppDbContext.SaveChanges();
 
 
                 var fileInfoDto = attachDto.FileInfo.FirstOrDefault();
                 var fileInfo = attach.FileInfo;
                 if (fileInfoDto?.Uid != fileInfo?.Uid)
                 {
-                    if (fileInfo != null)
-                        _removeFile(fileInfo.Uid);
-
-                    if(fileInfoDto != null)
+                    if (fileInfoDto != null)
                     {
-                        var fi = _storage.SaveFile(fileInfoDto.Uid.Value);
-                        var fileinfo = new FileInfo
-                        {
-                            Uid = fi.Uid,
-                            ContentType = fi.ContentType,
-                            Name = fi.Name,
-                            CreateTime = DateTime.Now,
-                            Size = fi.Size,
-                            Source = "N",
-                            CreatedById = _identity?.Identity?.Id
-                        };
-
-                        AppDbContext.FileInfos.Add(fileinfo);
-                        AppDbContext.SaveChanges();
-
-                        attach.FileInfoUid = fi.Uid;
+                        uidsForSave.Add(fileInfoDto.Uid.Value);
+                        var fileinfo = _helper.CreateFileInfo(fileInfoDto);
+                        attach.FileInfoUid = fileinfo.Uid;
                     }
+                    else
+                    {
+                        attach.FileInfoUid = null;
+                    }
+
+                    //  старый файл удаляем только после обновления приложенного документа
+                    if (fileInfo != null)
+                    {
+                        uidsForRemove.Add(fileInfo.Uid);
+                        AppDbContext.FileInfos.Remove(fileInfo);
+                        AppDbContext.SaveChanges();
+                        //_removeFile(fileInfo.Uid);
+                    }
+
+                    AppDbContext.SaveChanges();
                 }
             }
 
-            AppDbContext.SaveChanges();
+            //  файлы в хранилище модифицируем только после успешного обновления БД
+            foreach (var uid in uidsForSave)
+                _storage.SaveFile(uid);
+
+            foreach (var uid in uidsForRemove)
+                _storage.DeleteFile(uid);
+
             return apply.Id;
         }
 

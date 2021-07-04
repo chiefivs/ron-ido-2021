@@ -1,9 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
-using Ron.Ido.BM.Interfaces;
+using Ron.Ido.BM.Services;
 using Ron.Ido.Common.Interfaces;
-using Ron.Ido.EM;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -26,14 +24,12 @@ namespace Ron.Ido.BM.Models.FileStorage
         public class UploadFilesCommandHandler : IRequestHandler<UploadFilesCommand, IEnumerable<FileInfoDto>>
         {
             private IFileStorageService _storage;
-            private AppDbContext _context;
-            private IIdentityService _identity;
+            private FileStorageHelper _helper;
 
-            public UploadFilesCommandHandler(IFileStorageService storage, AppDbContext context, IIdentityService identity)
+            public UploadFilesCommandHandler(IFileStorageService storage, FileStorageHelper helper)
             {
                 _storage = storage;
-                _context = context;
-                _identity = identity;
+                _helper = helper;
             }
 
             public Task<IEnumerable<FileInfoDto>> Handle(UploadFilesCommand request, CancellationToken cancellationToken)
@@ -48,28 +44,18 @@ namespace Ron.Ido.BM.Models.FileStorage
                     if (request.CreateImmediatelly)
                     {
                         fileInfo = _storage.CreateFile(bytes, Path.GetFileName(file.FileName), file.ContentType);
-                        _context.FileInfos.Add(new EM.Entities.FileInfo { 
-                            Uid = fileInfo.Uid,
-                            Name = fileInfo.Name,
-                            Size = fileInfo.Size,
-                            ContentType = fileInfo.ContentType,
-                            CreateTime = DateTime.Now,
-                            CreatedById = _identity?.Identity?.Id,
-                            Source = "N",
-                            
-                        });
-                        _context.SaveChanges();
+                        _helper.CreateFileInfo(fileInfo);
                     }
                     else
                     {
                         fileInfo = _storage.CreateTempFile(bytes, Path.GetFileName(file.FileName), file.ContentType);
-                        //attachment.CreatedById = _identity?.Identity.Id;
                     }
 
                     list.Add(new FileInfoDto { 
                         Uid = fileInfo.Uid,
                         Name = fileInfo.Name,
-                        Size = fileInfo.Size
+                        Size = fileInfo.Size,
+                        ContentType = fileInfo.ContentType
                     });
                 }
 

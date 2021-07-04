@@ -1,12 +1,10 @@
 ﻿using FluentFTP;
-using Microsoft.Extensions.Configuration;
 using Ron.Ido.Common.Extensions;
 using Ron.Ido.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.Json;
 
 namespace Ron.Ido.FileStorage
@@ -190,11 +188,11 @@ namespace Ron.Ido.FileStorage
             }
 
             string metapath = temppath + ".meta";
-            var attachment = _deserializeFileInfo(metapath);
+            var fileinfo = _deserializeFileInfo(metapath);
             if (File.Exists(metapath))
                 File.Delete(metapath);
 
-            return attachment;
+            return fileinfo;
         }
 
         public Guid SaveFile(byte[] bytes)

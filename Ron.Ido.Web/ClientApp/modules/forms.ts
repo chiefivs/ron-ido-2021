@@ -2,6 +2,38 @@
 import * as ko from 'knockout';
 import { IODataOption, IODataForm } from '../codegen/webapi/odata';
 
+export interface IFormField {
+    value: ko.Observable<any> | ko.ObservableArray<any>;
+    options: ko.ObservableArray<IODataOption>;
+    errors: ko.ObservableArray<string>;
+    hasChanges: ko.Computed<boolean>;
+}
+
+export interface IFormBlockField extends IFormField {
+    title: string;
+    templateNodes: Node[];
+    hasFocus: ko.Observable<boolean>;
+    keyDown: (data:any, event:JQuery.Event) => boolean;
+    readonly: ko.Observable<boolean>;
+    visible: ko.Observable<boolean>;
+    block: FormBlock;
+}
+
+export interface IFormBlockHolder {
+    blocks: ko.ObservableArray<FormBlock>;
+    parent?: IFormBlockHolder;
+    openPrevBlock?: () => boolean;
+    openNextBlock?: () => boolean;
+    //focusNextField(field: IApplyFormField);
+}
+
+export interface IFormBlockParams {
+    title: string;
+    fields?: IFormBlockField[];
+    blocks?: IFormBlockParams[];
+    containerOnly?: boolean;
+}
+
 export class Form<T> {
     item: {[key:string]:IFormField};
     errors = ko.observableArray<string>();
@@ -57,12 +89,10 @@ export class Form<T> {
         this.hasChanges = ko.computed(() => {
             for(var key in this.item) {
                 if(this.item[key].hasChanges()){
-                    console.log('form has changes', key);
                     return true;
                 }
             }
 
-            console.log('form has no changes');
             return false;
         });
 
@@ -145,8 +175,6 @@ export class Form<T> {
                 const original = this.original()[key];
                 if(!Array.isArray(original)) {
                     const v = value() !== undefined ? value() : null;
-                    if(v !== original)
-                        console.log('item has changes', key, v, original);
 
                     return v !== original;
                 } else {
@@ -172,23 +200,200 @@ export class Form<T> {
                 }
             });
     }
-    
-    private _fieldHasChanges(key:string) {
-        console.log('_fieldHasChanges', this);
-        const val = this.item[key].value();
-        const org = this.original()[key];
-        if(!Array.isArray(org)) {
-            return val !== org;
-        } else {
-            const diff = ko.utils.compareArrays((org as any[]).sort(), (val as any[]).sort());
-            return !!ko.utils.arrayFirst(diff, d => d.status === 'added' || d.status === 'deleted');
-        }
-    }
 }
 
-export interface IFormField {
-    value: ko.Observable<any> | ko.ObservableArray<any>;
-    options: ko.ObservableArray<IODataOption>;
-    errors: ko.ObservableArray<string>;
-    hasChanges: ko.Computed<boolean>;
+export class FormBlock implements IFormBlockHolder {
+    title: ko.Computed<string>;
+    fields = ko.observableArray<IFormBlockField>();
+    blocks = ko.observableArray<FormBlock>();
+    parent: IFormBlockHolder;
+    isExpanded = ko.observable(false);
+    isVisible: ko.Computed<boolean>;
+    hasErrors: ko.Computed<boolean>;
+    afterExpand: () => void;
+    containerOnly: boolean;
+
+    private _title: string;
+
+    constructor(params: IFormBlockParams, parent: IFormBlockHolder) {
+        this.parent = parent;
+        this._title = params.title;
+        this.containerOnly = params.containerOnly || false;
+        this.fields(ko.utils.arrayMap(params.fields || [], f => {
+            f.block = this;
+            f.keyDown = (data:IFormBlockField, event:JQuery.Event) => {
+                if(event.key === 'Tab') {
+                    if(event.shiftKey){
+                        this.focusPrevField(f);
+                    } else {
+                        this.focusNextField(f);
+                    }
+
+                    return false;
+                }
+    
+                return true;
+            }
+
+            f.readonly = ko.observable(false);
+            f.visible = ko.observable(true);
+            f.hasFocus = ko.observable(false);
+            f.hasFocus.subscribe(has => { 
+                if(has){
+                    this.isExpanded(true);
+                } 
+             });
+
+            return f;
+        }));
+        this.blocks(ko.utils.arrayMap(params.blocks || [], b => {
+            const block = new FormBlock(b, this);
+            return block;
+        }));
+
+        this.isExpanded.subscribe(expanded => {
+            if(expanded) {
+                this.closeBlocksExcludingThis();
+                if(this.blocks.length)
+                    this.blocks[0].isExpanded(true);
+
+                const parent = this.parent as FormBlock;
+                if(parent.isExpanded)
+                    parent.isExpanded(true);
+            }
+        });
+
+        this.afterExpand = () => {
+            ko.utils.arrayForEach(this.fields(), f => f.hasFocus.valueHasMutated());
+            ko.utils.arrayForEach(this.blocks(), b => b.afterExpand());
+        };
+
+        this.hasErrors = ko.computed(() => !!ko.utils.arrayFirst(this.fields(), f => !!f.errors().length) || !!ko.utils.arrayFirst(this.blocks(), b => b.hasErrors()));
+
+        this.title = ko.computed(() => {
+            if(!this.hasErrors())
+                return this._title;
+
+            return `<span class="has-errors">${this._title}</span>`;
+        });
+
+        this.isVisible = ko.computed(() => {
+            const visible = !!ko.utils.arrayFirst(this.fields(), f => f.visible()) || !!ko.utils.arrayFirst(this.blocks(), b => b.isVisible());
+            return visible;
+        });
+    }
+
+    private closeBlocksExcludingThis() {
+        const blocks = ko.utils.arrayFilter(this.parent.blocks(), b => b !== this && b.isExpanded());
+        ko.utils.arrayForEach(blocks, g => g.isExpanded(false));
+    }
+
+    getVisibleFields() {
+        return ko.utils.arrayFilter(this.fields(), f => f.visible());
+    }
+
+    focusPrevField(field: IFormBlockField = null): boolean {
+        if(field)
+            field.hasFocus(false);
+        
+        const visibleFields = this.getVisibleFields();
+        const fieldIndex = ko.utils.arrayIndexOf(visibleFields, field);
+        if(fieldIndex > 0) {
+            //  есть предыдущее поле
+            this.isExpanded(true);
+            visibleFields[fieldIndex - 1].hasFocus(true);
+            return true;
+        }
+
+        if(this.openPrevBlock())
+            return true;
+
+        return false;
+    }
+
+    focusNextField(field: IFormBlockField = null): boolean {
+        if(field)
+            field.hasFocus(false);
+        
+        const visibleFields = this.getVisibleFields();
+        const fieldIndex = ko.utils.arrayIndexOf(visibleFields, field);
+        if(fieldIndex < visibleFields.length - 1) {
+            //  есть следующее поле
+            this.isExpanded(true);
+            visibleFields[fieldIndex + 1].hasFocus(true);
+            return true;
+        }
+
+        const visibleChildBlocks = ko.utils.arrayFilter(this.blocks(), b => b.isVisible());
+        if(visibleChildBlocks.length && visibleChildBlocks[0].focusNextField())
+            return true;
+
+        if(this.openNextBlock())
+            return true;
+
+        return false;
+    }
+
+    focusLastField(): boolean {
+        const visibleChildBlocks = ko.utils.arrayFilter(this.blocks(), b => b.isVisible());
+        if(visibleChildBlocks.length && visibleChildBlocks[visibleChildBlocks.length - 1].focusLastField()) {
+            this.isExpanded(true);
+            return true;
+        }
+
+        const visibleFields = this.getVisibleFields();
+        if(visibleFields.length){
+            this.isExpanded(true);
+            visibleFields[visibleFields.length - 1].hasFocus(true);
+            return true;
+        }
+
+        if(this.openPrevBlock())
+            return true;
+
+        return false;
+    }
+
+    openPrevBlock() {
+        if(!this.parent)
+            return false;
+
+        const parentBlock = this.parent;
+        const visibleSiblingBlocks = ko.utils.arrayFilter(parentBlock.blocks(), b => b.isVisible());
+        const blockIndex = ko.utils.arrayIndexOf(visibleSiblingBlocks, this);
+
+        if(blockIndex > 0 && visibleSiblingBlocks[blockIndex - 1].focusLastField())
+            return true;
+
+        if(blockIndex === 0) {
+            const parent = this.parent as FormBlock;
+            const visibleParentFields = parent.getVisibleFields ? parent.getVisibleFields() : [];
+            if(visibleParentFields.length) {
+                parent.isExpanded(true);
+                visibleParentFields[visibleParentFields.length - 1].visible(true);
+                return true;
+            }
+        }
+
+        if(this.parent.openPrevBlock && this.parent.openPrevBlock())
+            return true;
+    
+        return false;
+    }
+
+    openNextBlock() {
+        if(!this.parent)
+            return false;
+
+        const parentBlock = this.parent;
+        const visibleSiblingBlocks = ko.utils.arrayFilter(parentBlock.blocks(), b => b.isVisible());
+        const blockIndex = ko.utils.arrayIndexOf(visibleSiblingBlocks, this);
+        if(blockIndex < visibleSiblingBlocks.length - 1 && visibleSiblingBlocks[blockIndex + 1].focusNextField())
+            return true;
+
+        if(this.parent.openNextBlock && this.parent.openNextBlock())
+            return true;
+    
+        return false;
+    }
 }

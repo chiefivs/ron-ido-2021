@@ -280,6 +280,11 @@ namespace Ron.Ido.BM.Models.Dossier
         /// филиал Ростов
         /// </summary>
         public bool IsRostovFilial { get; set; }
+        #endregion
+
+        #region Прилагаемые документы
+        public IEnumerable<ApplyAttachmentDto> Attachments { get; set; }
+        #endregion
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
@@ -288,11 +293,9 @@ namespace Ron.Ido.BM.Models.Dossier
 
             if (string.IsNullOrWhiteSpace(CreatorFirstName) && !IsCreatorFirstNameAbsent)
                 yield return new ValidationResult("Поле обязательно к заполнению", new[] { nameof(CreatorFirstName) });
-        }
-        #endregion
 
-        #region Прилагаемые документы
-        public IEnumerable<ApplyAttachmentDto> Attachments { get; set; }
-        #endregion
+            if (string.IsNullOrWhiteSpace(CreatorLastName) && !IsCreatorLastNameAbsent)
+                yield return new ValidationResult("Поле обязательно к заполнению", new[] { nameof(CreatorLastName) });
+        }
     }
 }
