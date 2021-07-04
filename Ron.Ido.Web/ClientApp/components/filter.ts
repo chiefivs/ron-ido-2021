@@ -27,7 +27,6 @@ export interface IFilterOption {
 export interface IFilterParams{
     title: string | ko.Observable<string>;
     field: string;
-    values?: ko.ObservableArray<any>;
     aliases?: string[];
     valueType: FilterValueType;
     filterType: ODataFilterTypeEnum;
@@ -58,14 +57,16 @@ class FilterModel {
     private _templates:object = {};
     private _name:string;
     private _initialValues:any[];
+    private _filterType: ODataFilterTypeEnum;
 
     constructor(params:IFilterParams) {
         this._name = Utils.randomString(20);
         this._initialValues = params.initialValues || [];
+        this._filterType = params.filterType;
         this._defineAllTemplates();
         this.templateNodes = this._getTemplate(params.filterType, params.valueType);
 
-        this.values = params.values || ko.observableArray([]);
+        this.values = /*params.values ||*/ ko.observableArray([]);
 
         this.state = params.state || ko.observable(null);
         if(this._initialValues.length)
@@ -85,8 +86,8 @@ class FilterModel {
         }
 
         this.values.subscribe(values => {
-            this.value1(this.values().length ? this.values()[0] : null);
-            this.value2(this.values().length > 1 ? this.values()[1] : null);
+            if(isStateChanging)
+                return;
 
             if(!values.length) {
                 this.state(null);
@@ -107,6 +108,22 @@ class FilterModel {
                     });
                 }
             }
+        });
+
+        let isStateChanging = false;
+        this.state.subscribe(state => {
+            isStateChanging = true;
+            console.log('state', state);
+            let values:any[] = state ? state.values : [];
+            if(this._filterType === ODataFilterTypeEnum.In) {
+                values = ko.utils.arrayMap(values, v => ko.utils.arrayFirst(this.options(), opt => opt.value === v));
+                this.values(values);
+            } else {
+                this.values(values);
+                this.value1(this.values().length ? this.values()[0] : null);
+                this.value2(this.values().length > 1 ? this.values()[1] : null);
+            }
+            isStateChanging = false;
         });
     }
 

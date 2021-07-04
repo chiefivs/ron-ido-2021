@@ -12,7 +12,7 @@ export function init(){
         template: `
             <form class="filters-panel" data-bind="submit:search">
                 <div data-bind="foreach:filters">
-                    <div><cmp-filter params="title:title, field:field, aliases:aliases, options:options, values:values, initialValues:initialValues, state:state, filterType:filterType, valueType:valueType"></cmp-filter></div>
+                    <div><cmp-filter params="title:title, field:field, aliases:aliases, options:options, initialValues:initialValues, state:state, filterType:filterType, valueType:valueType"></cmp-filter></div>
                 </div>
                 <div>
                     <button class="btn btn-primary pull-right">ПОИСК</div>
@@ -34,7 +34,6 @@ class FiltersPanelModel {
     constructor(params: IFiltersPanelParams) {
         this.states = params.states;
 
-        ko.utils.arrayForEach(ko.unwrap(params.filters), f => f.values = ko.observableArray(f.initialValues || []));
         this.filters = ko.isObservableArray(params.filters)
             ? this.filters
             : ko.observableArray<IFilterParams>(<IFilterParams[]>params.filters || []);
@@ -65,10 +64,11 @@ class FiltersPanelModel {
 
     reset() {
         ko.utils.arrayForEach(this.filters(), f => {
-            f.values(f.initialValues || []);
-            // f.state(f.initialValues 
-            //     ? { field: f.field, aliases: f.aliases || [], type: f.filterType, values:getFilterStateValues(f.initialValues)}
-            //     : null);
+            f.state(f.initialValues 
+                ? { field: f.field, aliases: f.aliases || [], type: f.filterType, values:getFilterStateValues(f.initialValues)}
+                : null);
         });
+
+        this.search();
     }
 }
