@@ -15,12 +15,12 @@ namespace Ron.Ido.BM.Services
     public class ApplyService: ODataService
     {
         private IFileStorageService _storage;
-        private IIdentityService _identity;
+        private FileStorageHelper _helper;
 
-        public ApplyService(AppDbContext context, IFileStorageService storage, IIdentityService identity): base(context)
+        public ApplyService(AppDbContext context, IFileStorageService storage, FileStorageHelper helper): base(context)
         {
             _storage = storage;
-            _identity = identity;
+            _helper = helper;
         }
 
         public ApplyDto GetApplyDto(long id)
@@ -153,21 +153,7 @@ namespace Ron.Ido.BM.Services
                     if (fileInfoDto != null)
                     {
                         uidsForSave.Add(fileInfoDto.Uid.Value);
-                        //var fi = _storage.SaveFile(fileInfoDto.Uid.Value);
-                        var fileinfo = new FileInfo
-                        {
-                            Uid = fileInfoDto.Uid.Value,
-                            ContentType = fileInfoDto.ContentType,
-                            Name = fileInfoDto.Name,
-                            CreateTime = DateTime.Now,
-                            Size = fileInfoDto.Size,
-                            Source = "N",
-                            CreatedById = _identity?.Identity?.Id
-                        };
-
-                        AppDbContext.FileInfos.Add(fileinfo);
-                        AppDbContext.SaveChanges();
-
+                        var fileinfo = _helper.CreateFileInfo(fileInfoDto);
                         attach.FileInfoUid = fileinfo.Uid;
                     }
                     else

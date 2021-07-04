@@ -2,6 +2,7 @@
 using Ron.Ido.BM.Services;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace Ron.Ido.BM.Commands.Dossier.Apply
 {
@@ -20,6 +21,16 @@ namespace Ron.Ido.BM.Commands.Dossier.Apply
             {
                 var list = new List<ValidationResult>();
                 //TODO дополнительные проверки
+
+                foreach(var attach in apply.Attachments)
+                {
+                    if (!attach.AttachmentTypeId.HasValue)
+                        continue;
+
+                    var type = context.ApplyAttachmentTypes.Find(attach.AttachmentTypeId.Value);
+                    if (type.Required && !attach.FileInfo.Any())
+                        list.Add(new ValidationResult($"{type.Id}:Отсутствует прикрепленный файл", new[] { nameof(apply.Attachments)}));
+                }
 
                 return list;
             });

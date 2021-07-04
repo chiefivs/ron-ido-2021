@@ -356,19 +356,25 @@ class ApplyForm extends Form<DossierApi.IApplyDto> {
                     return jQuery.Deferred();
                 };
 
-                const valueArr = ko.observableArray(ko.utils.arrayMap(<DossierApi.IApplyAttachmentDto[]>data.item.attachments, att => {
+                const valueArr = ko.observableArray();
+                valueArr(ko.utils.arrayMap(<DossierApi.IApplyAttachmentDto[]>data.item.attachments, att => {
                     att.fileInfo = ko.utils.arrayMap(att.fileInfo, fi => new FileData(fi));
                     const formdata: IODataForm<DossierApi.IApplyAttachmentDto> = {
                         item: att,
                         options:{}
                     };
-                    const form = new AttachmentForm(formdata, save, validate);
+                    const form = new AttachmentForm(formdata, valueArr, applyForm.errorsDic.attachments, save, validate);
         
                     return form;
                 }));
 
+                // const arrayHasChanges = (arr:any[]) => {
+                //     const diff = ko.utils.compareArrays((this.original().sort(), (value() as any[]).sort());
+                //     return !!ko.utils.arrayFirst(diff, d => d.status === 'added' || d.status === 'deleted');
+                // };
+
                 return {
-                    errors:ko.observableArray([]),
+                    errors:applyForm.errorsDic.attachments,
                     options: ko.observableArray([]),
                     value: valueArr,
                     hasChanges: ko.computed(() => !!ko.utils.arrayFirst(valueArr(), v => v.hasChanges()))
@@ -405,9 +411,16 @@ class AttachmentForm extends Form<DossierApi.IApplyAttachmentDto> {
     fileDesc: ko.Computed<string>;
 
     private maxSize = 10*1024*1024; //10 MB
+    private _collection: ko.ObservableArray<any>;
 
-    constructor(data: IODataForm<DossierApi.IApplyAttachmentDto>, save:(att: DossierApi.IApplyAttachmentDto) => JQueryPromise<any>, validate:(att: DossierApi.IApplyAttachmentDto) => JQueryPromise<any>){
+    constructor(
+        data: IODataForm<DossierApi.IApplyAttachmentDto>,
+        collection: ko.ObservableArray<any>,
+        errors: ko.ObservableArray<string>,
+        save:(att: DossierApi.IApplyAttachmentDto) => JQueryPromise<any>,
+        validate:(att: DossierApi.IApplyAttachmentDto) => JQueryPromise<any>){
         super(data, save, validate);
+        this._collection = collection;
 
         this.fileDesc = ko.computed(() => {
             const files: FileData[] = this.item.fileInfo.value();
@@ -416,10 +429,28 @@ class AttachmentForm extends Form<DossierApi.IApplyAttachmentDto> {
 
             return `${files[0].name} (${files[0].sizeString})`;
         });
+
+        errors.subscribe(vals => {
+            if(!data.item.attachmentTypeId)
+                return [];
+
+            const filtered = ko.utils.arrayFilter(vals, v => {
+                const parts = v.split(':');
+                return parseInt(parts[0]) === data.item.attachmentTypeId;
+            });
+
+            this.errors(ko.utils.arrayMap(filtered, f => f.split(':').pop()));
+            console.log('attachment error', this.errors());
+        });
     }
     
     deleteFile() {
         this.item.fileInfo.value([]);
+    }
+
+    deleteAttachment() {
+        this._collection.remove(this);
+        console.log('deleteAttachment');
     }
 
     validateSelection(files:FileData[]) {
