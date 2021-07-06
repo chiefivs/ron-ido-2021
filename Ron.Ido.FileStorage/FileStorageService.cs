@@ -1,12 +1,11 @@
 ﻿using FluentFTP;
-using Microsoft.Extensions.Configuration;
 using Ron.Ido.Common.Extensions;
 using Ron.Ido.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.Json;
 
 namespace Ron.Ido.FileStorage
 {
@@ -29,9 +28,9 @@ namespace Ron.Ido.FileStorage
         private static readonly object _ftpParamsLock = new object();
         private static FtpParams _ftpParams;
 
-        public FileStorageService(IConfiguration config)
+        public FileStorageService(FileStorageSettings settings)
         {
-            _settings = config.GetSettings<FileStorageSettings>();
+            _settings = settings;
             _isFtp = _settings.FilesRoot.StartsWith("ftp://");
         }
 
@@ -131,7 +130,7 @@ namespace Ron.Ido.FileStorage
         {
             var uid = Guid.NewGuid();
 
-            var attachment = new TFileInfo
+            var fileinfo = new TFileInfo
             {
                 Uid = uid,
                 Name = filename,
@@ -144,15 +143,17 @@ namespace Ron.Ido.FileStorage
 
             File.WriteAllBytes(temppath, data);
 
-            using (var stream = File.Create(metapath))
-            {
-                var formatter = new BinaryFormatter();
-                #pragma warning disable SYSLIB0011 // Type or member is obsolete
-                formatter.Serialize(stream, new FileMeta<TFileInfo>(attachment));
-                #pragma warning restore SYSLIB0011 // Type or member is obsolete
-            }
+            File.AppendAllText(metapath, JsonSerializer.Serialize(new FileMeta<TFileInfo>(fileinfo)));
 
-            return attachment;
+            //using (var stream = File.Create(metapath))
+            //{
+            //    var formatter = new BinaryFormatter();
+            //    #pragma warning disable SYSLIB0011 // Type or member is obsolete
+            //    formatter.Serialize(stream, new FileMeta<TFileInfo>(attachment));
+            //    #pragma warning restore SYSLIB0011 // Type or member is obsolete
+            //}
+
+            return fileinfo;
         }
 
         public TFileInfo SaveFile(Guid uid)
@@ -187,11 +188,11 @@ namespace Ron.Ido.FileStorage
             }
 
             string metapath = temppath + ".meta";
-            var attachment = _deserializeFileInfo(metapath);
+            var fileinfo = _deserializeFileInfo(metapath);
             if (File.Exists(metapath))
                 File.Delete(metapath);
 
-            return attachment;
+            return fileinfo;
         }
 
         public Guid SaveFile(byte[] bytes)
@@ -303,14 +304,17 @@ namespace Ron.Ido.FileStorage
 
         private static TFileInfo _deserializeFileInfo(string temppath)
         {
-            using (var stream = File.OpenRead(temppath))
-            {
-                var formatter = new BinaryFormatter();
-                #pragma warning disable SYSLIB0011 // Type or member is obsolete
-                var meta = formatter.Deserialize(stream) as FileMeta<TFileInfo>;
-                #pragma warning restore SYSLIB0011 // Type or member is obsolete
-                return meta.GetFileInfo();
-            }
+            var meta = JsonSerializer.Deserialize<FileMeta<TFileInfo>>(File.ReadAllText(temppath));
+            return meta.GetFileInfo();
+
+            //using (var stream = File.OpenRead(temppath))
+            //{
+            //    var formatter = new BinaryFormatter();
+            //    #pragma warning disable SYSLIB0011 // Type or member is obsolete
+            //    var meta = formatter.Deserialize(stream) as FileMeta<TFileInfo>;
+            //    #pragma warning restore SYSLIB0011 // Type or member is obsolete
+            //    return meta.GetFileInfo();
+            //}
         }
 
         private FtpClient _createFtpClient()

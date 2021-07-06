@@ -24,69 +24,71 @@ export function init(){
             template: `
                 <!-- ko template:{nodes:[], afterRender:function(){setParentContext.bind($data)($parent);}} --><!-- /ko -->
     
-                <table class="table large-view js-table">
-                    <thead>
-                        <tr>
-                            <th class="control" data-bind="visible:hasChildColumns()"></th>
-                            <!-- ko foreach:columns -->
-                            <!-- ko with:parent -->
-    
-                            <!-- ko if:$parent.order -->
-                            <th class="sorting" data-bind="style:{'width':$parent.width}">
-                                <div>
-                                    <div class="sorting-title" data-bind="template:{nodes:$parent.nodes, data:$parent.data}"></div>
-                                    <div class="sorting-arrows" data-bind="with:$parent.order, css:{red:$parent.order.current()}">
-                                        <span class="glyphicon glyphicon-arrow-up" data-bind="click:descAction, visible:current()==='asc'"></span>
-                                        <span class="glyphicon glyphicon-arrow-down" data-bind="click:ascAction, visible:current()==='desc'"></span>
-                                        <span class="glyphicon glyphicon-arrow-up" data-bind="click:ascAction, visible:!current()"></span>
-                                        <span class="glyphicon glyphicon-arrow-down" data-bind="click:descAction, visible:!current()"></span>
-                                    </div>
-                                </div>
-                            </th>
-                            <!-- /ko -->
-                            <!-- ko ifnot:$parent.order -->
-                            <th data-bind="template:{nodes:$parent.nodes, data:$parent.data}, style:{width:$parent.width}"></th>
-                            <!-- /ko -->
-    
-    
-                            <!-- /ko -->
-                            <!-- /ko -->
-                        </tr>
-                    </thead>
-                    <tbody data-bind="foreach:rows">
-                        <tr data-bind="css:{expanded:isExpanded()}">
-                            <td class="control" data-bind="visible:hasChildColumns(), css:{expanded:isExpanded}, click:toggle"></td>
-                            <!-- ko foreach:cells -->
-                            <!-- ko with:parent -->
-                            <td data-bind="template:{nodes:$parent.nodes, data:$parent.data}, style:{'width':$parent.width}"></td>
-                            <!-- /ko -->
-                            <!-- /ko -->
-                        </tr>
-    
-                        <!-- ko children.length -->
-                        <tr class="children" data-bind="visible:isExpanded() && children().length, css:{expanded:isExpanded()}">
-                            <td data-bind="attr:{colspan:cells().length+1}">
-                                <ul data-bind="foreach:children">
-                                    <li>
-                                        <div>
-                                            <!-- ko with:title -->
-                                            <!-- ko with:parent -->
-                                            <div class="child-title" data-bind="template:{nodes:$parent.nodes, data:$parent.data}"></div>
-                                            <!-- /ko -->
-                                            <!-- /ko -->
-                                            <!-- ko with:content -->
-                                            <!-- ko with:parent -->
-                                            <div class="child-data" data-bind="template:{nodes:$parent.nodes, data:$parent.data}"></div>
-                                            <!-- /ko -->
-                                            <!-- /ko -->
+                <div class="table-container">
+                    <table class="table js-table">
+                        <thead>
+                            <tr>
+                                <th class="control" data-bind="visible:hasChildColumns()"></th>
+                                <!-- ko foreach:columns -->
+                                <!-- ko with:parent -->
+        
+                                <!-- ko if:$parent.order -->
+                                <th class="sorting" data-bind="style:{'width':$parent.width}">
+                                    <div>
+                                        <div class="sorting-title" data-bind="template:{nodes:$parent.nodes, data:$parent.data}"></div>
+                                        <div class="sorting-arrows" data-bind="with:$parent.order, css:{red:$parent.order.current()}">
+                                            <span class="glyphicon glyphicon-arrow-up" data-bind="click:descAction, visible:current()==='asc'"></span>
+                                            <span class="glyphicon glyphicon-arrow-down" data-bind="click:ascAction, visible:current()==='desc'"></span>
+                                            <span class="glyphicon glyphicon-arrow-up" data-bind="click:ascAction, visible:!current()"></span>
+                                            <span class="glyphicon glyphicon-arrow-down" data-bind="click:descAction, visible:!current()"></span>
                                         </div>
-                                    </li>
-                                </ul>
-                            </td>
-                        </tr>
-                        <!-- /ko -->
-                    </tbody>
-                </table>
+                                    </div>
+                                </th>
+                                <!-- /ko -->
+                                <!-- ko ifnot:$parent.order -->
+                                <th data-bind="template:{nodes:$parent.nodes, data:$parent.data}, style:{width:$parent.width}"></th>
+                                <!-- /ko -->
+        
+        
+                                <!-- /ko -->
+                                <!-- /ko -->
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach:rows">
+                            <tr data-bind="css:{expanded:isExpanded()}">
+                                <td class="control" data-bind="visible:hasChildColumns(), css:{expanded:isExpanded}, click:toggle"></td>
+                                <!-- ko foreach:cells -->
+                                <!-- ko with:parent -->
+                                <td data-bind="template:{nodes:$parent.nodes, data:$parent.data}, style:{'width':$parent.width}"></td>
+                                <!-- /ko -->
+                                <!-- /ko -->
+                            </tr>
+        
+                            <!-- ko children.length -->
+                            <tr class="children" data-bind="visible:isExpanded() && children().length, css:{expanded:isExpanded()}">
+                                <td data-bind="attr:{colspan:cells().length+1}">
+                                    <ul data-bind="foreach:children">
+                                        <li>
+                                            <div>
+                                                <!-- ko with:title -->
+                                                <!-- ko with:parent -->
+                                                <div class="child-title" data-bind="template:{nodes:$parent.nodes, data:$parent.data}"></div>
+                                                <!-- /ko -->
+                                                <!-- /ko -->
+                                                <!-- ko with:content -->
+                                                <!-- ko with:parent -->
+                                                <div class="child-data" data-bind="template:{nodes:$parent.nodes, data:$parent.data}"></div>
+                                                <!-- /ko -->
+                                                <!-- /ko -->
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <!-- /ko -->
+                        </tbody>
+                    </table>
+                </div>
        
                 <div class="table-pager js-pager" data-bind="with:pager">
                     <ul>
@@ -252,8 +254,6 @@ class TableModel {
         }
 
         this.columns = ko.computed(() => {
-            const cnt = this.parentColumns().length;
-            const width = cnt ? Math.floor(100 / cnt) : 100;
             return ko.utils.arrayMap(this.parentColumns(), col => {
                 const order: IOrderDescriptor = col.orderable
                     ? {
@@ -265,7 +265,7 @@ class TableModel {
 
                 return <IParentColDescriptor>{
                     order: order,
-                    width: col.width || (width + '%'),
+                    width: col.width || 'auto',
                     data: col.title,
                     parent: this.parentContext,
                     nodes: col.titleTemplateNodes || []
@@ -282,13 +282,11 @@ class TableModel {
         this.componentWidth.subscribe(() => this.recalcColumns());
         App.instance().windowWidth.subscribe(() => this._startUpdateComponentWidth());
         App.instance().leftPanelWidth.subscribe(() => this._startUpdateComponentWidth());
-        App.instance().windowHeight.subscribe(() => this._updateBodyHeight());
     }
 
     setParentContext(context: any) {
         this.parentContext = context;
         this._updateComponentWidth();
-        this._updateBodyHeight();
         this.allColumns.valueHasMutated();
     }
 
@@ -345,21 +343,6 @@ class TableModel {
     }
 
     private _updateBodyHeightTimeout = null;
-    private _updateBodyHeight() {
-        if(this._updateBodyHeightTimeout) {
-            clearTimeout(this._updateBodyHeightTimeout);
-        }
-
-        this._updateBodyHeightTimeout = setTimeout(() => {
-            const componentRect = this.componentElement[0].getBoundingClientRect();
-            const theadRect = $('.js-table > thead', this.componentElement)[0].getBoundingClientRect();
-            const pagerRect = $('.js-pager', this.componentElement)[0].getBoundingClientRect();
-
-            const tbodyElement = $('.js-table > tbody', this.componentElement);
-            tbodyElement.height(Math.trunc(componentRect.height - theadRect.height - pagerRect.height));
-            this._updateBodyHeightTimeout = null;
-        }, 100);
-    }
 
     private _mapColumns(columns: ITableColumnParams[] | ko.ObservableArray<ITableColumnParams>):
         TableColumnModel[] {

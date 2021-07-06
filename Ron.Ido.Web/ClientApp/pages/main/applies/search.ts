@@ -76,6 +76,7 @@ class AppliesSearchLeftPage extends LeftPageBase {
     learnLevelOptions = ko.observableArray<IFilterOption>([]);
     entryFormOptions = ko.observableArray<IFilterOption>([]);
     stagesOptions = ko.observableArray<IFilterOption>([]);
+    countriesOptions = ko.observableArray<IFilterOption>([]);
 
     constructor(owner: SearchMainPage) {
         super({
@@ -90,8 +91,9 @@ class AppliesSearchLeftPage extends LeftPageBase {
             { title: 'Номер заявления', field: 'barCode', aliases: ['primaryBarCode'], valueType: 'string', filterType: ODataFilterTypeEnum.Contains },
             { title: 'Дата создания', field: 'createTime', valueType: 'date', filterType: ODataFilterTypeEnum.BetweenLeft },
             { title: 'Статусы', field: 'statuses', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.statusesOptions },
-            { title: 'Уровень образования', field: 'learnLevel', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.learnLevelOptions },
-            { title: 'Форма приема', field: 'entryForm', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.entryFormOptions },
+            { title: 'Уровень образования', field: 'learnLevels', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.learnLevelOptions },
+            { title: 'Страна выдачи ИДО', field: 'docCountries', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.countriesOptions },
+            { title: 'Форма приема', field: 'entryForms', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.entryFormOptions },
             { title: 'Этапы', field: 'stages', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.stagesOptions }
         ];
 
@@ -111,6 +113,9 @@ class AppliesSearchLeftPage extends LeftPageBase {
             const stagesOptionValues: IFilterOption[] = ko.utils.arrayMap(dictions.stages, stage =>
                 <IFilterOption>{ value: stage.value.toString(), text: stage.text });
             this.stagesOptions(stagesOptionValues);
+
+            this.countriesOptions(ko.utils.arrayMap(dictions.countries, country =>
+                <IFilterOption>{ value: country.value.toString(), text: country.text }));
         });
     }
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Ron.Ido.BM.Commands.Dossier.Apply
 {
-    public class SaveApplyCommand : IRequest
+    public class SaveApplyCommand : IRequest<long>
     {
         public ApplyDto Apply { get; private set; }
 
@@ -17,31 +17,20 @@ namespace Ron.Ido.BM.Commands.Dossier.Apply
             Apply = dto;
         }
     }
-    public class SaveApplyCommandHandler : ApplyHandlerBase, IRequestHandler<SaveApplyCommand>
+    public class SaveApplyCommandHandler : ApplyHandlerBase, IRequestHandler<SaveApplyCommand, long>
     {
-
-        public SaveApplyCommandHandler(ODataService service) : base(service)
+        public SaveApplyCommandHandler(ApplyService service) : base(service)
         {
         }
 
-        public Task<Unit> Handle(SaveApplyCommand request, CancellationToken cancellationToken)
+        public Task<long> Handle(SaveApplyCommand request, CancellationToken cancellationToken)
         {
             var errors = ValidateApply(request.Apply);
             if (errors.Any())
                 throw new ODataValidationException(errors);
 
-            Service.SaveDto(request.Apply,
-                new[] {
-                    new ODataMapMemberConfig<ApplyDto, EM.Entities.Apply>(
-                        apply => apply.CertificateDeliveryForms,
-                        expr => expr.Ignore()
-                    )
-                },
-                (dto, apply, context) =>
-                {
-                });
-
-            return Task.FromResult(Unit.Value);
+            var id = Service.SaveApplyDto(request.Apply);
+            return Task.FromResult(id);
         }
     }
 }

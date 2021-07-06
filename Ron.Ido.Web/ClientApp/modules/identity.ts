@@ -46,7 +46,7 @@ export class LoginDialog extends Popups.Popup {
                 this._remove();
 
                 AccountApi.getMenu()
-                    .done(res => console.log('getmenu done', res))
+                    .done(res => {})
                     .fail(error => console.log('getmenu fail', error));
             })
             .fail(error => {

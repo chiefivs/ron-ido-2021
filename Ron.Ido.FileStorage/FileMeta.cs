@@ -11,6 +11,11 @@ namespace Ron.Ido.FileStorage
         public int Size { get; set; }
         public string ContentType { get; set; }
 
+        public FileMeta()
+        {
+
+        }
+
         public FileMeta(TFileInfo fileInfo)
         {
             Uid = fileInfo.Uid;

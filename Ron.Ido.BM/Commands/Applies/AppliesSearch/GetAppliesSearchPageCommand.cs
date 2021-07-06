@@ -65,7 +65,14 @@ namespace Ron.Ido.BM.Commands.Applies.AppliesSearch
                             if(entryFormFilter != null)
                             {
                                 var ids = entryFormFilter.GetIds();
-                                query = query.Where(a => ids.Contains(a.Id));
+                                query = query.Where(a => a.EntryFormId != null && ids.Contains((long)a.EntryFormId));
+                            }
+
+                            var docCountriesFilter = request.GetFilter("docCountries");
+                            if(docCountriesFilter != null)
+                            {
+                                var ids = docCountriesFilter.GetIds();
+                                query = query.Where(a => a.DocCountryId != null && ids.Contains((long)a.DocCountryId));
                             }
 
                             var stagesFilter = request.GetFilter("stages");

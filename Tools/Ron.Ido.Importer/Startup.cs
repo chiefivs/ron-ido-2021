@@ -25,7 +25,9 @@ namespace Ron.Ido.Importer
 			string basepath = Environment.GetEnvironmentVariable(Common.Constants.ConfigFolderPath)
 				  ?? Environment.GetEnvironmentVariable(Common.Constants.ConfigFolderPath, EnvironmentVariableTarget.Machine);
 
-			var builder = new ConfigurationBuilder();
+            Console.WriteLine("Base config path {0}", basepath);
+            var builder = new ConfigurationBuilder();
+
 
 			if (!string.IsNullOrEmpty(basepath))
 				builder.SetBasePath(basepath);
@@ -40,11 +42,12 @@ namespace Ron.Ido.Importer
 
 		public void ConfigureServices(IServiceCollection services)
 		{
-			var settings = Configuration.GetSettings<AppDbContextSettings>();
+			var dbSettings = Configuration.GetSettings<AppDbContextSettings>();
+			var fileStorageSettings = Configuration.GetSettings<FileStorageSettings>();
 
 			services.AddSingleton<IConfiguration>(Configuration);
-			services.AddAppDbContext(settings);
-			services.AddFileStorage<EM.Entities.FileInfo>();
+			services.AddAppDbContext(dbSettings);
+			services.AddFileStorage<EM.Entities.FileInfo>(fileStorageSettings);
 			services.AddDbContext<NostrificationRONContext>(builder => builder.UseSqlServer(_nostrificationConn));
 			services.Add(
 				new ServiceDescriptor(typeof(NostrificationStorage),

@@ -95,7 +95,7 @@ namespace Ron.Ido.EM
                 .HasOne(aa => aa.FileInfo)
                 .WithMany()
                 .HasForeignKey(aa => aa.FileInfoUid)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<ApplyCertificateDeliveryForm>().HasKey(ac => new { ac.ApplyId, ac.DeliveryFormId });
             //modelBuilder.Entity<ApplyCertificateDeliveryForm>()

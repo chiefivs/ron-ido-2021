@@ -32,6 +32,7 @@ export namespace AppliesSearchApi {
         learnLevels:IODataOption[];
         entryForms:IODataOption[];
         stages:IODataOption[];
+        countries:IODataOption[];
     }
 
 }

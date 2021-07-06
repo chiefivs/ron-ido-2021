@@ -14,7 +14,7 @@ export function init(){
                 }
             },
             template: `
-                <div class="expander-header">
+                <div class="expander-header" data-bind="css:{fixable:isFixable}">
                     <a class="glyphicon glyphicon-pushpin expander-pin" data-bind="click:toggleFixed, visible:isFixable, css:{'fixed':isFixed}"></a>
                     <a class="expander-title" data-bind="html:title, click:toggleExpanded"></a>
                 </div>

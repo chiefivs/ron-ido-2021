@@ -13,6 +13,6 @@ namespace Ron.Ido.BM.Models.Applies.AppliesSearch
         public IEnumerable<ODataOption> LearnLevels { get; set; }
         public IEnumerable<ODataOption> EntryForms { get; set; }
         public IEnumerable<ODataOption> Stages { get; set; }
-
+        public IEnumerable<ODataOption> Countries { get; set; }
     }
 }

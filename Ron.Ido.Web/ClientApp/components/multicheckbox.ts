@@ -79,6 +79,12 @@ class MultiCheckBoxModel {
         this._keyDown = params.keyDown;
     }
 
+    isFirstOption(option: MultiCheckBoxOption):boolean {
+        const options = ko.utils.arrayFilter(this.options(), o => !o.disabled());
+        const index = ko.utils.arrayIndexOf(options, option);
+        return index === 0;
+    }
+
     isLastOption(option: MultiCheckBoxOption):boolean {
         const options = ko.utils.arrayFilter(this.options(), o => !o.disabled());
         const index = ko.utils.arrayIndexOf(options, option);
@@ -113,9 +119,14 @@ class MultiCheckBoxOption {
     }
         
     keyDown(data:any, event:JQuery.Event) {
-        if(this._keyDown && this._parent.isLastOption(this))
-            return this._keyDown(data, event);
+        if(this._keyDown){
+            if(event.shiftKey && this._parent.isFirstOption(this))
+                return this._keyDown(data, event);
 
+            if(!event.shiftKey && this._parent.isLastOption(this))
+                return this._keyDown(data, event);
+        }
+        
         return true;
     }
 }
