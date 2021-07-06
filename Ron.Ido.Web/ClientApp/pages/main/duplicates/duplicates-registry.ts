@@ -1,13 +1,13 @@
 import * as ko from 'knockout';
 import { App } from '../../../app';
-import { default as DossierMainPage } from '../dossier/dossier';
+import { default as DuplicateMainPage } from './duplicate';
 import { ILeftPage, MainPageBase, LeftPageBase } from '../../../modules/content';
 import { IODataFilter, ODataFilterTypeEnum, ODataOrderTypeEnum } from '../../../codegen/webapi/odata';
 import { ITablePagerState, TableColumnOrderDirection, IFilterParams, IFilterOption, FilterValueType } from '../../../components/index';
 import { DuplicatesSearchApi } from '../../../codegen/webapi/duplicatesSearchApi';
 import { IODataOrder } from '../../../codegen/webapi/odata';
 
-export default class SearchMainPage extends MainPageBase {
+export default class DuplicateSearchMainPage extends MainPageBase {
     applies = ko.observableArray<DuplicatesSearchApi.IDuplicatesSearchPageItemDto>([]);
     tableTotalCount = ko.observable(0);
     pagerState = ko.observable<ITablePagerState>({
@@ -63,8 +63,8 @@ export default class SearchMainPage extends MainPageBase {
 
     open(item: DuplicatesSearchApi.IDuplicatesSearchPageItemDto) {
         console.log(item);
-        const page = <DossierMainPage>App.instance().openMainPage('dossier/dossier', item.dossierId.toString());
-        page.openApply();
+        const page = <DuplicateMainPage>App.instance().openMainPage('duplicates/duplicate', item.id.toString());
+        page.openDuplicate();
     }
 }
 
@@ -74,7 +74,7 @@ class DuplicatesSearchLeftPage extends LeftPageBase {
 
     statusesOptions = ko.observableArray<IFilterOption>([]);
 
-    constructor(owner: SearchMainPage) {
+    constructor(owner: DuplicateSearchMainPage) {
         super({
             pageTitle: 'поиск',
             templatePath: 'pages/left/duplicates-search.html'

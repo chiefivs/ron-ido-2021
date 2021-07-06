@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ron.Ido.BM.Models.DuplicatesSearch
+namespace Ron.Ido.BM.Models.Duplicate
 {
     public class DuplicatesSearchPageItemDto
     {

@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Ron.Ido.BM.Constants;
-using Ron.Ido.BM.Models.DuplicatesSearch;
+using Ron.Ido.BM.Models.Duplicate;
 using Ron.Ido.BM.Models.OData;
 using Ron.Ido.BM.Services;
 using Ron.Ido.Common.Extensions;
@@ -41,10 +41,10 @@ namespace Ron.Ido.BM.Commands.DuplicatesSearch
                 request.ReplaceOrder(nameof(DuplicatesSearchPageItemDto.CreateDate), "Duplicate." + nameof(E.Duplicate.CreateTime));
                 request.ReplaceOrder(nameof(DuplicatesSearchPageItemDto.CreatorFullName), "Apply." + nameof(Apply.CreatorSurname), "Apply." + nameof(Apply.CreatorFirstName), "Apply." + nameof(Apply.CreatorLastName));
                 request.ReplaceOrder(nameof(DuplicatesSearchPageItemDto.OwnerFullName), "Apply." + nameof(Apply.OwnerSurname), "Apply." + nameof(Apply.OwnerFirstName), "Apply." + nameof(Apply.OwnerLastName));
-                request.ReplaceOrder(nameof(DuplicatesSearchPageItemDto.Status), "Duplicate."+nameof(E.Duplicate.StatusId));
-                request.ReplaceOrder(nameof(DuplicatesSearchPageItemDto.BarCode), "Duplicate."+nameof(E.Duplicate.BarCode));
+                request.ReplaceOrder(nameof(DuplicatesSearchPageItemDto.Status), "Duplicate." + nameof(E.Duplicate.StatusId));
+                request.ReplaceOrder(nameof(DuplicatesSearchPageItemDto.BarCode), "Duplicate." + nameof(E.Duplicate.BarCode));
 
-                var result = _odataService.GetPage<E.Dossier,DuplicatesSearchPageItemDto> (request,
+                var result = _odataService.GetPage<E.Dossier, DuplicatesSearchPageItemDto>(request,
                     new[]
                     {
                         request.CreateCustomFilter<E.Dossier>(query => {
@@ -99,11 +99,11 @@ namespace Ron.Ido.BM.Commands.DuplicatesSearch
                         ),
                         new ODataMapMemberConfig<E.Dossier, DuplicatesSearchPageItemDto>(
                             duplicateDto => duplicateDto.CreatorFullName,
-                            expr => expr.MapFrom(dossier => $"{dossier.Apply.CreatorSurname} {dossier.Apply.CreatorFirstName} {dossier.Apply.CreatorLastName}")
+                            expr => expr.MapFrom(dossier => $"{dossier.Duplicate.DocFullName}")
                         ),
                         new ODataMapMemberConfig<E.Dossier, DuplicatesSearchPageItemDto>(
                             duplicateDto => duplicateDto.OwnerFullName,
-                            expr => expr.MapFrom(dossier => $"{dossier.Apply.OwnerSurname} {dossier.Apply.OwnerFirstName} {dossier.Apply.OwnerLastName}")
+                            expr => expr.MapFrom(dossier => $"{dossier.Duplicate.FullName}")
                         ),
                         new ODataMapMemberConfig<E.Dossier, DuplicatesSearchPageItemDto>(
                             duplicateDto => duplicateDto.BarCode,
@@ -113,6 +113,17 @@ namespace Ron.Ido.BM.Commands.DuplicatesSearch
                             duplicateDto => duplicateDto.Status,
                             expr => expr.MapFrom(
                                 dossier => dossier.Duplicate.Status.Name
+                                )
+                            ),
+                        new ODataMapMemberConfig<E.Dossier, DuplicatesSearchPageItemDto>(
+                            duplicateDto => duplicateDto.DossierId,
+                            expr => expr.MapFrom(
+                                dossier => dossier.Id
+                                )),
+                        new ODataMapMemberConfig<E.Dossier, DuplicatesSearchPageItemDto>(
+                            duplicateDto => duplicateDto.Id,
+                            expr => expr.MapFrom(
+                                dossier => dossier.Duplicate.Id
                                 )
 
                         )
