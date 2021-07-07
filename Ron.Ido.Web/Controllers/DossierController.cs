@@ -50,7 +50,7 @@ namespace Ron.Ido.Web.Controllers
         [HttpPost]
         [Route("api/dossier/apply/save")]
         [AuthorizedFor(PermissionEnum.APPLY_VIEW, PermissionEnum.APPLY_CREATE, PermissionEnum.APPLY_EDIT, PermissionEnum.APPLY_DEL)]
-        public async Task<long> SaveApply([FromBody] ApplyDto apply)
+        public async Task<DossierDataDto> SaveApply([FromBody] ApplyDto apply)
         {
             return await _mediator.Send(new SaveApplyCommand(apply));
         }

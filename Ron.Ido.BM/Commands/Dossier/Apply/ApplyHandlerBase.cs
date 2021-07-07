@@ -20,8 +20,17 @@ namespace Ron.Ido.BM.Commands.Dossier.Apply
             return Service.ValidateDto(applyDto, (apply, context) =>
             {
                 var list = new List<ValidationResult>();
-                //TODO дополнительные проверки
 
+                if (string.IsNullOrWhiteSpace(apply.CreatorSurname) && !apply.IsCreatorSurnameAbsent)
+                    list.Add(new ValidationResult("Поле обязательно к заполнению", new[] { nameof(apply.CreatorSurname) }));
+
+                if (string.IsNullOrWhiteSpace(apply.CreatorFirstName) && !apply.IsCreatorFirstNameAbsent)
+                    list.Add(new ValidationResult("Поле обязательно к заполнению", new[] { nameof(apply.CreatorFirstName) }));
+
+                if (string.IsNullOrWhiteSpace(apply.CreatorLastName) && !apply.IsCreatorLastNameAbsent)
+                    list.Add(new ValidationResult("Поле обязательно к заполнению", new[] { nameof(apply.CreatorLastName) }));
+
+                //  приложенные документы
                 var n = -1;
                 foreach(var attach in apply.Attachments)
                 {

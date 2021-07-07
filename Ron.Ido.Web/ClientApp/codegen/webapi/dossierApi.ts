@@ -18,7 +18,7 @@ export namespace DossierApi {
         return WebApi.post(segments.join('/'), apply);
     }
 
-    export function saveApply(apply:IApplyDto): JQueryPromise<number> {
+    export function saveApply(apply:IApplyDto): JQueryPromise<IDossierDataDto> {
         const segments = ['api', 'dossier', 'apply', 'save'];
         return WebApi.post(segments.join('/'), apply);
     }
@@ -26,10 +26,18 @@ export namespace DossierApi {
     //  Ron.Ido.BM.Models.Dossier.DossierDataDto
     export interface IDossierDataDto {
         apply:IApplyData;
+        duplicate:IDuplicateData;
     }
 
     //  Ron.Ido.BM.Models.Dossier.ApplyData
     export interface IApplyData {
+        id:number;
+        barCode:string;
+        createTime:string;
+    }
+
+    //  Ron.Ido.BM.Models.Dossier.DuplicateData
+    export interface IDuplicateData {
         id:number;
         barCode:string;
         createTime:string;

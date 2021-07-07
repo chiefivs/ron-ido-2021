@@ -19,31 +19,16 @@ namespace Ron.Ido.BM.Commands.Dossier
 
     public class GetDossierCommandHandler : IRequestHandler<GetDossierCommand, DossierDataDto>
     {
-        private ODataService _odataService;
+        private DossierService _service;
 
-        public GetDossierCommandHandler(ODataService service)
+        public GetDossierCommandHandler(DossierService service)
         {
-            _odataService = service;
+            _service = service;
         }
 
         public Task<DossierDataDto> Handle(GetDossierCommand cmd, CancellationToken cancellationToken)
         {
-            return Task.Run(() => {
-                var result = _odataService.GetDto<EM.Entities.Dossier, DossierDataDto>(cmd.Id,
-                    new[] { 
-                        new ODataMapMemberConfig<EM.Entities.Dossier, DossierDataDto>(
-                            dto => dto.Apply,
-                            expr => expr.MapFrom(dossier => dossier.ApplyId != null
-                            ? new ApplyData {
-                                    Id =  dossier.ApplyId.Value,
-                                    BarCode = dossier.Apply.BarCode,
-                                    CreateTime = dossier.Apply.CreateTime.ToString("dd.MM.yyyy HH:mm")
-                                }
-                            : null))
-                    });
-
-                return result;
-            });
+            return Task.Run(() => _service.GetDossierById(cmd.Id));
         }
     }
 }

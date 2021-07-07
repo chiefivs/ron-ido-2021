@@ -61,8 +61,12 @@ export default class AcceptanceMainPage extends MainPageBase {
         });
     }
 
+    create() {
+        const page = <DossierMainPage>App.instance().openMainPage('dossier/dossier', '0');
+        page.createApply();
+    }
+
     open(item: AppliesAcceptanceApi.IAcceptancePageItemDto) {
-        console.log(item);
         const page = <DossierMainPage>App.instance().openMainPage('dossier/dossier', item.dossierId.toString());
         page.openApply();
     }
