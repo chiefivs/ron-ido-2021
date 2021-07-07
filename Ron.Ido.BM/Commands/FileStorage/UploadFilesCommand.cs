@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
+using Ron.Ido.BM.Models.FileStorage;
 using Ron.Ido.BM.Services;
 using Ron.Ido.Common.Interfaces;
 using System.Collections.Generic;
@@ -8,9 +9,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Ron.Ido.BM.Models.FileStorage
+namespace Ron.Ido.BM.Commands.FileStorage
 {
-    public class UploadFilesCommand: IRequest<IEnumerable<FileInfoDto>>
+    public class UploadFilesCommand : IRequest<IEnumerable<FileInfoDto>>
     {
         public IEnumerable<IFormFile> Files { get; private set; }
         public bool CreateImmediatelly { get; set; }
@@ -51,7 +52,8 @@ namespace Ron.Ido.BM.Models.FileStorage
                         fileInfo = _storage.CreateTempFile(bytes, Path.GetFileName(file.FileName), file.ContentType);
                     }
 
-                    list.Add(new FileInfoDto { 
+                    list.Add(new FileInfoDto
+                    {
                         Uid = fileInfo.Uid,
                         Name = fileInfo.Name,
                         Size = fileInfo.Size,

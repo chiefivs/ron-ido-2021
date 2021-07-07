@@ -1,9 +1,11 @@
 import * as ko from 'knockout';
+import { DossierApi } from '../../../codegen/webapi/dossierApi';
 import { Control, IControlParams } from '../../../modules/content';
 
 export interface IDossier {
     id: number;
     parts: ko.ObservableArray<DossierPartBase>;
+    update: (data: DossierApi.IDossierDataDto) => void;
 }
 
 export interface IDossierPartBaseParams extends IControlParams {
@@ -14,7 +16,7 @@ export abstract class DossierPartBase extends Control {
     isVisible = ko.observable(false);
     priority: number = 0;
 
-    private _owner: IDossier;
+    protected _owner: IDossier;
 
     constructor(params: IDossierPartBaseParams) {
         super(params);

@@ -46,7 +46,7 @@ export class Form<T> {
     
     private _saveApi:(item:T) => JQueryPromise<any>;
     private _validateApi:(item:T) => JQueryPromise<{[key:string]:string[]}>
-    private _fieldsFactory:{[key:string]:(item:T, form:Form<T>) => IFormField};
+    protected _fieldsFactory:{[key:string]:(item:T, form:Form<T>) => IFormField};
 
     private _validateTimeout = null;
 

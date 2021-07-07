@@ -38,10 +38,14 @@
             <tr>
                 <td data-bind="with:fileInfo">
                     <cmp-fileupload params="files:value, accept:$parents[1].acceptFilesExt, validate:$parents[1].validateSelection.bind($parents[1])"></cmp-fileupload>
-                    <span data-bind="text:$parents[1].fileDesc()"></span>
+                    <span data-bind="text:$parents[1].fileDesc(), visible:!$parents[1].fileUrl()"></span>
+                    <a data-bind="text:$parents[1].fileDesc(), visible:$parents[1].fileUrl(), attr:{href:$parents[1].fileUrl()}"></a>
                     <a class="glyphicon glyphicon-remove pull-right" style="color:red;" data-bind="click:$parents[1].deleteFile.bind($parents[1]), visible:value().length"></a>
                 </td>
             </tr>
         </table>
     </div>
+</div>
+<div class="pull-right">
+    <a data-bind="click:function(){$parents[4].addAttachment();}">добавить документ</a>
 </div>
