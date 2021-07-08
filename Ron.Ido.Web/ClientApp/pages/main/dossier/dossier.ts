@@ -47,6 +47,7 @@ export default class DossierMainPage extends MainPageBase implements IDossier {
 
     createApply() {
         this.apply.update(null);
+        this.pageTitle('заявление');
         this.apply.isVisible(true);
     }
 
@@ -61,6 +62,8 @@ export default class DossierMainPage extends MainPageBase implements IDossier {
     }
 
     update(data: DossierApi.IDossierDataDto) {
+        this.pageKey = data.id.toString();
+
         this.pageTitle(data.duplicate
             ? data.duplicate.barCode
             : data.apply ? data.apply.barCode : '');

@@ -25,6 +25,7 @@ export namespace DossierApi {
 
     //  Ron.Ido.BM.Models.Dossier.DossierDataDto
     export interface IDossierDataDto {
+        id:number;
         apply:IApplyData;
         duplicate:IDuplicateData;
     }
