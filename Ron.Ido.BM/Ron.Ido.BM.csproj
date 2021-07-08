@@ -18,8 +18,4 @@
     <ProjectReference Include="..\Ron.Ido.EM\Ron.Ido.EM.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Commands\FileStorage\" />
-  </ItemGroup>
-
 </Project>

@@ -23,9 +23,14 @@ export class Apply extends DossierPartBase implements IFormBlockHolder {
         this._getApplyPromise = this._loadApply(id);
     }
 
+    private isLoaded = false;
     afterRender() {
+        if(this.isLoaded)
+            return;
+
         this._getApplyPromise.done(() => {
             setTimeout(() => (this.form().item.creatorSurname as IFormBlockField).hasFocus(true));
+            this.isLoaded = true;
         });
     }
 
@@ -41,9 +46,10 @@ export class Apply extends DossierPartBase implements IFormBlockHolder {
         const saveApply = () => {
             const data = this.form().get();
             DossierApi.saveApply(data)
-                .done(id => {
+                .done(dossier => {
                     Popups.Alert.open('сохранение заявки', 'Заявка успешно сохранена');
-                    this._loadApply(id);
+                    this._loadApply(dossier.apply.id);
+                    this._owner.update(dossier);
                 })
                 .fail(() => Popups.Alert.open('ошибка сохранения заявки', 'Не удалось сохранить заявку'))
         };
@@ -64,6 +70,10 @@ export class Apply extends DossierPartBase implements IFormBlockHolder {
         };
 
         saveFile();
+    }
+
+    addAttachment() {
+        this.form().addAttachment();
     }
 
     private _loadApply(id:number) {
@@ -346,7 +356,10 @@ export class Apply extends DossierPartBase implements IFormBlockHolder {
 class ApplyForm extends Form<DossierApi.IApplyDto> {
     constructor(data: IODataForm<DossierApi.IApplyDto>) {
         super(data, DossierApi.saveApply, DossierApi.validateApply, {
-            'attachments': (apply, applyForm) => {
+            'attachments': (apply, parentForm) => {
+                const applyForm = parentForm as ApplyForm;
+                applyForm.errorsDic.attachments = ko.observableArray();
+
                 const validate = (att: DossierApi.IApplyAttachmentDto) => {
                     applyForm.item.attachments.value.valueHasMutated();
                     return jQuery.Deferred();
@@ -363,7 +376,8 @@ class ApplyForm extends Form<DossierApi.IApplyDto> {
                         item: att,
                         options:{}
                     };
-                    const form = new AttachmentForm(formdata, valueArr, /*applyForm.errorsDic.attachments,*/ save, validate);
+                    const form = new AttachmentForm(formdata, save, validate);
+                    form.applyForm = applyForm;
         
                     return form;
                 });
@@ -373,9 +387,14 @@ class ApplyForm extends Form<DossierApi.IApplyDto> {
                 applyForm.errorsDic.attachments.subscribe(errors => {
                     ko.utils.arrayForEach(valueArr(), att => att.errors([]));
 
-                    ko.utils.arrayForEach(errors, (err, index) => {
+                    ko.utils.arrayForEach(errors, err => {
+                        //  для прилагаемых документов ошибки приходят в виде "индекс:описание"
+                        //  где индекс - индекс документа в коллекции 
                         const parts = err.split(':');
-                        valueArr()[parseInt(parts[0])].errors.push(parts[1]);
+                        const index = parseInt(parts[0]);
+                        const message = parts[1];
+                        if(valueArr()[index])
+                            valueArr()[index].errors.push(message);
                     });
                 });
 
@@ -395,8 +414,6 @@ class ApplyForm extends Form<DossierApi.IApplyDto> {
                         const diff = ko.utils.compareArrays(origStamps, valueStamps);
                         if(ko.utils.arrayFirst(diff, d => d.status === 'added' || d.status === 'deleted'))
                             return true;
-
-                        console.log('diff', origStamps, valueStamps);
 
                         return !!ko.utils.arrayFirst(valueArr(), v => v.hasChanges());
                     })
@@ -426,25 +443,59 @@ class ApplyForm extends Form<DossierApi.IApplyDto> {
         apply.attachments = attachments;
         return apply;
     }
+
+    addAttachment() {
+        const attDto: DossierApi.IApplyAttachmentDto = {
+            attachmentTypeId: null,
+            attachmentTypeName: '',
+            description: '',
+            error: '',
+            fileInfo: [],
+            given: false,
+            required: false,
+            id: 0
+        };
+
+        const form = this._createAttachmentForm(attDto);
+
+        (this.item.attachments.value as ko.ObservableArray).push(form);
+    }
+
+    private _createAttachmentForm(att: DossierApi.IApplyAttachmentDto) {
+        const validate = (att: DossierApi.IApplyAttachmentDto) => {
+            this.item.attachments.value.valueHasMutated();
+            return jQuery.Deferred();
+        };
+
+        const save = (att: DossierApi.IApplyAttachmentDto) => {
+            return jQuery.Deferred();
+        };
+
+        att.fileInfo = ko.utils.arrayMap(att.fileInfo, fi => new FileData(fi));
+        const formdata: IODataForm<DossierApi.IApplyAttachmentDto> = {
+            item: att,
+            options:{}
+        };
+        const form = new AttachmentForm(formdata, save, validate);
+        form.applyForm = this;
+
+        return form;
+    }
 }
 
 class AttachmentForm extends Form<DossierApi.IApplyAttachmentDto> {
     acceptFilesExt = ['.pdf','.png','.docx'];
     fileDesc: ko.Computed<string>;
+    fileUrl: ko.Computed<string>;
 
     private maxSize = 10*1024*1024; //10 MB
-    private _collection: ko.ObservableArray<any>;
+    applyForm: ApplyForm;
 
     constructor(
         data: IODataForm<DossierApi.IApplyAttachmentDto>,
-        collection: ko.ObservableArray<any>,
-        //errors: ko.ObservableArray<string>,
         save:(att: DossierApi.IApplyAttachmentDto) => JQueryPromise<any>,
         validate:(att: DossierApi.IApplyAttachmentDto) => JQueryPromise<any>){
         super(data, save, validate);
-
-        this._collection = collection;
-        console.log('_collection', this._collection());
 
         this.fileDesc = ko.computed(() => {
             const files: FileData[] = this.item.fileInfo.value();
@@ -454,17 +505,13 @@ class AttachmentForm extends Form<DossierApi.IApplyAttachmentDto> {
             return `${files[0].name} (${files[0].sizeString})`;
         });
 
-        // errors.subscribe(vals => {
-        //     if(!data.item.attachmentTypeId)
-        //         return [];
+        this.fileUrl = ko.computed(() => {
+            const files: FileData[] = this.item.fileInfo.value();
+            if(!files.length || !files[0].uid)
+                return '';
 
-        //     const filtered = ko.utils.arrayFilter(vals, v => {
-        //         const parts = v.split(':');
-        //         return parseInt(parts[0]) === data.item.attachmentTypeId;
-        //     });
-
-        //     this.errors(ko.utils.arrayMap(filtered, f => f.split(':').pop()));
-        // });
+            return `api/storage/download/${files[0].uid}`;
+        });
     }
     
     deleteFile() {
@@ -472,8 +519,7 @@ class AttachmentForm extends Form<DossierApi.IApplyAttachmentDto> {
     }
 
     deleteAttachment() {
-        this._collection.remove(this);
-        console.log('deleteAttachment', this._collection());
+        (this.applyForm.item.attachments.value as ko.ObservableArray).remove(this);
     }
 
     validateSelection(files:FileData[]) {

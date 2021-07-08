@@ -9,13 +9,13 @@ import { Conclusion } from './dossier-conclusion';
 
 export default class DossierMainPage extends MainPageBase implements IDossier {
     id: number;
-    data = ko.observable<DossierApi.IDossierDataDto>();
     parts: ko.ObservableArray<DossierPartBase>;
     sortedParts: ko.Computed<DossierPartBase[]>;
 
-    apply = ko.observable<DossierPartDescriptor<DossierApi.IApplyData>>();
-    comments = ko.observable<DossierPartDescriptor<string>>();
-    conclusions = ko.observableArray<DossierPartDescriptor<any>>();
+    apply: DossierPartDescriptor<DossierApi.IApplyData>; 
+    duplicate: DossierPartDescriptor<DossierApi.IDuplicateData>;
+    //comments = ko.observable<DossierPartDescriptor<string>>();
+    //conclusions = ko.observableArray<DossierPartDescriptor<any>>();
 
     private _loadDossierPromise: JQueryPromise<DossierApi.IDossierDataDto>;
     private _dataPage: DossierDataLeftPage;
@@ -36,34 +36,49 @@ export default class DossierMainPage extends MainPageBase implements IDossier {
         this._dataPage.isVisible(false);
         this.leftPages([<ILeftPage>this._dataPage]);
 
+        this.apply= new DossierPartDescriptor<DossierApi.IApplyData>(this, (data) => new Apply(data ? data.id : 0, this));
+        this.duplicate = new DossierPartDescriptor<DossierApi.IDuplicateData>(this, (data) => null);  //TODO: здесь реализовать создание страницы дубликата
+
         if(this.id) {
             this._loadDossierPromise = DossierApi.getDossier(this.id)
-            .done(data => {
-                this.pageTitle(data.apply.barCode);
-
-                this.data(data);
-                this._dataPage.isVisible(true);
-                App.instance().activeLeftPage(this._dataPage);
-
-                this.apply(new DossierPartDescriptor(data.apply, this, () => new Apply(data.apply.id, this)));
-                // this.comments(new DossierPartDescriptor('Комментарии', this, () => new Comments(this)));
-
-                // this.conclusions.push(
-                //     new DossierPartDescriptor('123', this, () => new Conclusion(this)),
-                //     new DossierPartDescriptor('45', this, () => new Conclusion(this))
-                // )
-            });
+            .done(data => this.update(data));
         }
+    }
+
+    createApply() {
+        this.apply.update(null);
+        this.pageTitle('заявление');
+        this.apply.isVisible(true);
     }
 
     openApply(){
         if(!this._loadDossierPromise)
             return;
 
-        this._loadDossierPromise.done(() => {
-            if(this.apply())
-                this.apply().isVisible(true);
+        this._loadDossierPromise.done(data => {
+            this.apply.update(data.apply);
+            this.apply.isVisible(true);
         });
+    }
+
+    update(data: DossierApi.IDossierDataDto) {
+        this.pageKey = data.id.toString();
+
+        this.pageTitle(data.duplicate
+            ? data.duplicate.barCode
+            : data.apply ? data.apply.barCode : '');
+
+        this._dataPage.isVisible(true);
+        App.instance().activeLeftPage(this._dataPage);
+
+        this.apply.update(data.apply);
+        this.duplicate.update(data.duplicate);
+        // this.comments(new DossierPartDescriptor('Комментарии', this, () => new Comments(this)));
+
+        // this.conclusions.push(
+        //     new DossierPartDescriptor('123', this, () => new Conclusion(this)),
+        //     new DossierPartDescriptor('45', this, () => new Conclusion(this))
+        // )
     }
 
     afterActivate() {
@@ -83,15 +98,15 @@ class DossierDataLeftPage extends LeftPageBase {
 }
 
 class DossierPartDescriptor<TPartData> {
-    item: TPartData;
+    item: ko.Observable<TPartData>;
     isVisible = ko.observable(false);
     allowOpen: ko.Computed<boolean>;
 
-    private _create: () => DossierPartBase;
+    private _create: (data: TPartData) => DossierPartBase;
     private _part: DossierPartBase = null;
 
-    constructor(item: TPartData, owner: DossierMainPage, create: () => DossierPartBase) {
-        this.item = item;
+    constructor(owner: DossierMainPage, create: (data: TPartData) => DossierPartBase) {
+        this.item = ko.observable(null);
         this._create = create;
 
         this.allowOpen = ko.computed(() => {
@@ -100,11 +115,15 @@ class DossierPartDescriptor<TPartData> {
 
         this.isVisible.subscribe(visible => {
             if(visible) {
-                this._part = this._create();
+                this._part = this._create(this.item());
                 owner.parts.push(this._part);
             } else if(this._part && this._part.close()) {
                 this._part = null;
             }
         });
+    }
+
+    update(data: TPartData) {
+        this.item(data);
     }
 }

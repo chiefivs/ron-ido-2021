@@ -1,0 +1,860 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn://rostelekom.ru/LaborVeteran/1.0.1" targetNamespace="urn://rostelekom.ru/LaborVeteran/1.0.1" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xsd:element name="request" type="tns:requestType">
+    <xsd:annotation>
+      <xsd:documentation>Корневой элемент запроса</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:complexType name="requestType">
+    <xsd:annotation>
+      <xsd:documentation>Root request element</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="Service" type="tns:FormStepServiceType">
+        <xsd:annotation>
+          <xsd:documentation>Служебная информация</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="ApplicantInformation" type="tns:ApplicantInformationType">
+        <xsd:annotation>
+          <xsd:documentation>Заявитель (лицо, представляющее интересы обладателя документа об иностранном образовании)</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="ResultObtainingForm" type="tns:ResultObtainingFormType">
+        <xsd:annotation>
+          <xsd:documentation>Форма получения результата</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+            <xsd:element name="MethodOfReturningDocuments" type="tns:MethodOfReturningDocumentsType">
+        <xsd:annotation>
+          <xsd:documentation>Способ возрата документов</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="DocumentHolder" type="tns:DocumentHolderType">
+        <xsd:annotation>
+          <xsd:documentation>Обладатель документа</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="DocumentForRecognition" type="tns:DocumentForRecognitionType">
+        <xsd:annotation>
+          <xsd:documentation>Документ представленный к признанию</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="InformationEducation" type="tns:InformationEducationType">
+        <xsd:annotation>
+          <xsd:documentation>Сведения о полученном образовании</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Documents" type="tns:DocumentsType" minOccurs="0" maxOccurs="1">
+        <xsd:annotation>
+          <xsd:documentation>Электронные документы по делу</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+
+
+  <xsd:complexType name="FormStepServiceType">
+    <xsd:annotation>
+      <xsd:documentation>Служебная информация</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="currentDate" type="tns:date">
+        <xsd:annotation>
+          <xsd:documentation>Текущая дата</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="userType" type="tns:userTypeType">
+        <xsd:annotation>
+          <xsd:documentation>Тип текущего пользователя</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="orderId" type="xsd:long">
+        <xsd:annotation>
+          <xsd:documentation>Номер заявления</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="orderStatusCode" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Код режима внесения данных</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="TargetId" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Код цели обращения</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="TargetName" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Наименование цели обращения</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="DepartmentId" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Код ведомства</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="DepartmentName" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Наименование ведомства</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:simpleType name="userTypeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="PERSON_RF">
+        <xsd:annotation>
+          <xsd:documentation>Физическое лицо</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+
+  <xsd:complexType name="ApplicantInformationType">
+    <xsd:annotation>
+      <xsd:documentation>Заявитель (лицо, представляющее интересы обладателя документа об иностранном образовании)</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="CreatorSurname" type="tns:string-60">
+        <xsd:annotation>
+          <xsd:documentation>Фамилия</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CreatorFirstName" type="tns:string-60">
+        <xsd:annotation>
+          <xsd:documentation>Имя</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CreatorLastName" type="tns:string-60" minOccurs="0" maxOccurs="1">
+        <xsd:annotation>
+          <xsd:documentation>Отчество</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CreatorGender" type="tns:CreatorGenderType">
+        <xsd:annotation>
+          <xsd:documentation>Пол</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CreatorBirthDate" type="xsd:date">
+        <xsd:annotation>
+          <xsd:documentation>Дата рождения</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CreatorBirthPlace" type="tns:string-255">
+        <xsd:annotation>
+          <xsd:documentation>Место рождения</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CreatorCityzenshipId" type="tns:string-50">
+        <xsd:annotation>
+          <xsd:documentation>Гражданство</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CreatorPassportKindType" type="tns:string-60">
+        <xsd:annotation>
+          <xsd:documentation>Вид документа, удостоверяющего личность</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CreatorPassportReq" type="tns:string-50" >
+        <xsd:annotation>
+          <xsd:documentation>Реквизиты документа, удостоверяющего личность</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+          <xsd:element name="CreatorCountryId" type="tns:string-50" >
+        <xsd:annotation>
+          <xsd:documentation>Страна жительства</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+              <xsd:element name="CreatorMailIndex" type="tns:string-10" >
+        <xsd:annotation>
+          <xsd:documentation>Почтовый индекс</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+              <xsd:element name="CreatorCityName" type="tns:string-100" >
+        <xsd:annotation>
+          <xsd:documentation>Населенный пункт</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+              <xsd:element name="CreatorStreet" type="tns:string-100" >
+        <xsd:annotation>
+          <xsd:documentation>Улица</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+            <xsd:element name="CreatorBlock" type="tns:string-10" >
+        <xsd:annotation>
+          <xsd:documentation>Дом</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    <xsd:element name="CreatorCorpus" type="tns:string-10" >
+        <xsd:annotation>
+          <xsd:documentation>Корпус</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+        <xsd:element name="CreatorBuild" type="tns:string-10" >
+        <xsd:annotation>
+          <xsd:documentation>Строение</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+        <xsd:element name="CreatorFlat" type="tns:string-10" >
+        <xsd:annotation>
+          <xsd:documentation>Квартира</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    <xsd:element name="CreatorPhone" type="tns:string-50" >
+        <xsd:annotation>
+          <xsd:documentation>Телефон</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+        <xsd:element name="CreatorEmail" type="xsd:string" >
+        <xsd:annotation>
+          <xsd:documentation>Электронная почта</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="ByWarrant" type="xsd:boolean" >
+        <xsd:annotation>
+          <xsd:documentation>По доверенности</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+          <xsd:element name="WarrantReq" type="tns:string-250" >
+        <xsd:annotation>
+          <xsd:documentation>Номер доверенности</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+              <xsd:element name="WarrantDate" type="xsd:date" >
+        <xsd:annotation>
+          <xsd:documentation>Дата доверенности</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+              <xsd:element name="WarrantTerm" type="xsd:date" >
+        <xsd:annotation>
+          <xsd:documentation>Действительна до</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  
+  <xsd:simpleType name="CreatorGenderType">
+     <xsd:restriction base="xsd:string">
+      <xsd:enumeration value=""/>
+			<xsd:enumeration value="Мужской"/>
+			<xsd:enumeration value="Женский"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+<xsd:complexType name="ResultObtainingFormType">
+    <xsd:annotation>
+      <xsd:documentation>Укажите форму получения результата</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="DeliveryFormEmail" type="xsd:boolean">
+        <xsd:annotation>
+          <xsd:documentation>Посредством электронной почты</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+            <xsd:element name="DeliveryFormEPGU" type="xsd:boolean">
+        <xsd:annotation>
+          <xsd:documentation>В личный кабинет</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>  
+
+
+<xsd:complexType name="MethodOfReturningDocumentsType">
+    <xsd:annotation>
+      <xsd:documentation>Способ возврата документов</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="ReturnOriginal" type="tns:MethodReturningType">
+        <xsd:annotation>
+          <xsd:documentation>Укажите способ получения документов после сверки</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+            <xsd:element name="ResidenceАddress" type="xsd:boolean">
+        <xsd:annotation>
+          <xsd:documentation>Адрес проживания совпадает с адресом оправки?</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+     <xsd:element name="PostAddress" type="tns:string-255">
+        <xsd:annotation>
+          <xsd:documentation>Адрес почтового отправления</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>  
+
+  <xsd:simpleType name="MethodReturningType">
+    <xsd:restriction base="xsd:byte">
+      <xsd:enumeration value="1">
+        <xsd:annotation>
+          <xsd:documentation>Забрать лично</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="2">
+        <xsd:annotation>
+          <xsd:documentation>Доставка курьером (за счет заявителя)</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="3">
+        <xsd:annotation>
+          <xsd:documentation>Доставка по почте (за счет Федеральной службы)</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+<xsd:complexType name="DocumentHolderType">
+    <xsd:annotation>
+      <xsd:documentation>Обладатель документа</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="OwnerSurname" type="tns:string-60">
+        <xsd:annotation>
+          <xsd:documentation>Фамилия</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="OwnerFirstName" type="tns:string-60">
+        <xsd:annotation>
+          <xsd:documentation>Имя</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="OwnerLastName" type="tns:string-60">
+        <xsd:annotation>
+          <xsd:documentation>Отчество</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="OwnerGender" type="tns:CreatorGenderType">
+        <xsd:annotation>
+          <xsd:documentation>Пол</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="OwnerBithDate" type="xsd:date">
+        <xsd:annotation>
+          <xsd:documentation>Дата рождения</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+       <xsd:element name="OwnerBirthPlace" type="tns:string-255">
+        <xsd:annotation>
+          <xsd:documentation>Место рождения</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="OwnerCityzenshipId" type="tns:string-50">
+        <xsd:annotation>
+          <xsd:documentation>Гражданство</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="OwnerCountryId" type="tns:string-50">
+        <xsd:annotation>
+          <xsd:documentation>Страна жительства</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+        <xsd:element name="OwnerPassportKindType" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Вид документа, удостоверяющего личность</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="OwnerPassportReq" type="tns:string-50">
+        <xsd:annotation>
+          <xsd:documentation>Реквизиты документа, удостоверяющего личность</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+        <xsd:element name="OwnerCityName" type="tns:string-100">
+        <xsd:annotation>
+          <xsd:documentation>Населенный пункт</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="OwnerMailIndex" type="tns:string-10">
+        <xsd:annotation>
+          <xsd:documentation>Индекс</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="OwnerStreet" type="tns:string-100">
+        <xsd:annotation>
+          <xsd:documentation>Улица</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element> 
+      <xsd:element name="OwnerBlock" type="tns:string-10">
+        <xsd:annotation>
+          <xsd:documentation>Дом</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>  
+       <xsd:element name="OwnerCorpus" type="tns:string-10">
+        <xsd:annotation>
+          <xsd:documentation>Корпус</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element> 
+             <xsd:element name="OwnerBuild" type="tns:string-10">
+        <xsd:annotation>
+          <xsd:documentation>Строение</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element> 
+       <xsd:element name="OwnerFlat" type="tns:string-10">
+        <xsd:annotation>
+          <xsd:documentation>Квартира</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element> 
+         <xsd:element name="OwnerPhone" type="tns:string-50">
+        <xsd:annotation>
+          <xsd:documentation>Телефон</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element> 
+    </xsd:sequence>
+  </xsd:complexType>  
+  
+    
+  <xsd:complexType name="DocumentForRecognitionType">
+    <xsd:annotation>
+      <xsd:documentation>Документ, представленный к признанию</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="SchoolCountryId" type="tns:string-50">
+        <xsd:annotation>
+          <xsd:documentation>Страна выдачи</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="DocTypeId" type="tns:DocType">
+        <xsd:annotation>
+          <xsd:documentation>Уровень образования</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>            
+      <xsd:element name="DocBlankNum" type="tns:string-20">
+        <xsd:annotation>
+          <xsd:documentation>Бланк: серия, номер</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>              
+      <xsd:element name="DocRegNum" type="tns:string-20">
+        <xsd:annotation>
+          <xsd:documentation>Регистрационный номер</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>                
+       <xsd:element name="DocDate" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Дата выдачи</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="DocFullName" type="tns:string-150">
+        <xsd:annotation>
+          <xsd:documentation>Фамилия, имя, отчество заявителя по документу об образовании</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>      
+       <xsd:element name="SchoolName" type="tns:string-50">
+        <xsd:annotation>
+          <xsd:documentation>Наименование учебного заведения</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>       
+       <xsd:element name="SchoolTypeId" type="tns:SchoolType">
+        <xsd:annotation>
+          <xsd:documentation>Тип учебного заведения</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>     
+       <xsd:element name="SchoolPostIndex" type="tns:string-50">
+        <xsd:annotation>
+          <xsd:documentation>Почтовый индекс</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>       
+      <xsd:element name="SchoolCountryId" type="tns:string-50">
+        <xsd:annotation>
+          <xsd:documentation>Страна выдачи</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>      
+        <xsd:element name="SchoolCityName" type="tns:string-100">
+        <xsd:annotation>
+          <xsd:documentation>Город, область, район</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>   
+       <xsd:element name="SchoolsAddress" type="tns:string-50">
+        <xsd:annotation>
+          <xsd:documentation>Улица, дом</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>    
+       <xsd:element name="SchoolsPhone" type="tns:string-50">
+        <xsd:annotation>
+          <xsd:documentation>Телефон</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>    
+       <xsd:element name="SchoolsFax" type="tns:string-20">
+        <xsd:annotation>
+          <xsd:documentation>Факс</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>    
+        <xsd:element name="SchoolsEmail" type="tns:string-100">
+        <xsd:annotation>
+          <xsd:documentation>Электронная почта</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>    
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:simpleType name="DocType">
+    <xsd:restriction base="xsd:string">  
+      <xsd:enumeration value=""/>
+			<xsd:enumeration value="Основное общее образование"/>
+			<xsd:enumeration value="Среднее общее образование"/>
+      <xsd:enumeration value="Среднее профессиональное образование"/>
+      <xsd:enumeration value="Высшее образование - бакалавриат"/>
+      <xsd:enumeration value="Высшее образование - специалитет"/>
+      <xsd:enumeration value="Высшее образование - магистратура"/>
+      <xsd:enumeration value="Высшее образование - подготовка кадров высшей квалификации"/>   
+    </xsd:restriction>
+  </xsd:simpleType>
+<xsd:simpleType name="SchoolType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value=""/>
+			<xsd:enumeration value="Государственное"/>
+			<xsd:enumeration value="Негосударственное"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+
+  
+ <xsd:complexType name="InformationEducationType">
+    <xsd:annotation>
+      <xsd:documentation>Сведения о полученном образовании</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="BaseLearnDateBegin" type="xsd:date">
+        <xsd:annotation>
+          <xsd:documentation>Дата начала обучения по общеобразовательной программе (аттестат)</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+            <xsd:element name="BaseLearnDateEnd" type="xsd:date">
+        <xsd:annotation>
+          <xsd:documentation>Дата окончания обучения по общеобразовательной программе (аттестат)</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    <xsd:element name="SpeshialLearnDateBegin" type="xsd:date">
+        <xsd:annotation>
+          <xsd:documentation>Дата начала обучения по программе профессионального образования</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+  <xsd:element name="SpeshialLearnDateEnd" type="xsd:date">
+        <xsd:annotation>
+          <xsd:documentation>Дата окончания обучения по программе профессионального образования</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+  <xsd:element name="LearnSpesialization" type="tns:string-200">
+        <xsd:annotation>
+          <xsd:documentation>Направление (специализация)</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+  <xsd:element name="SpecialLearnFormId" type="tns:SpecialLearnFormType">
+        <xsd:annotation>
+          <xsd:documentation>Форма обучения</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+  <xsd:element name="AimId" type="tns:AimType">
+        <xsd:annotation>
+          <xsd:documentation>Цель получения документа о признание</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+  <xsd:element name="Other" type="tns:string-500">
+        <xsd:annotation>
+          <xsd:documentation>Подробнее о цели получения документа о признание</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>   
+  <xsd:simpleType name="SpecialLearnFormType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value=""/>
+			<xsd:enumeration value="дневная"/>
+			<xsd:enumeration value="заочная"/>
+      <xsd:enumeration value="вечерняя"/>
+      <xsd:enumeration value="экстернат"/>
+      <xsd:enumeration value="дистанционная"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="AimType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value=""/>
+			<xsd:enumeration value="(АП) Продолжение обучения в Российской Федерации"/>
+			<xsd:enumeration value="(ПП) Осуществление профессиональной деятельности в Российской Федерации"/>
+      <xsd:enumeration value="(АП) и (ПП)"/>
+      <xsd:enumeration value="-"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="DocumentsType">
+    <xsd:annotation>
+      <xsd:documentation>Электронные документы по делу</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="SignatureNotary" type="xsd:boolean">
+        <xsd:annotation>
+          <xsd:documentation>Документы заверенные электронной подписью нотариуса?</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CopyDoc_1" type="tns:DocInfoType" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>Доверенность от заявителя, выданная обладателем</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CopyDoc_2" type="tns:DocInfoType" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>Открепленная подпись</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CopyDoc_3" type="tns:DocInfoType" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>Копия документа, удостоверяющего личность заявителя</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CopyDoc_4" type="tns:DocInfoType" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>Открепленная подпись</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CopyDoc_5" type="tns:DocInfoType" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>Копия документа, удостоверяющего личность обладателя документа об образовании</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CopyDoc_6" type="tns:DocInfoType" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>Открепленная подпись</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CopyDoc_7" type="tns:DocInfoType" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>Оригинал иностранного документа об образовании</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CopyDoc_8" type="tns:DocInfoType" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>Открепленная подпись</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CopyDoc_9" type="tns:DocInfoType" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>Открепленная подпись</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CopyDoc_10" type="tns:DocInfoType" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>Открепленная подпись</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CopyDoc_11" type="tns:DocInfoType" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>Копия документа об образовании с переводом на русский язык, заверенная надлежащим образом</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CopyDoc_12" type="tns:DocInfoType" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>Открепленная подпись</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CopyDoc_13" type="tns:DocInfoType" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>Копия приложения документа об образовании с переводом на русский язык, заверенная надлежащим образом</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CopyDoc_14" type="tns:DocInfoType" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>Открепленная подпись</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CopyDoc_15" type="tns:DocInfoType" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>Копия документа о предыдущем образовании</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CopyDoc_16" type="tns:DocInfoType" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>Открепленная подпись</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CopyDoc_17" type="tns:DocInfoType" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>Информация о наличии лицензии у образовательного учреждения на период обучения</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CopyDoc_18" type="tns:DocInfoType" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>Информация о наличии аккредитации у образовательного учреждения на период обучения</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CopyDoc_19" type="tns:DocInfoType" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>Справка из образовательного учреждения, подтверждающая факт обучения и выдачи документа иностранного государства об образовании</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CopyDoc_20" type="tns:DocInfoType" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>Открепленная подпись</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CopyDoc_21" type="tns:DocInfoType" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>Сведения о профессиональной деятельности</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CopyDoc_22" type="tns:DocInfoType" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>Открепленная подпись</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CopyDoc_23" type="tns:DocInfoType" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>Копия документа о предыдущем образовании</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CopyDoc_24" type="tns:DocInfoType" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>Открепленная подпись</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="DocInfoType">
+    <xsd:annotation>
+      <xsd:documentation>Электронные документы по делу</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="CodeDocument" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Код документа</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Name" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Имя файла документа</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="URL" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Относительный путь к файлу внутри архива</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="type" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>MIME-тип контента</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  
+  <xsd:simpleType name="string-10">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="10"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="string-20">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="20"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="string-50">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="50"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="string-60">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="60"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="string-100">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="100"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="string-150">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="150"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="string-200">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="200"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="string-250">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="250"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="string-255">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="255"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="string-500">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="500"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="string-2048">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="2048"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="date">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="10"/>
+      <xsd:pattern value="[0-9]{2}[.][0-9]{2}[.][0-9]{4}"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="CreatorEmail">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[^@]+@[^\.]+\..+"/>
+      <xsd:maxLength value="100"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="DocDate">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[0-9]{2}[.][0-9]{2}[.][0-9]{4}"/>
+      <xsd:maxLength value="10"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="FormResponseType">
+    <xsd:annotation>
+      <xsd:documentation>Ответ на подачу заявления или запроса на отмену заявления или текстового сообщения от заявителя в ведомство</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="changeOrderInfo" type="tns:changeOrderInfoType"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="FormResponse" type="tns:FormResponseType"/>
+  <xsd:complexType name="changeOrderInfoType">
+    <xsd:annotation>
+      <xsd:documentation>Информация для изменения статуса заявления в ЛК ЕПГУ</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="orderId" type="tns:orderIdType"/>
+      <xsd:element name="statusCode" type="tns:statusCodeType"/>
+      <xsd:element name="comment" type="tns:string-2048" minOccurs="0"/>
+      <xsd:element name="cancelAllowed" type="xsd:boolean" minOccurs="0"/>
+      <xsd:element name="sendMessageAllowed" type="xsd:boolean" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="orderIdType">
+    <xsd:sequence>
+      <xsd:annotation>
+        <xsd:documentation>Номер заявки в ЛК ЕПГУ</xsd:documentation>
+      </xsd:annotation>
+      <xsd:element name="pguId" type="xsd:long"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="statusCodeType">
+    <xsd:annotation>
+      <xsd:documentation>Новый статус заявления</xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice>
+      <xsd:element name="orgCode" type="tns:string-20">
+        <xsd:annotation>
+          <xsd:documentation>Код ведомственного статуса</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="techCode" type="tns:string-20">
+        <xsd:annotation>
+          <xsd:documentation>Код статуса ЕПГУ</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:complexType>
+</xsd:schema>

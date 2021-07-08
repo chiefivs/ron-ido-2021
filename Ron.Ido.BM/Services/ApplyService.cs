@@ -6,13 +6,14 @@ using Ron.Ido.BM.Models.OData;
 using Ron.Ido.Common.Interfaces;
 using Ron.Ido.EM;
 using Ron.Ido.EM.Entities;
+using Ron.Ido.EM.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Ron.Ido.BM.Services
 {
-    public class ApplyService: ODataService
+    public class ApplyService: DossierService
     {
         private IFileStorageService _storage;
         private FileStorageHelper _helper;
@@ -25,7 +26,7 @@ namespace Ron.Ido.BM.Services
 
         public ApplyDto GetApplyDto(long id)
         {
-            var apply = AppDbContext.Applies.Find(id) ?? new EM.Entities.Apply();
+            var apply = AppDbContext.Applies.Find(id) ?? new Apply();
             var applyMapper = new Mapper(new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<EM.Entities.Apply, ApplyDto>()
@@ -73,7 +74,7 @@ namespace Ron.Ido.BM.Services
             return applyDto;
         }
 
-        public long SaveApplyDto(ApplyDto applyDto)
+        public DossierDataDto SaveApplyDto(ApplyDto applyDto)
         {
             var applyMapper = new Mapper(new MapperConfiguration(cfg =>
             {
@@ -87,7 +88,14 @@ namespace Ron.Ido.BM.Services
             applyMapper.Map(applyDto, apply);
 
             if (apply.Id == 0)
+            {
+                apply.PrimaryBarCode = apply.BarCode = CreateBarCode(3);
+                apply.CreateTime = DateTime.Now;
+                //TODO: присвоение статуса должно происходить через ApplyStatusService и сопровождаться событием изменения статуса
+                apply.StatusId = AppDbContext.ApplyStatuses.First(a => a.StatusEnumValue == ApplyStatusEnum.NO_VALIDATED.ToString()).Id;
+                apply.StatusChangeTime = apply.CreateTime = DateTime.Now;
                 AppDbContext.Applies.Add(apply);
+            }
 
             AppDbContext.SaveChanges();
 
@@ -167,12 +175,13 @@ namespace Ron.Ido.BM.Services
                         uidsForRemove.Add(fileInfo.Uid);
                         AppDbContext.FileInfos.Remove(fileInfo);
                         AppDbContext.SaveChanges();
-                        //_removeFile(fileInfo.Uid);
                     }
 
                     AppDbContext.SaveChanges();
                 }
             }
+
+            //TODO: здесь должно быть событие изменения статуса, если заявление новое
 
             //  файлы в хранилище модифицируем только после успешного обновления БД
             foreach (var uid in uidsForSave)
@@ -181,16 +190,35 @@ namespace Ron.Ido.BM.Services
             foreach (var uid in uidsForRemove)
                 _storage.DeleteFile(uid);
 
-            return apply.Id;
+            var dossier = apply.Dossiers.FirstOrDefault(d => d.DuplicateId == null);
+            if(dossier == null)
+            {
+                dossier = new Dossier
+                {
+                    ApplyId = apply.Id
+                };
+            }
+
+            return GetDossierByApplyId(apply.Id);
         }
 
-        private void _removeFile(Guid uid)
-        {
-            _storage.DeleteFile(uid);
-            var fileinfo = AppDbContext.FileInfos.Find(uid);
-            if (fileinfo != null)
-                AppDbContext.FileInfos.Remove(fileinfo);
 
+        private string CreateBarCode(int diapason = 3)
+        {
+            var last = AppDbContext.Applies
+                .Where(a => !string.IsNullOrEmpty(a.BarCode))
+                .Select(a => new { barcode = a.BarCode, time = a.AcceptTime != null ? a.AcceptTime.Value : a.CreateTime })
+                .OrderByDescending(a => a.time)
+                .FirstOrDefault();
+
+            var now = DateTime.Now;
+
+            if (last == null || last.time.Year < now.Year)
+                return $"{diapason}{now:yyMMdd}00001";
+
+            var num = int.Parse(last.barcode.Substring(7)) + 1;
+
+            return $"{diapason}{now:yyMMdd}{num:00000}";
         }
     }
 }
