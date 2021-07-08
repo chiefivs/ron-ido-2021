@@ -53,7 +53,8 @@ export interface IDuplicatePartBaseParams extends IControlParams {
 
 
 export class Duplicate extends DuplicatePartBase implements IDuplicateFieldBlockHolder {
-    form: DuplicateForm;
+    form:  DuplicateForm;
+    ready: ko.Observable<boolean>;
     blocks = ko.observableArray<DuplicateFieldsBlock>();
 
     private _getDuplicatePromise: JQueryPromise<IODataForm<DuplicatesSearchApi.IDuplicateDto>>
@@ -63,11 +64,28 @@ export class Duplicate extends DuplicatePartBase implements IDuplicateFieldBlock
             templatePath: 'pages/main/duplicates/duplicate-main.html',
             owner: owner
         });
-
+        this.ready = ko.observable(false);
         this.priority = 0;
         this._getDuplicatePromise = DuplicatesSearchApi.getDuplicate(id).done(data => {
             this.form = new DuplicateForm(data);
+            this.ready(true);
             this._setBlocks();
+        });
+    }
+
+
+    save() {
+        this.form.save().done(()=> { 
+            this.form.commit(); 
+            for(const key in this.form.item) {
+                if ( this.form.item[key].hasChanges())
+                {
+                    var hc = this.form.item[key].hasChanges;
+                    hc();
+                    alert(key);
+                }
+            }
+    
         });
     }
 
@@ -78,7 +96,7 @@ export class Duplicate extends DuplicatePartBase implements IDuplicateFieldBlock
     }
 
     private _setBlocks() {
-        const path = 'pages/main/dossier/field-templates/';
+        const path = 'pages/main/duplicates/field-templates/';
         const textbox = Utils.getNodesFromFile(`${path}textbox-field.html`);
         const datepicker = Utils.getNodesFromFile(`${path}datepicker-field.html`);
         const checkbox = Utils.getNodesFromFile(`${path}checkbox-field.html`);
@@ -255,8 +273,8 @@ class DuplicateFieldsBlock implements IDuplicateFieldBlockHolder {
     
                 return true;
             }
-
-            f.readonly = ko.observable(false);
+            if  (!f.readonly)
+                f.readonly = ko.observable(false);
             f.hasFocus = ko.observable(false);
             f.visible = ko.observable(true);
             f.hasFocus.subscribe(has => { if(has) this.isExpanded(true); });

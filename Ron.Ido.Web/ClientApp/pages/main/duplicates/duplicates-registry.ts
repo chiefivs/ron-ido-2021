@@ -82,8 +82,8 @@ class DuplicatesSearchLeftPage extends LeftPageBase {
 
         this.owner = owner;
         this.filters = [
-            { title: 'ФИО заявителя', field: 'creatorSurname', aliases: ['creatorFirstname', 'creatorLastname'], valueType: 'string', filterType: ODataFilterTypeEnum.Contains },
-            { title: 'ФИО владельца', field: 'ownerSurname', aliases: ['ownerFirstName', 'ownerLastName'], valueType: 'string', filterType: ODataFilterTypeEnum.Contains },
+            { title: 'ФИО заявителя', field: 'creatorFullName', valueType: 'string', filterType: ODataFilterTypeEnum.Contains },
+            { title: 'ФИО владельца', field: 'ownerFullName', aliases: ['ownerFirstName', 'ownerLastName'], valueType: 'string', filterType: ODataFilterTypeEnum.Contains },
             { title: 'Номер заявления', field: 'barCode', aliases: ['BarCode'], valueType: 'string', filterType: ODataFilterTypeEnum.Contains },
             { title: 'Дата создания', field: 'createTime', valueType: 'date', filterType: ODataFilterTypeEnum.BetweenLeft },
             { title: 'Статусы', field: 'statuses', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.statusesOptions },

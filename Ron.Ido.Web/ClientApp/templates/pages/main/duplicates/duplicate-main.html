@@ -1,25 +1,34 @@
-<div data-bind="foreach:blocks">
-    <div data-bind="visible:isVisible">
-        <!-- ko ifnot:containerOnly -->
-        <cmp-expander params="title:title, templateId:'dossier-apply-block', data:$data, expanded:isExpanded, fixed:false, afterExpand:afterExpand"></cmp-expander>
-        <!-- /ko -->
-        <!-- ko if:containerOnly -->
-        <label data-bind="text:title"></label>
-        <div data-bind="foreach:fields">
-            <div data-bind="template:{nodes:templateNodes, data:$data}, visible:visible"></div>
+<div data-bind="if:ready">
+    <div class="pull-right" data-bind="with:form">
+        <a class="btn btn-primary" data-bind="click:reset, css:{disabled:!hasChanges()}">ОТМЕНИТЬ</a>
+        <a class="btn btn-primary"
+            data-bind="click:$parent.save.bind($parent), css:{disabled:!hasChanges() || hasErrors()}">СОХРАНИТЬ</a>
+    </div>
+    <div data-bind="foreach:blocks" style="position:absolute; top:30px; bottom:0; left:0; right: 0; overflow: auto;">
+        <div data-bind="visible:isVisible">
+            <!-- ko ifnot:containerOnly -->
+            <cmp-expander
+                params="title:title, templateId:'duplicate-block', data:$data, expanded:isExpanded, fixed:false, afterExpand:afterExpand">
+            </cmp-expander>
+            <!-- /ko -->
+            <!-- ko if:containerOnly -->
+            <label data-bind="text:title"></label>
+            <div data-bind="foreach:fields">
+                <div data-bind="template:{nodes:templateNodes, data:$data}, visible:visible"></div>
+            </div>
+            <!-- /ko -->
         </div>
-        <!-- /ko -->
-   </div>
+    </div>
 </div>
 
-<script type="text/html" id="dossier-apply-block">
+<script type="text/html" id="duplicate-block">
     <div style="padding-left:20px;" data-bind="foreach:fields">
         <div data-bind="template:{nodes:templateNodes, data:$data}, visible:visible"></div>
     </div>
     <div style="padding-left:20px;" data-bind="foreach:blocks">
         <div data-bind="visible:isVisible">
             <!-- ko ifnot:containerOnly -->
-            <cmp-expander params="title:title, templateId:'dossier-apply-block', data:$data, expanded:isExpanded, fixed:false, afterExpand:afterExpand"></cmp-expander>
+            <cmp-expander params="title:title, templateId:'duplicate-block', data:$data, expanded:isExpanded, fixed:false, afterExpand:afterExpand"></cmp-expander>
             <!-- /ko -->
             <!-- ko if:containerOnly -->
             <label data-bind="text:title"></label>

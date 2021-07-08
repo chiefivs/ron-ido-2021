@@ -15,10 +15,6 @@ export default class DuplicateMainPage extends MainPageBase implements IDuplicat
     sortedParts: ko.Computed<DuplicatePartBase[]>;
     duplicate = ko.observable<DuplicatePartDescriptor<DuplicatesSearchApi.IDuplicateDto>>();
 
-    //apply = ko.observable<DuplicatePartDescriptor<DuplicatesSearchApi.IDuplicateDto>>();
-    //comments = ko.observable<DuplicatePartDescriptor<string>>();
-    //conclusions = ko.observableArray<DuplicatePartDescriptor<any>>();
-
     private _loadDuplicatePromise: JQueryPromise<IODataForm< DuplicatesSearchApi.IDuplicateDto>>;
     private _dataPage: DuplicateDataLeftPage;
 
@@ -48,12 +44,6 @@ export default class DuplicateMainPage extends MainPageBase implements IDuplicat
                 App.instance().activeLeftPage(this._dataPage);
 
                 this.duplicate(new DuplicatePartDescriptor(data.item, this, () => new Duplicate(data.item.id, this)));
-                // this.comments(new DuplicatePartDescriptor('Комментарии', this, () => new Comments(this)));
-
-                // this.conclusions.push(
-                //     new DuplicatePartDescriptor('123', this, () => new Conclusion(this)),
-                //     new DuplicatePartDescriptor('45', this, () => new Conclusion(this))
-                // )
             });
         }
     }
