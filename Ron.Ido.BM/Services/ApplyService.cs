@@ -205,18 +205,18 @@ namespace Ron.Ido.BM.Services
 
         private string CreateBarCode(int diapason = 3)
         {
-            var bc = AppDbContext.Applies
+            var last = AppDbContext.Applies
                 .Where(a => !string.IsNullOrEmpty(a.BarCode))
-                .OrderByDescending(a => a.BarCode).Select(a => a.PrimaryBarCode.Substring(1));
+                .Select(a => new { barcode = a.BarCode, time = a.AcceptTime != null ? a.AcceptTime.Value : a.CreateTime })
+                .OrderByDescending(a => a.time)
+                .FirstOrDefault();
 
-            var last = bc.FirstOrDefault();
             var now = DateTime.Now;
 
-            var year = int.Parse(last.Substring(0, 2));
-            if (string.IsNullOrEmpty(last) || year < now.Year)
+            if (last == null || last.time.Year < now.Year)
                 return $"{diapason}{now:yyMMdd}00001";
 
-            var num = int.Parse(last.Substring(6)) + 1;
+            var num = int.Parse(last.barcode.Substring(7)) + 1;
 
             return $"{diapason}{now:yyMMdd}{num:00000}";
         }

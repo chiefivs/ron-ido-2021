@@ -2,6 +2,7 @@
 {
     public class DossierDataDto
     {
+        public long Id { get; set; }
         public ApplyData Apply { get; set; }
         public DuplicateData Duplicate { get; set; }
     }
