@@ -2,9 +2,9 @@
 //  https://habr.com/ru/post/321250/
 //  https://developer.mozilla.org/ru/docs/Web/API/FormData/Using_FormData_Objects
 import * as ko from 'knockout';
-import { Utils } from '../modules/utils';
 import { IEditBaseParams, EditBaseModel} from './edit-base';
 import { IFileInfoDto } from '../codegen/webapi/odata';
+//import { WebApi } from '../modules/webapi';
 
 export function init(){
     ko.components.register('cmp-fileupload', {
@@ -111,28 +111,34 @@ export class FileData implements IFileInfoDto {
         if(!this.selection)
             return;
 
-        const deferred = $.Deferred<IFileInfoDto[]>();
+        const webapi = require('../modules/webapi');
+        return webapi.WebApi.upload(url, this.selection);
+        // const deferred = $.Deferred<IFileInfoDto[]>();
 
-        const formData = new FormData();
-        formData.append('file', this.selection);
-        const request = new XMLHttpRequest();
+        // const formData = new FormData();
+        // formData.append('file', this.selection);
+        // const request = new XMLHttpRequest();
 
-        request.open('POST', url, true);
-        request.onprogress = progressEvt => {
-            console.log('upload progress', progressEvt);
-        };
-        request.onload = loadEvt => {
-            if(request.status === 200){
-                const result = JSON.parse(request.response) as IFileInfoDto[];
-                deferred.resolve(result);
-            } else {
-                console.log('file upload error', loadEvt);
-                deferred.reject();
-            }
-        };
-        request.send(formData);
+        // request.open('POST', url, true);
+        // request.onprogress = progressEvt => {
+        //     console.log('upload progress', progressEvt);
+        // };
+        // request.onload = loadEvt => {
+        //     if(request.status === 200){
+        //         const result = JSON.parse(request.response) as IFileInfoDto[];
+        //         deferred.resolve(result);
+        //     } else {
+        //         console.log('file upload error', loadEvt);
+        //         deferred.reject();
+        //     }
 
-        return deferred.promise();
+        //     webapi.WebApiLoading.instance().remove(url);
+        // };
+
+        // webapi.WebApiLoading.instance().add(url);
+        // request.send(formData);
+
+        //return deferred.promise();
     }
 
     private getSizeString(size: number): string {

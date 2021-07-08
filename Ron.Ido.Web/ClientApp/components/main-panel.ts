@@ -1,10 +1,11 @@
-import * as MainPanelComponent from 'knockout';
+import * as ko from 'knockout';
 import { App } from '../app';
 import { IMainPage } from '../modules/content';
 import { Utils } from '../modules/utils';
+import { WebApi } from '../modules/webapi';
 
 export function init(){
-    MainPanelComponent.components.register('cmp-main-panel', {
+    ko.components.register('cmp-main-panel', {
         viewModel: {
             createViewModel: function(params, componentInfo) {
                 return new MainPanelModel(params);
@@ -36,39 +37,43 @@ export function init(){
 }
 
 export interface IMainPanelParams {
-    pages: MainPanelComponent.ObservableArray<IMainPage>;
-    active: MainPanelComponent.Observable<IMainPage>;
+    pages: ko.ObservableArray<IMainPage>;
+    active: ko.Observable<IMainPage>;
 }
 
 class MainPanelModel {
     tabsTemplateNodes = Utils.getNodesFromHtml(`
         <!-- ko foreach:pages -->
-        <div class="main-tab" draggable="true" data-bind="css:{'active':$parent.isActive($data), 'dragover':$parent.isDragOver($data)},
+        <div class="main-tab" draggable="true" data-bind="css:{'active':$parent.isActive($data), 'loading':$parent.isLoading(), 'dragover':$parent.isDragOver($data)},
           event:{dragover:$parent.tabDragOver.bind($parent), dragleave:$parent.tabDragLeave.bind($parent), dragend:$parent.tabDragEnd.bind($parent)},
           click:function(){$parent.setActive($data);}">
             <div data-bind="text:pageTitle"></div>
+            <i class="loading-icon glyphicon glyphicon-refresh"></i>
             <a class="close" data-bind="click:function(page,evt){$parent.closePage(page,evt);}"><span>&times;</span></a>
             </div>
         <!-- /ko -->`);
 
-    pages: MainPanelComponent.ObservableArray<IMainPage>;
-    pageDragOver = MainPanelComponent.observable<IMainPage>(null);
-    tail: MainPanelComponent.ObservableArray<IMainPage> = MainPanelComponent.observableArray([]);
-    active: MainPanelComponent.Observable<IMainPage>;
-    isTailVisible: MainPanelComponent.Computed<boolean>;
-    tailWidth = MainPanelComponent.observable(0);
-    tailHeight = MainPanelComponent.observable(0);
+    pages: ko.ObservableArray<IMainPage>;
+    pageDragOver = ko.observable<IMainPage>(null);
+    tail: ko.ObservableArray<IMainPage> = ko.observableArray([]);
+    active: ko.Observable<IMainPage>;
+    isLoading: ko.Observable<boolean> = ko.observable(false);
+    isTailVisible: ko.Computed<boolean>;
+    tailWidth = ko.observable(0);
+    tailHeight = ko.observable(0);
 
     private _tabsPanelElement: JQuery<Element>;
     private _tailListElement: JQuery<Element>;
-    private _tailVisible = MainPanelComponent.observable(false);
+    private _tailVisible = ko.observable(false);
 
     constructor(params: IMainPanelParams){
         this.pages = params.pages;
         this.pages.subscribe(() => setTimeout(() => this._reorderTabs(), 100));
 
-        this.active = params.active || MainPanelComponent.observable(null);
-        this.isTailVisible = MainPanelComponent.computed(() => this.tail().length && this.tailWidth() > 0 && this.tailHeight() > 0);
+        this.active = params.active || ko.observable(null);
+
+        this.isLoading = WebApi.loading.hasProcesses;
+        this.isTailVisible = ko.computed(() => this.tail().length && this.tailWidth() > 0 && this.tailHeight() > 0);
         
         const outsideTailClick = () => this._tailVisible(false);
         this._tailVisible.subscribe(visible => {
@@ -149,8 +154,8 @@ class MainPanelModel {
     tabDragEnd(page:IMainPage) {
         if(this.pageDragOver() && page !== this.pageDragOver()) {
             const pages = this.pages();
-            const index = MainPanelComponent.utils.arrayIndexOf(pages, this.pageDragOver());
-            MainPanelComponent.utils.arrayRemoveItem(pages, page);
+            const index = ko.utils.arrayIndexOf(pages, this.pageDragOver());
+            ko.utils.arrayRemoveItem(pages, page);
             pages.splice(index, 0, page);
             this.pages(pages);
             this._reorderTabs();

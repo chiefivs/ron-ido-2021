@@ -6,6 +6,7 @@ import { FileData } from '../../../components/index';
 import { DossierApi } from '../../../codegen/webapi/dossierApi';
 import { IODataForm } from '../../../codegen/webapi/odata';
 import { Popups } from '../../../modules/content';
+import { WebApi } from '../../../modules/webapi';
 
 export class Apply extends DossierPartBase implements IFormBlockHolder {
     form = ko.observable<ApplyForm>();;
@@ -518,8 +519,12 @@ class AttachmentForm extends Form<DossierApi.IApplyAttachmentDto> {
         this.item.fileInfo.value([]);
     }
 
-    deleteAttachment() {
-        (this.applyForm.item.attachments.value as ko.ObservableArray).remove(this);
+    downloadFile() {
+        console.log(this.item.fileInfo.value());
+        if(!this.item.fileInfo.value().length)
+            return;
+
+        WebApi.download('api/storage/download', this.item.fileInfo.value()[0]);
     }
 
     validateSelection(files:FileData[]) {
