@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Ron.Ido.Web.Controllers
 {
-    [ApiController, NoCodegen]
+    [ApiController]
     public class FileStorageController : ControllerBase
     {
         private IMediator _mediator;
@@ -23,16 +23,9 @@ namespace Ron.Ido.Web.Controllers
         [HttpGet]
         [Route("api/files/download/{uid}")]
         [AuthorizedFor]
-        public async Task<ActionResult> Download(Guid uid)
+        public async Task<byte[]> GetBytes(Guid uid)
         {
-            var bytes = await _mediator.Send(new DownloadFileCommand(uid));
-            if (bytes == null)
-                return NotFound();
-
-            return new ContentResult
-            {
-                Content = Convert.ToBase64String(bytes)
-            };
+            return await _mediator.Send(new DownloadFileCommand(uid));
         }
     }
 }

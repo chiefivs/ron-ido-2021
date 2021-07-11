@@ -194,7 +194,7 @@ namespace Codegen
         private Dictionary<string, CodeModule> Modules;
         private static Type BooleanType = typeof(bool);
         private static Type[] NumberTypes = new[] { typeof(Int16), typeof(Int32), typeof(Int64), typeof(UInt16), typeof(UInt32), typeof(UInt64), typeof(double) };
-        private static Type[] StringTypes = new[] { typeof(DateTime), typeof(string) };
+        private static Type[] StringTypes = new[] { typeof(DateTime), typeof(string), typeof(Guid) };
 
         public CodeModule(string name, Dictionary<string, CodeModule> modules)
         {
@@ -239,6 +239,9 @@ namespace Codegen
             else if (type.IsArray)
             {
                 var itemType = type.GetElementType();
+                if (itemType == typeof(byte))   //  массив байтов передается как base64
+                    return "string";
+
                 return $"{GenerateType(itemType)}[]";
             }
             else if (type.IsGenericType)
@@ -256,6 +259,9 @@ namespace Codegen
                 else if (type.GetInterfaces().Any(ti => ti.Name.StartsWith("IEnumerable")))
                 {
                     var itemType = type.GetGenericArguments().First();
+                    if (itemType == typeof(byte))   //  массив байтов передается как base64
+                        return "string";
+
                     if (genericTypes != null && genericTypes.Contains(itemType.Name))
                         return $"{itemType.Name}[]";
 

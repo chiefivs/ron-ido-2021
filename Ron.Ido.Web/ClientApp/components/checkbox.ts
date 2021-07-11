@@ -9,7 +9,7 @@ export function init(){
             }
         },
         template: `
-            <input type="checkbox" data-bind="value:value, checked:checked, css:css, event:{keydown:keyDown}, disable:disable, attr:{readonly:readonly}, hasFocus:hasFocus"></input>`
+            <input type="checkbox" data-bind="value:value, checked:checked, css:css, event:{keydown:keyDown}, disable:disable() || readonly(), attr:{readonly:readonly}, hasFocus:hasFocus"></input>`
     });
 }
 
