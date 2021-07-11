@@ -166,17 +166,8 @@ namespace Ron.Ido.BM.Services
                 var fileInfo = attach.FileInfo;
                 if (fileInfoDto?.Uid != fileInfo?.Uid || fileInfoDto?.BytesBase64 != null)
                 {
-                    if (fileInfoDto?.BytesBase64 != null)
-                    {
-                        fileInfoDto.Uid =_storage.SaveFile(Convert.FromBase64String(fileInfoDto.BytesBase64));
-                        //filesForSave.Add(fileInfoDto);
-                        var fileinfo = _helper.CreateFileInfo(fileInfoDto);
-                        attach.FileInfoUid = fileinfo.Uid;
-                    }
-                    else
-                    {
-                        attach.FileInfoUid = null;
-                    }
+                    var fileinfo = _helper.CreateFileInfo(fileInfoDto);
+                    attach.FileInfoUid = fileinfo?.Uid;
 
                     //  старый файл удаляем только после обновления приложенного документа
                     if (fileInfo != null)

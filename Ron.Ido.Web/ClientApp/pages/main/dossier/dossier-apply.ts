@@ -520,7 +520,7 @@ class AttachmentForm extends Form<DossierApi.IApplyAttachmentDto> {
         if(!this.item.fileInfo.value().length)
             return;
 
-        WebApi.download('api/storage/download', this.item.fileInfo.value()[0]);
+        WebApi.download('api/files/download', this.item.fileInfo.value()[0]);
     }
 
     validateSelection(files:FileData[]) {

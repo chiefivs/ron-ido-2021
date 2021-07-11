@@ -20,16 +20,8 @@ namespace Ron.Ido.Web.Controllers
             _mediator = mediator;
         }
 
-        [HttpPost]
-        [Route("api/storage/upload")]
-        [AuthorizedFor]
-        public async Task<IEnumerable<FileInfoDto>> Upload()
-        {
-            return await _mediator.Send(new UploadFilesCommand(Request.Form.Files));
-        }
-
         [HttpGet]
-        [Route("api/storage/download/{uid}")]
+        [Route("api/files/download/{uid}")]
         [AuthorizedFor]
         public async Task<ActionResult> Download(Guid uid)
         {
