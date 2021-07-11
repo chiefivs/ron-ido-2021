@@ -338,7 +338,8 @@ export class Apply extends DossierPartBase implements IFormBlockHolder {
         });
         formItem.byWarrant.value.valueHasMutated();
 
-        ko.utils.arrayForEach(this.blocks(), block => this._setReadonlyForAllFields(block, true));
+        //  установка заявки в режим "только чтение" (на будущее)
+        //ko.utils.arrayForEach(this.blocks(), block => this._setReadonlyForAllFields(block, true));
     }
 
     private _setReadonlyForAllFields(block:FormBlock, readonly:boolean) {
