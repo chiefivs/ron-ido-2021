@@ -109,9 +109,17 @@ namespace Ron.Ido.BM.Services
 
             var notEmptyList = applyDto.Attachments.Where(a => a.IsNotEmpty());
             var emptyList = applyDto.Attachments.Where(a => !a.IsNotEmpty());
+            var ids = applyDto.Attachments.Select(a => a.Id).Where(id => id > 0);
+            var deletedList = apply.Attachments.Where(a => !ids.Contains(a.Id)).ToArray();
 
             var uidsForRemove = new List<Guid>();
-            var uidsForSave = new List<Guid>();
+            var filesForSave = new List<FileInfoDto>();
+
+            foreach(var attachment in deletedList)
+            {
+                apply.Attachments.Remove(attachment);
+            }
+            AppDbContext.SaveChanges();
 
             foreach (var attachDto in emptyList)
             {
@@ -156,11 +164,12 @@ namespace Ron.Ido.BM.Services
 
                 var fileInfoDto = attachDto.FileInfo.FirstOrDefault();
                 var fileInfo = attach.FileInfo;
-                if (fileInfoDto?.Uid != fileInfo?.Uid)
+                if (fileInfoDto?.Uid != fileInfo?.Uid || fileInfoDto?.BytesBase64 != null)
                 {
-                    if (fileInfoDto != null)
+                    if (fileInfoDto?.BytesBase64 != null)
                     {
-                        uidsForSave.Add(fileInfoDto.Uid.Value);
+                        fileInfoDto.Uid =_storage.SaveFile(Convert.FromBase64String(fileInfoDto.BytesBase64));
+                        //filesForSave.Add(fileInfoDto);
                         var fileinfo = _helper.CreateFileInfo(fileInfoDto);
                         attach.FileInfoUid = fileinfo.Uid;
                     }
@@ -184,9 +193,6 @@ namespace Ron.Ido.BM.Services
             //TODO: здесь должно быть событие изменения статуса, если заявление новое
 
             //  файлы в хранилище модифицируем только после успешного обновления БД
-            foreach (var uid in uidsForSave)
-                _storage.SaveFile(uid);
-
             foreach (var uid in uidsForRemove)
                 _storage.DeleteFile(uid);
 

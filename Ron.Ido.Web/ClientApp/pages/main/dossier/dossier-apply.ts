@@ -63,11 +63,7 @@ export class Apply extends DossierPartBase implements IFormBlockHolder {
 
             const attach = attachs.shift();
             const file:FileData = attach.item.fileInfo.value()[0];
-            file.upload('api/storage/upload')
-                .done(res => {
-                    attach.item.fileInfo.value([new FileData(res[0])]);
-                    saveFile();
-                });
+            file.fillBytesBase64().always(() => saveFile());
         };
 
         saveFile();

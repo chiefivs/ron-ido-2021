@@ -80,6 +80,7 @@ export class FileData implements IFileInfoDto {
     contentType: string;
     sizeString: string;
     selection: File;
+    bytesBase64: string = null;
 
     constructor(data: IFileInfoDto | File) {
         if(data instanceof File){
@@ -103,7 +104,8 @@ export class FileData implements IFileInfoDto {
             name: this.name,
             size: this.size,
             uid: this.uid,
-            contentType: this.contentType
+            contentType: this.contentType,
+            bytesBase64: this.bytesBase64
         };
     }
 
@@ -113,32 +115,24 @@ export class FileData implements IFileInfoDto {
 
         const webapi = require('../modules/webapi');
         return webapi.WebApi.upload(url, this.selection);
-        // const deferred = $.Deferred<IFileInfoDto[]>();
+    }
+    
+    fillBytesBase64() {
+        const deferred = $.Deferred();
+        if(!this.selection)
+            deferred.reject();
 
-        // const formData = new FormData();
-        // formData.append('file', this.selection);
-        // const request = new XMLHttpRequest();
+        const reader = new FileReader();
+        reader.readAsDataURL(this.selection);
+        reader.onload = () => {
+            const result = reader.result as string;
+            const n = result.indexOf(',');
+            this.bytesBase64 = result.substr(n+1);
+            deferred.resolve();
+        };
+        reader.onerror = () => deferred.reject();
 
-        // request.open('POST', url, true);
-        // request.onprogress = progressEvt => {
-        //     console.log('upload progress', progressEvt);
-        // };
-        // request.onload = loadEvt => {
-        //     if(request.status === 200){
-        //         const result = JSON.parse(request.response) as IFileInfoDto[];
-        //         deferred.resolve(result);
-        //     } else {
-        //         console.log('file upload error', loadEvt);
-        //         deferred.reject();
-        //     }
-
-        //     webapi.WebApiLoading.instance().remove(url);
-        // };
-
-        // webapi.WebApiLoading.instance().add(url);
-        // request.send(formData);
-
-        //return deferred.promise();
+        return deferred.promise();
     }
 
     private getSizeString(size: number): string {
@@ -147,15 +141,3 @@ export class FileData implements IFileInfoDto {
             : Math.round(size / 1024 / 1024).toString() + 'Mb';
     }
 }
-
-// export interface IFileSelect {
-//     name: string;
-//     size: number;
-//     type: string;
-//     content?: string;
-// }
-
-// export interface IProgressData {
-//     loaded: number;
-//     total: number;
-// }

@@ -71,5 +71,6 @@
         name:string;
         size:number;
         contentType:string;
+        bytesBase64:string;
     }
 
