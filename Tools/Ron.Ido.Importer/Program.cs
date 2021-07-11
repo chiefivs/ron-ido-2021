@@ -56,7 +56,7 @@ namespace Ron.Ido.Importer
                 Guid uid = Guid.Empty;
                 if (bytes != null)
                 {
-                    uid = _appStorage.SaveFile(bytes);
+                    uid = _appStorage.CreateFile(bytes);
                 }
 
                 var login = nextUploadedFile?.User?.Login;
@@ -485,7 +485,7 @@ namespace Ron.Ido.Importer
                     var bytes = _nostrStorage.GetFileBytes(nDocFile);
                     if (bytes != null)
                     {
-                        uid = _appStorage.SaveFile(bytes);
+                        uid = _appStorage.CreateFile(bytes);
                         var nUser = nDocFile.UserId != null ? _nostrContext.Users.First(u => u.Id == nDocFile.UserId) : null;
                         var login = nUser?.Login;
                         var userId = login != null ? _appContext.Users.FirstOrDefault(u => u.Login == login)?.Id : null;
@@ -546,7 +546,7 @@ namespace Ron.Ido.Importer
                     var bytes = _nostrStorage.GetFileBytes(nFile);
                     if (bytes != null)
                     {
-                        uid = _appStorage.SaveFile(bytes);
+                        uid = _appStorage.CreateFile(bytes);
                         var nFileUser = nFile.UserId != null ? _nostrContext.Users.First(u => u.Id == nFile.UserId) : null;
                         var login = nFileUser?.Login;
                         var userId = login != null ? _appContext.Users.FirstOrDefault(u => u.Login == login)?.Id : null;

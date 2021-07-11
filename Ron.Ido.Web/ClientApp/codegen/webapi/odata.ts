@@ -67,9 +67,10 @@
 
     //  Ron.Ido.BM.Models.FileStorage.FileInfoDto
     export interface IFileInfoDto {
-        uid:any;
+        uid:string;
         name:string;
         size:number;
         contentType:string;
+        bytesBase64:string;
     }
 

@@ -9,12 +9,12 @@ export function init(){
             }
         },
         template: `
-            <div class="form-control" style="height:unset;">
+            <div class="form-control" style="height:unset;" data-bind="disable:disable, attr:{readonly:readonly}">
                 <table style="width:100%" data-bind="foreach:options">
                     <tr>
                         <td><span data-bind="html:text"></span></td>
                         <td style="text-align:right;">
-                            <input type="radio" data-bind="value:value, checked:$parent.value, attr:{name:$parent.name}, hasFocus:hasFocus, event:{keydown:keyDown}" />
+                            <input type="radio" data-bind="value:value, checked:$parent.value, disable:$parent.disable() || $parent.readonly(), attr:{name:$parent.name}, hasFocus:hasFocus, event:{keydown:keyDown}" />
                         </td>
                     </tr>
                 </table>

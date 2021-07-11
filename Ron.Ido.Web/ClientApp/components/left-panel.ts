@@ -1,10 +1,10 @@
-import * as LeftPanelComponent from 'knockout';
+import * as ko from 'knockout';
 import { App } from '../app';
 import { ILeftPage } from '../modules/content';
 import { Utils } from '../modules/utils';
 
 export function init(){
-    LeftPanelComponent.components.register('cmp-left-panel', {
+    ko.components.register('cmp-left-panel', {
         viewModel: {
             createViewModel: function(params, componentInfo) {
                 return new LeftPanelModel(params);
@@ -29,38 +29,39 @@ export function init(){
     });
 }
 
+
 export interface ILeftPanelParams {
-    pages: ILeftPage[] | LeftPanelComponent.ObservableArray<ILeftPage> | LeftPanelComponent.Computed<ILeftPage[]>;
-    active: LeftPanelComponent.Observable<ILeftPage>;
-    width: number | LeftPanelComponent.Observable<number>;
+    pages: ILeftPage[] | ko.ObservableArray<ILeftPage> | ko.Computed<ILeftPage[]>;
+    active: ko.Observable<ILeftPage>;
+    width: number | ko.Observable<number>;
 }
 
 export class LeftPanelModel {
-    tabsTemplateNodes = LeftPanelComponent.observable(Utils.getNodesFromHtml(`
+    tabsTemplateNodes = ko.observable(Utils.getNodesFromHtml(`
         <!-- ko foreach:pages -->
         <div class="left-tab" data-bind="css:{'active':$parent.isActive($data)}, click:function(){$parent.setActive($data);}">
             <div data-bind="text:pageTitle"></div>
         </div>
         <!-- /ko -->`));
 
-    pages: LeftPanelComponent.ObservableArray<ILeftPage> | LeftPanelComponent.Computed<ILeftPage[]>;
-    active: LeftPanelComponent.Observable<ILeftPage>;
-    widthString: LeftPanelComponent.Computed<string>;
+    pages: ko.ObservableArray<ILeftPage> | ko.Computed<ILeftPage[]>;
+    active: ko.Observable<ILeftPage>;
+    widthString: ko.Computed<string>;
 
-    private width: LeftPanelComponent.Observable<number>;
+    private width: ko.Observable<number>;
     private tabElements: JQuery<Element> = null;
 
     constructor(params: ILeftPanelParams){
-        this.pages = LeftPanelComponent.isObservable(params.pages)
+        this.pages = ko.isObservable(params.pages)
             ? params.pages
-            : LeftPanelComponent.isComputed(params.pages)
+            : ko.isComputed(params.pages)
                 ? params.pages
-                : LeftPanelComponent.observableArray(params.pages);
+                : ko.observableArray(params.pages);
 
-        this.active = params.active || LeftPanelComponent.observable(null);
+        this.active = params.active || ko.observable(null);
 
-        this.width = LeftPanelComponent.isObservable(params.width) ? params.width : LeftPanelComponent.observable(330);
-        this.widthString = LeftPanelComponent.computed(() => `${(this.width()-30)}px`);
+        this.width = ko.isObservable(params.width) ? params.width : ko.observable(330);
+        this.widthString = ko.computed(() => `${(this.width()-30)}px`);
 
         App.instance().contentVisible.subscribe(() => this._refresh());
         this.pages.subscribe(() => this.tabsTemplateNodes.valueHasMutated());

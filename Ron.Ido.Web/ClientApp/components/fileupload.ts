@@ -2,9 +2,9 @@
 //  https://habr.com/ru/post/321250/
 //  https://developer.mozilla.org/ru/docs/Web/API/FormData/Using_FormData_Objects
 import * as ko from 'knockout';
-import { Utils } from '../modules/utils';
 import { IEditBaseParams, EditBaseModel} from './edit-base';
 import { IFileInfoDto } from '../codegen/webapi/odata';
+//import { WebApi } from '../modules/webapi';
 
 export function init(){
     ko.components.register('cmp-fileupload', {
@@ -80,6 +80,7 @@ export class FileData implements IFileInfoDto {
     contentType: string;
     sizeString: string;
     selection: File;
+    bytesBase64: string = null;
 
     constructor(data: IFileInfoDto | File) {
         if(data instanceof File){
@@ -103,7 +104,8 @@ export class FileData implements IFileInfoDto {
             name: this.name,
             size: this.size,
             uid: this.uid,
-            contentType: this.contentType
+            contentType: this.contentType,
+            bytesBase64: this.bytesBase64
         };
     }
 
@@ -111,26 +113,24 @@ export class FileData implements IFileInfoDto {
         if(!this.selection)
             return;
 
-        const deferred = $.Deferred<IFileInfoDto[]>();
+        const webapi = require('../modules/webapi');
+        return webapi.WebApi.upload(url, this.selection);
+    }
+    
+    fillBytesBase64() {
+        const deferred = $.Deferred();
+        if(!this.selection)
+            deferred.reject();
 
-        const formData = new FormData();
-        formData.append('file', this.selection);
-        const request = new XMLHttpRequest();
-
-        request.open('POST', url, true);
-        request.onprogress = progressEvt => {
-            console.log('upload progress', progressEvt);
+        const reader = new FileReader();
+        reader.readAsDataURL(this.selection);
+        reader.onload = () => {
+            const result = reader.result as string;
+            const n = result.indexOf(',');
+            this.bytesBase64 = result.substr(n+1);
+            deferred.resolve();
         };
-        request.onload = loadEvt => {
-            if(request.status === 200){
-                const result = JSON.parse(request.response) as IFileInfoDto[];
-                deferred.resolve(result);
-            } else {
-                console.log('file upload error', loadEvt);
-                deferred.reject();
-            }
-        };
-        request.send(formData);
+        reader.onerror = () => deferred.reject();
 
         return deferred.promise();
     }
@@ -141,15 +141,3 @@ export class FileData implements IFileInfoDto {
             : Math.round(size / 1024 / 1024).toString() + 'Mb';
     }
 }
-
-// export interface IFileSelect {
-//     name: string;
-//     size: number;
-//     type: string;
-//     content?: string;
-// }
-
-// export interface IProgressData {
-//     loaded: number;
-//     total: number;
-// }
