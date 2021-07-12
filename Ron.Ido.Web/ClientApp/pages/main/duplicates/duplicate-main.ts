@@ -77,6 +77,7 @@ export class Duplicate extends DuplicatePartBase implements IDuplicateFieldBlock
     save() {
         this.form.save().done(()=> { 
             this.form.commit(); 
+            /*
             for(const key in this.form.item) {
                 if ( this.form.item[key].hasChanges())
                 {
@@ -84,7 +85,7 @@ export class Duplicate extends DuplicatePartBase implements IDuplicateFieldBlock
                     hc();
                     alert(key);
                 }
-            }
+            }*/
     
         });
     }
@@ -108,9 +109,9 @@ export class Duplicate extends DuplicatePartBase implements IDuplicateFieldBlock
         const blocks: IDuplicateFieldsBlockParams[] = [
             {
                 title: 'Дубликат',
-                blocks: [
-                    {
-                        title: 'Вся информация кучей',
+                //blocks: [
+                   // {
+                   //     title: 'Вся информация кучей',
                         fields: [
                             this._getDuplicateReadonlyField('Дата создания заявления', this.form.item.createTime, textbox),
                             this._getDuplicateReadonlyField('Дата выдачи', this.form.item.handoutTime, textbox),
@@ -141,36 +142,32 @@ export class Duplicate extends DuplicatePartBase implements IDuplicateFieldBlock
                             this._getDuplicateReadonlyField('Наименование учебного заведения', this.form.item.schoolName, textbox),
 
 
-                        ],
-                    },/*
-                    {
-                        title: 'Гражданство',
-                        fields: [
-                            this._getDuplicateField('Гражданство (КНР)', this.form.item.creatorCitizenshipId, select),
-                        ]
-                    },
-                    {
-                        title: 'Документ, удостоверяющий личность',
-                        fields: [
-                            this._getDuplicateField('Тип документа (Код типа документа)', this.form.item.creatorPassportTypeId, select),
-                            this._getDuplicateField('Реквизиты документа (ВА123131)', this.form.item.creatorPassportReq, textbox),
+            //             ],
+            //         //},
+            //         /*
+            //         {
+            //             title: 'Гражданство',
+            //             fields: [
+            //                 this._getDuplicateField('Гражданство (КНР)', this.form.item.creatorCitizenshipId, select),
+            //             ]
+            //         },
+            //         {
+            //             title: 'Документ, удостоверяющий личность',
+            //             fields: [
+            //                 this._getDuplicateField('Тип документа (Код типа документа)', this.form.item.creatorPassportTypeId, select),
+            //                 this._getDuplicateField('Реквизиты документа (ВА123131)', this.form.item.creatorPassportReq, textbox),
                             
-                        ],
-                    },*/
+            //             ],
+            //         },*/
                                 
-                ]
-            },
-            {
-                title: 'Форма приема',
-                fields: [
+            //     //]
+            // },
+            // {
+            //     title: 'Форма приема',
+            //     fields: [
                     this._getDuplicateField('Форма приема заявления', this.form.item.returnOriginalsFormId, select),
                 ]
             },
-            {
-                title: 'Документы по делу',
-                fields: [],
-                blocks: []
-            }
         ];
 
         this.blocks(ko.utils.arrayMap(blocks, b => new DuplicateFieldsBlock(b, this)));
