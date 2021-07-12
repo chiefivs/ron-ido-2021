@@ -129,7 +129,7 @@ namespace Ron.Ido.EM
 
             modelBuilder.Entity<DuplicateCertificateDeliveryForm>().HasKey(ac => new { ac.DuplicateId, ac.DeliveryFormId });
 
-            modelBuilder.Entity<EmailAttachment>().HasKey(a => new { a.EmailId, a.FileInfoId });
+            modelBuilder.Entity<EmailAttachment>().HasKey(a => new { a.EmailId, a.FileInfoUid });
 
 
             modelBuilder.Entity<RolePermission>().HasKey(rp => new { rp.RoleId, rp.PermissionId });
