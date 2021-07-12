@@ -35,6 +35,9 @@ namespace Ron.Ido.EM
         public virtual DbSet<DuplicateStatus> DuplicateStatuses { get; set; }
         public virtual DbSet<DuplicateStatusHistory> DuplicateStatusHistories { get; set; }
 
+        public virtual DbSet<Email> Emails { get; set; }
+        public virtual DbSet<EmailAttachment> EmailAttachments { get; set; }
+
         public virtual DbSet<FileInfo> FileInfos { get; set; }
         public virtual DbSet<LearnLevel> LearnLevels { get; set; }
         public virtual DbSet<Legalization> Legalizations { get; set; }
@@ -125,6 +128,8 @@ namespace Ron.Ido.EM
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<DuplicateCertificateDeliveryForm>().HasKey(ac => new { ac.DuplicateId, ac.DeliveryFormId });
+
+            modelBuilder.Entity<EmailAttachment>().HasKey(a => new { a.EmailId, a.FileInfoUid });
 
 
             modelBuilder.Entity<RolePermission>().HasKey(rp => new { rp.RoleId, rp.PermissionId });
