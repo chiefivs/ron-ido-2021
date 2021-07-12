@@ -11,29 +11,22 @@ namespace Ron.Ido.BM.Services
     public class FileStorageHelper: IDependency
     {
         private AppDbContext _context;
+        private IFileStorageService _storage;
         private IIdentityService _identity;
 
-        public FileStorageHelper(AppDbContext context, IIdentityService identity)
+        public FileStorageHelper(AppDbContext context, IFileStorageService storage, IIdentityService identity)
         {
             _context = context;
+            _storage = storage;
             _identity = identity;
-        }
-
-        public FileInfo CreateFileInfo(IFileInfo info)
-        {
-            return _createFileInfo(new FileInfo
-            {
-                Uid = info.Uid,
-                ContentType = info.ContentType,
-                Name = info.Name,
-                Size = info.Size
-            });
         }
 
         public FileInfo CreateFileInfo(FileInfoDto dto)
         {
-            if (!dto.Uid.HasValue)
+            if (string.IsNullOrEmpty(dto.BytesBase64))
                 return null;
+
+            dto.Uid = _storage.CreateFile(Convert.FromBase64String(dto.BytesBase64));
 
             return _createFileInfo(new FileInfo
             {

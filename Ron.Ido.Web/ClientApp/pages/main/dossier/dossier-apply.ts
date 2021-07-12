@@ -4,8 +4,10 @@ import { Form, IFormField, IFormBlockHolder, IFormBlockField, IFormBlockParams, 
 import { Utils } from '../../../modules/utils';
 import { FileData } from '../../../components/index';
 import { DossierApi } from '../../../codegen/webapi/dossierApi';
-import { IODataForm } from '../../../codegen/webapi/odata';
+import { IODataForm, IFileInfoDto } from '../../../codegen/webapi/odata';
+import { FileStorageApi } from '../../../codegen/webapi/fileStorageApi';
 import { Popups } from '../../../modules/content';
+import { FileUtils } from '../../../modules/fileUtils';
 
 export class Apply extends DossierPartBase implements IFormBlockHolder {
     form = ko.observable<ApplyForm>();;
@@ -62,11 +64,7 @@ export class Apply extends DossierPartBase implements IFormBlockHolder {
 
             const attach = attachs.shift();
             const file:FileData = attach.item.fileInfo.value()[0];
-            file.upload('api/storage/upload')
-                .done(res => {
-                    attach.item.fileInfo.value([new FileData(res[0])]);
-                    saveFile();
-                });
+            file.fillBytesBase64().always(() => saveFile());
         };
 
         saveFile();
@@ -317,10 +315,19 @@ export class Apply extends DossierPartBase implements IFormBlockHolder {
 
         const formItem = this.form().item as {[key:string]:IFormBlockField};
         (formItem.isCreatorSurnameAbsent.value as ko.Observable<boolean>).subscribe(checked => this._setCanAbsentField(checked, formItem.creatorSurname));
+        formItem.isCreatorSurnameAbsent.value.valueHasMutated();
         (formItem.isCreatorFirstNameAbsent.value as ko.Observable<boolean>).subscribe(checked => this._setCanAbsentField(checked, formItem.creatorFirstName));
+        formItem.isCreatorFirstNameAbsent.value.valueHasMutated();
         (formItem.isCreatorLastNameAbsent.value as ko.Observable<boolean>).subscribe(checked => this._setCanAbsentField(checked, formItem.creatorLastName));
-        //this.form().commit();
-    
+        formItem.isCreatorLastNameAbsent.value.valueHasMutated();
+
+        (formItem.isOwnerSurnameAbsent.value as ko.Observable<boolean>).subscribe(checked => this._setCanAbsentField(checked, formItem.ownerSurname));
+        formItem.isOwnerSurnameAbsent.value.valueHasMutated();
+        (formItem.isOwnerFirstNameAbsent.value as ko.Observable<boolean>).subscribe(checked => this._setCanAbsentField(checked, formItem.ownerFirstName));
+        formItem.isOwnerFirstNameAbsent.value.valueHasMutated();
+        (formItem.isOwnerLastNameAbsent.value as ko.Observable<boolean>).subscribe(checked => this._setCanAbsentField(checked, formItem.ownerLastName));
+        formItem.isOwnerLastNameAbsent.value.valueHasMutated();
+
         (formItem.byWarrant.value as ko.Observable<boolean>).subscribe(val => {
             formItem.warrantReq.visible(val);
             formItem.warrantDate.visible(val);
@@ -330,6 +337,14 @@ export class Apply extends DossierPartBase implements IFormBlockHolder {
             this._setVisibleForAllFields(ownerBlock, val);
         });
         formItem.byWarrant.value.valueHasMutated();
+
+        //  установка заявки в режим "только чтение" (на будущее)
+        //ko.utils.arrayForEach(this.blocks(), block => this._setReadonlyForAllFields(block, true));
+    }
+
+    private _setReadonlyForAllFields(block:FormBlock, readonly:boolean) {
+        ko.utils.arrayForEach(block.fields(), f => f.readonly(readonly));
+        ko.utils.arrayForEach(block.blocks(), b => this._setReadonlyForAllFields(b, readonly));
     }
 
     private _setVisibleForAllFields(block:FormBlock, visible:boolean) {
@@ -486,7 +501,7 @@ class ApplyForm extends Form<DossierApi.IApplyDto> {
 class AttachmentForm extends Form<DossierApi.IApplyAttachmentDto> {
     acceptFilesExt = ['.pdf','.png','.docx'];
     fileDesc: ko.Computed<string>;
-    fileUrl: ko.Computed<string>;
+    canDownload: ko.Computed<boolean>;
 
     private maxSize = 10*1024*1024; //10 MB
     applyForm: ApplyForm;
@@ -505,21 +520,30 @@ class AttachmentForm extends Form<DossierApi.IApplyAttachmentDto> {
             return `${files[0].name} (${files[0].sizeString})`;
         });
 
-        this.fileUrl = ko.computed(() => {
+        this.canDownload = ko.computed(() => {
             const files: FileData[] = this.item.fileInfo.value();
-            if(!files.length || !files[0].uid)
-                return '';
-
-            return `api/storage/download/${files[0].uid}`;
+            return !!(files.length && files[0].uid);
         });
+    }
+
+    deleteAttachment() {
+        const attachments = this.applyForm.item.attachments.value as ko.ObservableArray<AttachmentForm>;
+        attachments.remove(this);
     }
     
     deleteFile() {
         this.item.fileInfo.value([]);
     }
 
-    deleteAttachment() {
-        (this.applyForm.item.attachments.value as ko.ObservableArray).remove(this);
+    downloadFile() {
+        if(!this.item.fileInfo.value().length)
+            return;
+
+        const fileInfo: IFileInfoDto = this.item.fileInfo.value()[0];
+        if(!fileInfo.uid)
+            return;
+
+        FileStorageApi.getBytes(fileInfo.uid).done(base64 => FileUtils.download(base64, fileInfo.name, fileInfo.contentType));
     }
 
     validateSelection(files:FileData[]) {

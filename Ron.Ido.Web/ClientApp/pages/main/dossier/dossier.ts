@@ -62,7 +62,14 @@ export default class DossierMainPage extends MainPageBase implements IDossier {
     }
 
     update(data: DossierApi.IDossierDataDto) {
-        this.pageKey = data.id.toString();
+        const pageKeyParts = this.pageKey.split('/');
+        if(this.id)
+            pageKeyParts.pop();
+        if(data.id)
+            pageKeyParts.push(data.id.toString());
+
+        this.pageKey = pageKeyParts.join('/');
+        this.id = data.id;
 
         this.pageTitle(data.duplicate
             ? data.duplicate.barCode

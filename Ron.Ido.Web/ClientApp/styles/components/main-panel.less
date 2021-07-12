@@ -25,7 +25,7 @@ cmp-main-panel {
                 display: inline-block;
                 position: relative;
                 padding: 6px;
-                padding-right: 14px;
+                padding-right: 20px;
                 margin-right: -2px;
                 background-color: @panel-bg;
                 border-radius: 4px 4px 0 0;
@@ -35,10 +35,24 @@ cmp-main-panel {
                 &.active {
                     height: 32px;
                     font-weight: bold;
+
+
+                    &.loading {
+                        .loading-icon {
+                            display: inherit;
+                        }
+                    }
                 }
 
                 &.dragover {
                     color:red;
+                }
+
+                .loading-icon {
+                    position: absolute;
+                    top:8px;
+                    right: 5px;
+                    display: none;
                 }
 
                 .close {

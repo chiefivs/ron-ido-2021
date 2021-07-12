@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 namespace Ron.Ido.EM.Entities
 {
 	[Index(nameof(OldId))]
-	public class FileInfo : IFileInfo
+	public class FileInfo
 	{
 		[Key]
 		public Guid Uid { get; set; }

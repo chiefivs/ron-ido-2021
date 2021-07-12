@@ -79,7 +79,7 @@ namespace ForeignDocsRec2020.Web
             });
             services
                 .AddHttpContextAccessor()
-                .AddFileStorage<Ron.Ido.EM.Entities.FileInfo>(fileStorageSettings)
+                .AddFileStorage(fileStorageSettings)
                 .AddMediatR(typeof(Ron.Ido.BM.IAssemblyMarker), typeof(Startup))
                 //.AddTransient<IStatusChecker,StatusChecker>( )
                 //.AddTransient<IIdentityService, IdentityService>( )

@@ -47,7 +47,7 @@ namespace Ron.Ido.Importer
 
 			services.AddSingleton<IConfiguration>(Configuration);
 			services.AddAppDbContext(dbSettings);
-			services.AddFileStorage<EM.Entities.FileInfo>(fileStorageSettings);
+			services.AddFileStorage(fileStorageSettings);
 			services.AddDbContext<NostrificationRONContext>(builder => builder.UseSqlServer(_nostrificationConn));
 			services.Add(
 				new ServiceDescriptor(typeof(NostrificationStorage),

@@ -13,5 +13,7 @@ namespace Ron.Ido.BM.Models.FileStorage
         public int Size { get; set; }
 
         public string ContentType { get; set; }
+
+        public string BytesBase64 { get; set; }
     }
 }

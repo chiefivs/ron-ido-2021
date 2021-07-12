@@ -168,18 +168,3 @@ export class App {
         }
     }
 }
-
-class TestMainPage extends MainPageBase{
-
-    constructor(title: string, html: string) {
-        super({
-            templateHtml: html,
-            pageTitle: title
-        });
-    }
-
-    close() {
-        console.log(`TestMainPage closing "${this.pageTitle()}"`);
-        super.close();
-    }
-}

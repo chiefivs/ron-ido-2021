@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Ron.Ido.BM.Models.Dossier
 {
-    public class ApplyDto: IValidatableObject
+    public class ApplyDto
     {
         public long Id { get; set; }
 
@@ -103,6 +103,7 @@ namespace Ron.Ido.BM.Models.Dossier
         /// Форма получения результата
         /// </summary>
         public long? DeliveryFormId { get; set; }
+        //TODO: Необходимо предусмотреть переключатель «Адрес доставки совпадает адресом получения», если указывается «нет», то появляется поле для ввода нового адреса
 
         /// <summary>
         /// Формы получения электронного свидетельства
@@ -285,17 +286,5 @@ namespace Ron.Ido.BM.Models.Dossier
         #region Прилагаемые документы
         public IEnumerable<ApplyAttachmentDto> Attachments { get; set; }
         #endregion
-
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            if (string.IsNullOrWhiteSpace(CreatorSurname) && !IsCreatorSurnameAbsent)
-                yield return new ValidationResult("Поле обязательно к заполнению", new[] { nameof(CreatorSurname) });
-
-            if (string.IsNullOrWhiteSpace(CreatorFirstName) && !IsCreatorFirstNameAbsent)
-                yield return new ValidationResult("Поле обязательно к заполнению", new[] { nameof(CreatorFirstName) });
-
-            if (string.IsNullOrWhiteSpace(CreatorLastName) && !IsCreatorLastNameAbsent)
-                yield return new ValidationResult("Поле обязательно к заполнению", new[] { nameof(CreatorLastName) });
-        }
     }
 }

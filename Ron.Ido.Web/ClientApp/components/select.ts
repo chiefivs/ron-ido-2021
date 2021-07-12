@@ -9,7 +9,7 @@ export function init(){
             }
         },
         template: `
-            <select class="form-control" data-bind="value: value, options: options, optionsText: optionsText, optionsValue: optionsValue, optionsCaption: optionsCaption, optionsAfterRender: afterRender, hasFocus:hasFocus, css:css, event:{keydown:keyDown}, disable:disable()||readonly(), attr:{readonly:readonly}"></select>`
+            <select class="form-control" data-bind="value: value, options: options, optionsText: optionsText, optionsValue: optionsValue, optionsCaption: optionsCaption, optionsAfterRender: afterRender, hasFocus:hasFocus, css:css, event:{keydown:keyDown}, disable:disable() || readonly(), attr:{readonly:readonly}"></select>`
     });
 }
 

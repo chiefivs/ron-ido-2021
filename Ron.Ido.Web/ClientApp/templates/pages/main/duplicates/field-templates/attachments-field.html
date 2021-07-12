@@ -4,33 +4,32 @@
             <tr>
                 <td rowspan="2" style="width:120px; vertical-align: top;">
                     <div data-bind="with:required">
-                        <cmp-checkbox params="value:true, checked:value, readonly:$parents[2].readonly()"></cmp-checkbox>
+                        <cmp-checkbox params="value:true, checked:value"></cmp-checkbox>
                         <label style="margin:0;">требуется</label>
                     </div>
                     <div data-bind="with:given">
-                        <cmp-checkbox params="value:true, checked:value, readonly:$parents[2].readonly()"></cmp-checkbox>
+                        <cmp-checkbox params="value:true, checked:value"></cmp-checkbox>
                         <label style="margin:0;">предоставлен</label>
                     </div>
                 </td>
                 <td>
                     <table style="width: 100%;">
                         <tr>
-                            <td style="width:20px;" data-bind="visible:$parent.errors().length">
-                                <i class="img img-error img-size-20" style="margin-right: 4px;" data-bind="attr: { title:$parent.errors().join('\n') }"></i>
+                            <td data-bind="visible:$parent.errors().length">
+                                <i class="img img-error img-size-20" data-bind="attr: { title:$parent.errors().join('\n') }"></i>
                             </td>
                             <td data-bind="if:attachmentTypeId.value()">
                                 <span data-bind="text:attachmentTypeName.value()"></span>
                             </td>
                             <td data-bind="ifnot:attachmentTypeId.value()">
                                 <!-- ko with:description -->
-                                <cmp-textbox params="value:value, readonly:$parents[2].readonly()"></cmp-textbox>
+                                <cmp-textbox params="value:value"></cmp-textbox>
                                 <!-- /ko -->
                             </td>
-                            <td style="width:20px;" data-bind="if:!attachmentTypeId.value() && !$parents[1].readonly()">
+                            <td data-bind="ifnot:attachmentTypeId.value()">
                                 <!-- ko with:$parent -->
+                                <a class="glyphicon glyphicon-remove pull-right" style="color:red;" data-bind="click:deleteAttachment"></a>
                                 <!-- /ko -->
-                                <a class="glyphicon glyphicon-remove pull-right" style="color:red;"
-                                   data-bind="click:function(){$parent.deleteAttachment()}"></a>
                             </td>
                         </tr>
                     </table>
@@ -38,19 +37,11 @@
             </tr>
             <tr>
                 <td data-bind="with:fileInfo">
-                    <!-- ko ifnot:$parents[2].readonly() -->
                     <cmp-fileupload params="files:value, accept:$parents[1].acceptFilesExt, validate:$parents[1].validateSelection.bind($parents[1])"></cmp-fileupload>
-                    <!-- /ko -->
-                    <span data-bind="text:$parents[1].fileDesc(), visible:!$parents[1].canDownload()"></span>
-                    <a data-bind="text:$parents[1].fileDesc(), visible:$parents[1].canDownload(), click:function(){$parents[1].downloadFile();}"></a>
-                    <!-- ko ifnot:$parents[2].readonly() -->
+                    <span data-bind="text:$parents[1].fileDesc()"></span>
                     <a class="glyphicon glyphicon-remove pull-right" style="color:red;" data-bind="click:$parents[1].deleteFile.bind($parents[1]), visible:value().length"></a>
-                    <!-- /ko -->
                 </td>
             </tr>
         </table>
     </div>
-</div>
-<div class="pull-right" data-bind="if:!readonly()">
-    <a data-bind="click:function(){$parents[4].addAttachment();}">добавить документ</a>
 </div>
