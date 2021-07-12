@@ -12,7 +12,7 @@ export default class DuplicateSearchMainPage extends MainPageBase {
     tableTotalCount = ko.observable(0);
     pagerState = ko.observable<ITablePagerState>({
         skipCount: 0,
-        sorting: 'Duplicate.createTime desc',
+        sorting: 'createTime desc',
         maxResultCount: 10,
     });
     private _searchPage: DuplicatesSearchLeftPage;

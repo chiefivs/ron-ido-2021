@@ -38,44 +38,43 @@ namespace Ron.Ido.BM.Commands.DuplicatesSearch
             return Task.Run(() =>
             {
                 var request = cmd.Request;
-                request.ReplaceOrder(nameof(DuplicatesSearchPageItemDto.CreateDate), "Duplicate." + nameof(E.Duplicate.CreateTime));
-                request.ReplaceOrder(nameof(DuplicatesSearchPageItemDto.CreatorFullName), "Duplicate." + nameof(Duplicate.FullName));
-                request.ReplaceOrder(nameof(DuplicatesSearchPageItemDto.OwnerFullName), "Duplicate." + nameof(Duplicate.DocFullName));
-                request.ReplaceOrder(nameof(DuplicatesSearchPageItemDto.Status), "Duplicate." + nameof(E.Duplicate.StatusId));
-                request.ReplaceOrder(nameof(DuplicatesSearchPageItemDto.BarCode), "Duplicate." + nameof(E.Duplicate.BarCode));
+                request.ReplaceOrder(nameof(DuplicatesSearchPageItemDto.CreateDate), nameof(E.Duplicate.CreateTime));
+                request.ReplaceOrder(nameof(DuplicatesSearchPageItemDto.CreatorFullName),  nameof(Duplicate.FullName));
+                request.ReplaceOrder(nameof(DuplicatesSearchPageItemDto.OwnerFullName),  nameof(Duplicate.DocFullName));
+                request.ReplaceOrder(nameof(DuplicatesSearchPageItemDto.Status),  nameof(E.Duplicate.StatusId));
+                request.ReplaceOrder(nameof(DuplicatesSearchPageItemDto.BarCode),  nameof(E.Duplicate.BarCode));
 
-                var result = _odataService.GetPage<E.Dossier, DuplicatesSearchPageItemDto>(request,
+                var result = _odataService.GetPage<Duplicate, DuplicatesSearchPageItemDto>(request,
                     new[]
                     {
-                        request.CreateCustomFilter<E.Dossier>(query => {
+                        request.CreateCustomFilter<E.Duplicate>(query => {
                             var statusFilter = request.GetFilter("statuses");
                             var allowedStatuses = statusFilter != null
                                 ? DuplicateAllowedStatuses.Search.Intersect(statusFilter.GetIds()).ToArray()
                                 : DuplicateAllowedStatuses.Search;
-                            query = query.Include(dossier=>dossier.Duplicate).Where(d=>d.Duplicate != null);
-                            query = query.Where(a => allowedStatuses.Contains(a.Duplicate.StatusId));
+                            query = query.Where(a => allowedStatuses.Contains(a.StatusId));
 
                             var barcodeFilter = request.GetFilter("barCode");
                             if(barcodeFilter != null && !string.IsNullOrEmpty(barcodeFilter.Values?.FirstOrDefault()))
                             {
-                                query = query.Where(dossier => dossier.Duplicate.BarCode.Contains( barcodeFilter.Values.First()) );
+                                query = query.Where(duplicate => duplicate.BarCode.Contains( barcodeFilter.Values.First()) );
                             }
-
+                            /*
                             var createTimeFilter = request.GetFilter("createTime");
                             if(createTimeFilter != null && createTimeFilter.Values.Length == 2)
                                     query = query
-                                .WhereGreaterThanOrEqual("Duplicate."+nameof(Duplicate.CreateTime), createTimeFilter.Values[0].Parse(typeof(DateTime)))
-                                .WhereLessThan("Duplicate."+nameof(Duplicate.CreateTime), createTimeFilter.Values[1].Parse(typeof(DateTime)));
-
+                                .WhereGreaterThanOrEqual(nameof(Duplicate.CreateTime), createTimeFilter.Values[0].Parse(typeof(DateTime)))
+                                .WhereLessThan(nameof(Duplicate.CreateTime), createTimeFilter.Values[1].Parse(typeof(DateTime)));
+                            */
                             var fullname = request.GetFilter("creatorFullName");
                             if(fullname != null && !string.IsNullOrEmpty(fullname.Values?.FirstOrDefault()))
                             {
-                                query = query.Where(dossier => dossier.Duplicate != null && dossier.Duplicate.FullName.Contains( fullname.Values.First()) );
+                                query = query.Where(duplicate => duplicate.FullName.Contains( fullname.Values.First()) );
                             }
                             var docFullName = request.GetFilter("ownerFullName");
                             if(docFullName != null && !string.IsNullOrEmpty(docFullName.Values?.FirstOrDefault()))
                             {
-                                query = query.Where(dossier => dossier.Duplicate != null && dossier.Duplicate.DocFullName.Contains(docFullName.Values.First() ) );
+                                query = query.Where(duplicate => duplicate.DocFullName.Contains(docFullName.Values.First() ) );
                             }
                             /*
                             var entryFormFilter = request.GetFilter("entryForms");
@@ -89,44 +88,32 @@ namespace Ron.Ido.BM.Commands.DuplicatesSearch
                         })
                     },
                     new[] {
-                        new ODataMapMemberConfig<E.Dossier, DuplicatesSearchPageItemDto>(
+                        new ODataMapMemberConfig<Duplicate, DuplicatesSearchPageItemDto>(
                             duplicateDto => duplicateDto.DossierId,
-                            expr => expr.MapFrom(dossier => dossier.Id)
+                            expr => expr.MapFrom(dossier => dossier.Dossiers.First().Id)
                         ),
-                        new ODataMapMemberConfig<E.Dossier, DuplicatesSearchPageItemDto>(
+                        new ODataMapMemberConfig<Duplicate, DuplicatesSearchPageItemDto>(
                             duplicateDto => duplicateDto.CreateDate,
-                            expr => expr.MapFrom(dossier => $"{dossier.Duplicate.CreateTime:dd.MM.yyyy}")
+                            expr => expr.MapFrom(dossier => $"{dossier.CreateTime:dd.MM.yyyy}")
                         ),
-                        new ODataMapMemberConfig<E.Dossier, DuplicatesSearchPageItemDto>(
+                        new ODataMapMemberConfig<Duplicate, DuplicatesSearchPageItemDto>(
                             duplicateDto => duplicateDto.CreatorFullName,
-                            expr => expr.MapFrom(dossier => $"{dossier.Duplicate.FullName}")
+                            expr => expr.MapFrom(dossier => $"{dossier.FullName}")
                         ),
-                        new ODataMapMemberConfig<E.Dossier, DuplicatesSearchPageItemDto>(
+                        new ODataMapMemberConfig<Duplicate, DuplicatesSearchPageItemDto>(
                             duplicateDto => duplicateDto.OwnerFullName,
-                            expr => expr.MapFrom(dossier => $"{dossier.Duplicate.DocFullName}")
+                            expr => expr.MapFrom(dossier => $"{dossier.DocFullName}")
                         ),
-                        new ODataMapMemberConfig<E.Dossier, DuplicatesSearchPageItemDto>(
+                        new ODataMapMemberConfig<Duplicate, DuplicatesSearchPageItemDto>(
                             duplicateDto => duplicateDto.BarCode,
-                            expr => expr.MapFrom(dossier => dossier.Duplicate.BarCode)
+                            expr => expr.MapFrom(dossier => dossier.BarCode)
                         ),
-                        new ODataMapMemberConfig<E.Dossier, DuplicatesSearchPageItemDto>(
+                        new ODataMapMemberConfig<Duplicate, DuplicatesSearchPageItemDto>(
                             duplicateDto => duplicateDto.Status,
                             expr => expr.MapFrom(
-                                dossier => dossier.Duplicate.Status.Name
+                                dossier => dossier.Status.Name
                                 )
-                            ),
-                        new ODataMapMemberConfig<E.Dossier, DuplicatesSearchPageItemDto>(
-                            duplicateDto => duplicateDto.DossierId,
-                            expr => expr.MapFrom(
-                                dossier => dossier.Id
-                                )),
-                        new ODataMapMemberConfig<E.Dossier, DuplicatesSearchPageItemDto>(
-                            duplicateDto => duplicateDto.Id,
-                            expr => expr.MapFrom(
-                                dossier => dossier.Duplicate.Id
-                                )
-
-                        )
+                            )
                     });
 
                 return result;
