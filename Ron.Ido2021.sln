@@ -35,7 +35,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ron.Ido.FileStorage", "Ron.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ron.Ido.DbStorage.Npgsql", "Providers\Ron.Ido.DbStorage.Npgsql\Ron.Ido.DbStorage.Npgsql.csproj", "{675D5190-B845-44D3-BC64-F8A8022CDE02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ron.Ido.Tests", "Ron.Ido.Tests\Ron.Ido.Tests.csproj", "{60EE3251-70D4-456C-81BE-B3193B74405A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ron.Ido.Tests", "Ron.Ido.Tests\Ron.Ido.Tests.csproj", "{60EE3251-70D4-456C-81BE-B3193B74405A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ron.Ido.Scheduler", "Ron.Ido.Scheduler\Ron.Ido.Scheduler.csproj", "{002DEE32-EDC8-4136-B333-6507B22BC62B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -91,6 +93,10 @@ Global
 		{60EE3251-70D4-456C-81BE-B3193B74405A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{60EE3251-70D4-456C-81BE-B3193B74405A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{60EE3251-70D4-456C-81BE-B3193B74405A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{002DEE32-EDC8-4136-B333-6507B22BC62B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{002DEE32-EDC8-4136-B333-6507B22BC62B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{002DEE32-EDC8-4136-B333-6507B22BC62B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{002DEE32-EDC8-4136-B333-6507B22BC62B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
