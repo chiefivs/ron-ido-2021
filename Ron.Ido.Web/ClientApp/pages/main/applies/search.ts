@@ -4,11 +4,11 @@ import { default as DossierMainPage } from '../dossier/dossier';
 import { ILeftPage, MainPageBase, LeftPageBase } from '../../../modules/content';
 import { IODataFilter, ODataFilterTypeEnum, ODataOrderTypeEnum } from '../../../codegen/webapi/odata';
 import { ITablePagerState, TableColumnOrderDirection, IFilterParams, IFilterOption, FilterValueType } from '../../../components/index';
-import { AppliesSearchtApi } from '../../../codegen/webapi/appliesSearchtApi';
+import { AppliesSearchApi } from '../../../codegen/webapi/appliesSearchApi';
 import { IODataOrder } from '../../../codegen/webapi/odata';
 
 export default class SearchMainPage extends MainPageBase {
-    applies = ko.observableArray<AppliesSearchtApi.IAppliesSearchPageItemDto>([]);
+    applies = ko.observableArray<AppliesSearchApi.IAppliesSearchPageItemDto>([]);
     tableTotalCount = ko.observable(0);
     pagerState = ko.observable<ITablePagerState>({
         skipCount: 0,
@@ -50,7 +50,7 @@ export default class SearchMainPage extends MainPageBase {
 
         const filterStates = this._searchPage.filterStates();
 
-        AppliesSearchtApi.getAppliesSearchPage({
+        AppliesSearchApi.getAppliesSearchPage({
             skip: state.skipCount,
             take: state.maxResultCount,
             filters: filterStates,
@@ -61,7 +61,7 @@ export default class SearchMainPage extends MainPageBase {
         });
     }
 
-    open(item: AppliesSearchtApi.IAppliesSearchPageItemDto) {
+    open(item: AppliesSearchApi.IAppliesSearchPageItemDto) {
         console.log(item);
         const page = <DossierMainPage>App.instance().openMainPage('dossier/dossier', item.dossierId.toString());
         page.openApply();
@@ -97,7 +97,7 @@ class AppliesSearchLeftPage extends LeftPageBase {
             { title: 'Этапы', field: 'stages', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.stagesOptions }
         ];
 
-        AppliesSearchtApi.getAppliesSearchDictions().done(dictions => {
+        AppliesSearchApi.getAppliesSearchDictions().done(dictions => {
             const statusOptionValues: IFilterOption[] = ko.utils.arrayMap(dictions.statuses, status =>
                 <IFilterOption>{ value: status.value.toString(), text: status.text });
             this.statusesOptions(statusOptionValues);

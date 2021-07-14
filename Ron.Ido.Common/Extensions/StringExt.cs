@@ -111,5 +111,17 @@
         }
 
         public static string Join(this IEnumerable<string> list, string separator) => string.Join(separator, list);
+
+
+        public static string FormatDate(this DateTime self)
+        {
+            return self.ToString("dd.MM.yyyy HH:mm");
+        }
+        public static string FormatDate(this DateTime? self)
+        {
+            if ( !self.HasValue )
+                return string.Empty;
+            return self.Value.FormatDate();
+        }
     }
 }

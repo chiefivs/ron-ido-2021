@@ -234,8 +234,8 @@ export class FormBlock implements IFormBlockHolder {
     
                 return true;
             }
-
-            f.readonly = ko.observable(false);
+            if ( !f.readonly)
+                f.readonly = ko.observable(false);
             f.visible = ko.observable(true);
             f.hasFocus = ko.observable(false);
             f.hasFocus.subscribe(has => { 

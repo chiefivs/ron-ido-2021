@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Ron.Ido.BM.Commands.Applies.Acceptance;
 using Ron.Ido.BM.Commands.Applies.AppliesSearch;
@@ -15,11 +15,11 @@ namespace Ron.Ido.Web.Controllers
 {
     [ApiController]
 
-    public class AppliesSearchControllert : ControllerBase
+    public class AppliesSearchController : ControllerBase
     {
         private IMediator _mediator;
 
-        public AppliesSearchControllert(IMediator mediator)
+        public AppliesSearchController(IMediator mediator)
         {
             _mediator = mediator;
         }
@@ -37,7 +37,7 @@ namespace Ron.Ido.Web.Controllers
         [AuthorizedFor(PermissionEnum.APPLY_VIEW, PermissionEnum.APPLY_CREATE, PermissionEnum.APPLY_EDIT, PermissionEnum.APPLY_DEL)]
         public async Task<AppliesSearchDictions> GetAppliesSearchDictions()
         {
-            return await _mediator.Send(new GetAppliesSearchDictinsCommand());
+            return await _mediator.Send(new GetAppliesSearchDictionsCommand());
         }
 
     }

@@ -23,6 +23,21 @@ export namespace DossierApi {
         return WebApi.post(segments.join('/'), apply);
     }
 
+    export function getDuplicate(id:number): JQueryPromise<IODataForm<IDuplicateDto>> {
+        const segments = ['api', 'duplicate', id, 'get'];
+        return WebApi.get(segments.join('/'));
+    }
+
+    export function validateDuplicate(apply:IDuplicateDto): JQueryPromise<{[key:string]:string[]}> {
+        const segments = ['api', 'duplicate', 'validate'];
+        return WebApi.post(segments.join('/'), apply);
+    }
+
+    export function saveDuplicate(apply:IDuplicateDto): JQueryPromise<any> {
+        const segments = ['api', 'duplicate', 'save'];
+        return WebApi.post(segments.join('/'), apply);
+    }
+
     //  Ron.Ido.BM.Models.Dossier.DossierDataDto
     export interface IDossierDataDto {
         id:number;
@@ -146,6 +161,39 @@ export namespace DossierApi {
         attachmentTypeId:number;
         attachmentTypeName:string;
         fileInfo:IFileInfoDto[];
+    }
+
+    //  Ron.Ido.BM.Models.Dossier.DuplicateDto
+    export interface IDuplicateDto {
+        id:number;
+        createTime:string;
+        handoutTime:string;
+        barCode:string;
+        storage:string;
+        createUserId:number;
+        handoutUserId:number;
+        isEnglish:boolean;
+        statusId:number;
+        email:string;
+        note:string;
+        fullName:string;
+        mailIndex:string;
+        cityName:string;
+        street:string;
+        block:string;
+        flat:string;
+        corpus:string;
+        building:string;
+        address:string;
+        phones:string;
+        creatorCountryId:number;
+        docFullName:string;
+        schoolName:string;
+        docCountryId:number;
+        documentTypeId:number;
+        documentDate:string;
+        returnOriginalsFormId:number;
+        returnOriginalsPostAddress:string;
     }
 
 }
