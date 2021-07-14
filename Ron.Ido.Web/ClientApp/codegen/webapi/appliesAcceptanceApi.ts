@@ -26,6 +26,23 @@ export namespace AppliesAcceptanceApi {
         status:string;
     }
 
+    //  Ron.Ido.BM.Models.Applies.Acceptance.AcceptancePageItemDto - статические поля
+    export class AcceptancePageItemDtoConstants {
+        static primaryBarCodeFilterField = 'primaryBarCode';
+        static barCodeFilterField = 'barCode';
+        static createTimeFilterField = 'createTime';
+        static creatorSurnameFilterField = 'creatorSurname';
+        static creatorFirstNameFilterField = 'creatorFirstName';
+        static creatorLastNameFilterField = 'creatorLastName';
+        static ownerSurnameFilterField = 'ownerSurname';
+        static ownerFirstNameFilterField = 'ownerFirstName';
+        static ownerLastNameFilterField = 'ownerLastName';
+        static statusesFilterField = 'statuses';
+        static learnLevelsFilterField = 'learnLevels';
+        static entryFormsFilterField = 'entryForms';
+        static stagesFilterField = 'stages';
+    }
+
     //  Ron.Ido.BM.Models.Applies.Acceptance.AcceptanceDictions
     export interface IAcceptanceDictions {
         statuses:IODataOption[];

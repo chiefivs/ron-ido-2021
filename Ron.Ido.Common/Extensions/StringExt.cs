@@ -38,6 +38,11 @@
             }
         }
 
+        public static T[] Parse<T>(this string[] source, T defValue)
+        {
+            return source.Select(s => s.Parse<T>(defValue)).ToArray();
+        }
+
         // ReSharper disable once InconsistentNaming
         private static readonly Dictionary<Type, MethodInfo> _parseMethods = new Dictionary<Type, MethodInfo>();
         public static object Parse(this string source, Type type)

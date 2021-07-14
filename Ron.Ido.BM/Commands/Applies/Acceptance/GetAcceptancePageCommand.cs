@@ -44,37 +44,24 @@ namespace Ron.Ido.BM.Commands.Applies.Acceptance
                 var result = _odataService.GetPage(request,
                     new[]
                     {
-                        request.CreateCustomFilter<Apply>(query => {
-                            var statusFilter = request.GetFilter("statuses");
-                            var allowedStatuses = statusFilter != null
-                                ? ApplyAllowedStatuses.Acceptance.Intersect(statusFilter.GetIds()).ToArray()
+                        new ODataCustomFilter<Apply>(AcceptancePageItemDto.StatusesFilterField, (query, values) => {
+                            var allowedStatuses = values != null
+                                ? ApplyAllowedStatuses.Acceptance.Intersect(values.Parse<long>(0)).ToArray()
                                 : ApplyAllowedStatuses.Acceptance;
-                            query = query.Where(a => allowedStatuses.Contains(a.StatusId));
-
-                            var levelFilter = request.GetFilter("learnLevels");
-                            if(levelFilter != null)
-                            {
-                                var ids = levelFilter.GetIds();
-                                query = query.Where(a => a.DocTypeId != null && ids.Contains(a.DocType.LearnLevelId));
-                            }
-
-                            var entryFormFilter = request.GetFilter("entryForms");
-                            if(entryFormFilter != null)
-                            {
-                                var ids = entryFormFilter.GetIds();
-                                query = query.Where(a => ids.Contains(a.Id));
-                            }
-
-                            var stagesFilter = request.GetFilter("stages");
-                            if(stagesFilter != null)
-                            {
-                                var ids = stagesFilter.GetIds();
-                                query = query.Where(a => a.Status.EtapId != null && ids.Contains(a.Status.EtapId.Value));
-                            }
-
-
-                            return query;
-                        })
+                            return query.Where(a => allowedStatuses.Contains(a.StatusId));
+                        }),
+                        new ODataCustomFilter<Apply>(AcceptancePageItemDto.LearnLevelsFilterField, (query, values) => {
+                                var ids = values.Parse<long>(0);
+                                return query.Where(a => a.DocTypeId != null && ids.Contains(a.DocType.LearnLevelId));
+                        }),
+                        new ODataCustomFilter<Apply>(AcceptancePageItemDto.EntryFormsFilterField, (query, values) => {
+                                var ids = values.Parse<long>(0);
+                                return query.Where(a => a.EntryFormId != null && ids.Contains(a.EntryFormId.Value));
+                        }),
+                        new ODataCustomFilter<Apply>(AcceptancePageItemDto.StagesFilterField, (query, values) => {
+                                var ids = values.Parse<long>(0);
+                                return query.Where(a => a.Status.EtapId != null && ids.Contains(a.Status.EtapId.Value));
+                        }),
                     },
                     new[] {
                         new ODataMapMemberConfig<Apply, AcceptancePageItemDto>(
