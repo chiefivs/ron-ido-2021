@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Ron.Ido.BM.Models.Duplicate
+namespace Ron.Ido.BM.Models.Dossier
 {
     public class DuplicateDto : IValidatableObject
     {

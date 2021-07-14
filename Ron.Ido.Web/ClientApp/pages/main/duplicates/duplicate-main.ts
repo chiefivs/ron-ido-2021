@@ -2,7 +2,7 @@ import * as ko from 'knockout';
 import { DossierPartBase, IDossier } from '../dossier/dossier-part-base';
 import { Form, IFormField } from '../../../modules/forms';
 import { Utils } from '../../../modules/utils';
-import { DuplicatesSearchApi } from '../../../codegen/webapi/duplicatesSearchApi';
+import { DossierApi } from '../../../codegen/webapi/dossierApi';
 import { IODataForm } from '../../../codegen/webapi/odata';
 import { Control, IControlParams } from '../../../modules/content';
 
@@ -57,7 +57,7 @@ export class Duplicate extends DuplicatePartBase implements IDuplicateFieldBlock
     ready: ko.Observable<boolean>;
     blocks = ko.observableArray<DuplicateFieldsBlock>();
 
-    private _getDuplicatePromise: JQueryPromise<IODataForm<DuplicatesSearchApi.IDuplicateDto>>
+    private _getDuplicatePromise: JQueryPromise<IODataForm<DossierApi.IDuplicateDto>>
 
     constructor(id: number, owner: IDuplicate) {
         super({
@@ -66,7 +66,7 @@ export class Duplicate extends DuplicatePartBase implements IDuplicateFieldBlock
         });
         this.ready = ko.observable(false);
         this.priority = 0;
-        this._getDuplicatePromise = DuplicatesSearchApi.getDuplicate(id).done(data => {
+        this._getDuplicatePromise = DossierApi.getDuplicate(id).done(data => {
             this.form = new DuplicateForm(data);
             this.ready(true);
             this._setBlocks();
@@ -215,9 +215,9 @@ export class Duplicate extends DuplicatePartBase implements IDuplicateFieldBlock
     }
 }
 
-class DuplicateForm extends Form<DuplicatesSearchApi.IDuplicateDto> {
-    constructor(data: IODataForm<DuplicatesSearchApi.IDuplicateDto>) {
-        super(data, DuplicatesSearchApi.saveDuplicate, DuplicatesSearchApi.validateDuplicate);
+class DuplicateForm extends Form<DossierApi.IDuplicateDto> {
+    constructor(data: IODataForm<DossierApi.IDuplicateDto>) {
+        super(data, DossierApi.saveDuplicate, DossierApi.validateDuplicate);
     }
 }
 

@@ -1,9 +1,9 @@
-﻿using Ron.Ido.BM.Models.Duplicate;
+﻿using Ron.Ido.BM.Models.Dossier;
 using Ron.Ido.BM.Services;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Ron.Ido.BM.Commands.DuplicatesSearch
+namespace Ron.Ido.BM.Commands.Dossier.Duplicate
 {
     public abstract class DuplicateHandlerBase
     {

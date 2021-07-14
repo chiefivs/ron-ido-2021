@@ -1,19 +1,16 @@
 ﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Ron.Ido.BM.Constants;
-using Ron.Ido.BM.Models.Duplicate;
+using Ron.Ido.BM.Models.Dossier;
 using Ron.Ido.BM.Models.OData;
 using Ron.Ido.BM.Services;
 using Ron.Ido.Common.Extensions;
 using Ron.Ido.EM.Entities;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using E = Ron.Ido.EM.Entities;
 
-namespace Ron.Ido.BM.Commands.DuplicatesSearch
+namespace Ron.Ido.BM.Commands.Dossier.Duplicate
 {
     public class GetDuplicateCommand : IRequest<ODataForm<DuplicateDto>>
     {
@@ -39,25 +36,25 @@ namespace Ron.Ido.BM.Commands.DuplicatesSearch
 
             return Task.Run(() =>
             {
-                var dto = _odataService.GetDto(cmd.Id, 
+                var dto = _odataService.GetDto(cmd.Id,
                     new[] {
-                        new ODataMapMemberConfig<EM.Entities.Duplicate, DuplicateDto>(
+                        new ODataMapMemberConfig<E.Duplicate, DuplicateDto>(
                             dto => dto.CreateTime,
                             expr => expr.MapFrom(dup => dup.CreateTime.FormatDate())
                             )
                             ,
-                        new ODataMapMemberConfig<EM.Entities.Duplicate, DuplicateDto>(
+                        new ODataMapMemberConfig<E.Duplicate, DuplicateDto>(
                             dto => dto.HandoutTime,
                             expr => expr.MapFrom(dup => dup.HandoutTime.FormatDate())
                             )
                     });
 
 
-                var docTypes = _odataService.GetOptions<EM.Entities.ApplyDocType>("Name", "Id");
-                var deliveryForm = _odataService.GetOptions<EM.Entities.ApplyDeliveryForm>("Name", "Id");
-                var allCountries = _odataService.GetOptions<EM.Entities.Country>("Name", "Id");
-                var foreignCountries = _odataService.GetOptions<EM.Entities.Country>("Name", "Id", countries => countries.Where(c => c.A2code != "RU"));
-                var status = _odataService.GetOptions<EM.Entities.DuplicateStatus>("Name", "Id");
+                var docTypes = _odataService.GetOptions<ApplyDocType>("Name", "Id");
+                var deliveryForm = _odataService.GetOptions<ApplyDeliveryForm>("Name", "Id");
+                var allCountries = _odataService.GetOptions<Country>("Name", "Id");
+                var foreignCountries = _odataService.GetOptions<Country>("Name", "Id", countries => countries.Where(c => c.A2code != "RU"));
+                var status = _odataService.GetOptions<DuplicateStatus>("Name", "Id");
 
                 return new ODataForm<DuplicateDto>
                 {

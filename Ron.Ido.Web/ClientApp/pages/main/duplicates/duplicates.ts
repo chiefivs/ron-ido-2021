@@ -4,11 +4,11 @@ import { default as DuplicateMainPage } from './duplicate';
 import { ILeftPage, MainPageBase, LeftPageBase } from '../../../modules/content';
 import { IODataFilter, ODataFilterTypeEnum, ODataOrderTypeEnum } from '../../../codegen/webapi/odata';
 import { ITablePagerState, TableColumnOrderDirection, IFilterParams, IFilterOption, FilterValueType } from '../../../components/index';
-import { DuplicatesSearchApi } from '../../../codegen/webapi/duplicatesSearchApi';
+import { DuplicatesApi } from '../../../codegen/webapi/duplicatesApi';
 import { IODataOrder } from '../../../codegen/webapi/odata';
 
 export default class DuplicateSearchMainPage extends MainPageBase {
-    applies = ko.observableArray<DuplicatesSearchApi.IDuplicatesSearchPageItemDto>([]);
+    applies = ko.observableArray<DuplicatesApi.IDuplicatesPageItemDto>([]);
     tableTotalCount = ko.observable(0);
     pagerState = ko.observable<ITablePagerState>({
         skipCount: 0,
@@ -50,7 +50,7 @@ export default class DuplicateSearchMainPage extends MainPageBase {
 
         const filterStates = this._searchPage.filterStates();
 
-        DuplicatesSearchApi.getDuplicatesSearchPage({
+        DuplicatesApi.getDuplicatesSearchPage({
             skip: state.skipCount,
             take: state.maxResultCount,
             filters: filterStates,
@@ -61,7 +61,7 @@ export default class DuplicateSearchMainPage extends MainPageBase {
         });
     }
 
-    open(item: DuplicatesSearchApi.IDuplicatesSearchPageItemDto) {
+    open(item: DuplicatesApi.IDuplicatesPageItemDto) {
         console.log(item);
         const page = <DuplicateMainPage>App.instance().openMainPage('duplicates/duplicate', item.id.toString());
         page.openDuplicate();
@@ -89,7 +89,7 @@ class DuplicatesSearchLeftPage extends LeftPageBase {
             { title: 'Статусы', field: 'statuses', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.statusesOptions },
         ];
 
-        DuplicatesSearchApi.getDuplicatesSearchDictions().done(dictions => {
+        DuplicatesApi.getDuplicatesSearchDictions().done(dictions => {
             const statusOptionValues: IFilterOption[] = ko.utils.arrayMap(dictions.statuses, status =>
                 <IFilterOption>{ value: status.value.toString(), text: status.text });
             this.statusesOptions(statusOptionValues);

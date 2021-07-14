@@ -1,6 +1,6 @@
 import * as ko from 'knockout';
 import { Control, IControlParams, ILeftPage, MainPageBase, LeftPageBase } from '../../../modules/content';
-import { DuplicatesSearchApi } from '../../../codegen/webapi/duplicatesSearchApi';
+import { DossierApi } from '../../../codegen/webapi/dossierApi';
 import { App } from '../../../app';
 //import  { IDuplicate, DuplicatePartBase } from '../dossier/dossier-part-base';
 import { Duplicate, DuplicatePartBase, IDuplicate } from '../duplicates/duplicate-main';
@@ -10,12 +10,12 @@ import { IODataForm } from '../../../codegen/webapi/odata';
 
 export default class DuplicateMainPage extends MainPageBase implements IDuplicate {
     id: number;
-    data = ko.observable<DuplicatesSearchApi.IDuplicateDto>();
+    data = ko.observable<DossierApi.IDuplicateDto>();
     parts: ko.ObservableArray<DuplicatePartBase>;
     sortedParts: ko.Computed<DuplicatePartBase[]>;
-    duplicate = ko.observable<DuplicatePartDescriptor<DuplicatesSearchApi.IDuplicateDto>>();
+    duplicate = ko.observable<DuplicatePartDescriptor<DossierApi.IDuplicateDto>>();
 
-    private _loadDuplicatePromise: JQueryPromise<IODataForm< DuplicatesSearchApi.IDuplicateDto>>;
+    private _loadDuplicatePromise: JQueryPromise<IODataForm< DossierApi.IDuplicateDto>>;
     private _dataPage: DuplicateDataLeftPage;
 
     constructor(duplicateId:string) {
@@ -35,7 +35,7 @@ export default class DuplicateMainPage extends MainPageBase implements IDuplicat
         this.leftPages([<ILeftPage>this._dataPage]);
 
         if(this.id) {
-            this._loadDuplicatePromise = DuplicatesSearchApi.getDuplicate(this.id)
+            this._loadDuplicatePromise = DossierApi.getDuplicate(this.id)
             .done(data => {
                 this.pageTitle(data.item.barCode);
 
