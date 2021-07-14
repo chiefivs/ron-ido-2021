@@ -1,4 +1,4 @@
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Ron.Ido.BM.Models.OData;
+using Ron.Ido.BM.Scheduler;
 using Ron.Ido.Common;
 using Ron.Ido.Common.DependencyInjection;
 using Ron.Ido.Common.Extensions;
@@ -28,7 +29,7 @@ using System.Security.Authentication;
 
 namespace ForeignDocsRec2020.Web
 {
-    public class Startup
+	public class Startup
     {
         public IConfiguration Configuration { get; }
         private const string DBCONTEXT_CREATED = "AppDbContextCreated";
@@ -36,163 +37,165 @@ namespace ForeignDocsRec2020.Web
 
         public Startup()
         {
-            string basepath = Environment.GetEnvironmentVariable(Constants.ConfigFolderPath)
-                  ?? Environment.GetEnvironmentVariable(Constants.ConfigFolderPath, EnvironmentVariableTarget.Machine);
+            string basepath = Environment.GetEnvironmentVariable( Constants.ConfigFolderPath )
+            ?? Environment.GetEnvironmentVariable( Constants.ConfigFolderPath, EnvironmentVariableTarget.Machine );
 
             var builder = new ConfigurationBuilder();
-            if (File.Exists(APPSETTINGS))
-                builder.AddJsonFile(APPSETTINGS, true);
-            else if(!string.IsNullOrEmpty(basepath))
-                builder.AddJsonFile(Path.Combine(basepath, APPSETTINGS), true);
+            if ( File.Exists( APPSETTINGS ) )
+                builder.AddJsonFile( APPSETTINGS, true );
+            else if ( !string.IsNullOrEmpty( basepath ) )
+                builder.AddJsonFile( Path.Combine( basepath, APPSETTINGS ), true );
 
             Configuration = builder.Build();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public void ConfigureServices( IServiceCollection services )
         {
             var dbContextSettings = Configuration.GetSettings<AppDbContextSettings>();
-            services.AddAppDbContext(dbContextSettings, (provider, context) => {
+            services.AddAppDbContext( dbContextSettings, ( provider, context ) => {
                 var httpcontext = provider.GetRequiredService<IHttpContextAccessor>()?.HttpContext;
-                //  если это httprequest, то при создании контекста сразу открываем транзакцию
-                //  (при завершении запроса закроем)
+                // если это httprequest, то при создании контекста сразу открываем транзакцию
+                // (при завершении запроса закроем)
 
-                //  (при завершении запроса закроем)
-                if (httpcontext != null)
+                // (при завершении запроса закроем)
+                if ( httpcontext != null )
                 {
-                    httpcontext.Items.Add(DBCONTEXT_CREATED, true);
+                    httpcontext.Items.Add( DBCONTEXT_CREATED, true );
                     context.BeginTransaction();
                 }
-            });
+            } );
 
             var authSettings = Configuration.GetSettings<AuthOptionSettings>();
             var fileStorageSettings = Configuration.GetSettings<FileStorageSettings>();
-            AuthOptions.SetSettings(authSettings);
+            AuthOptions.SetSettings( authSettings );
 
             services.AddMvcCore();
-            services.AddLogging(builder =>
+            services.AddLogging( builder =>
             {
                 builder
-                    .AddFileLogging(Configuration)
-                    //.AddConsole()
-                    .SetMinimumLevel(LogLevel.Debug);
-            });
+                .AddFileLogging( Configuration )
+                //.AddConsole()
+                .SetMinimumLevel( LogLevel.Debug );
+            } );
             services
-                .AddHttpContextAccessor()
-                .AddFileStorage(fileStorageSettings)
-                .AddMediatR(typeof(Ron.Ido.BM.IAssemblyMarker), typeof(Startup))
-                //.AddTransient<IStatusChecker,StatusChecker>( )
-                //.AddTransient<IIdentityService, IdentityService>( )
-                .AddDependencies(typeof(Ron.Ido.BM.IAssemblyMarker), typeof(Startup))
-                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options => {
-                    options.RequireHttpsMetadata = false;
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        // указывает, будет ли валидироваться издатель при валидации токена
-                        ValidateIssuer = false,
-                        // строка, представляющая издателя
-                        ValidIssuer = AuthOptions.ISSUER,
-                        // будет ли валидироваться потребитель токена
-                        ValidateAudience = false,
-                        // установка потребителя токена
-                        ValidAudience = AuthOptions.AUDIENCE,
-                        // будет ли валидироваться время существования
-                        ValidateLifetime = false,
-                        // установка ключа безопасности
-                        IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
-                        // валидация ключа безопасности
-                        ValidateIssuerSigningKey = false,
-                    };
-                });
+            .AddHttpContextAccessor()
+            .AddFileStorage( fileStorageSettings )
+            .AddMediatR( typeof( Ron.Ido.BM.IAssemblyMarker ), typeof( Startup ) )
+            .AddSchedulerJobs()
+            .AddSingleton<IHostedService, SchedulerHostedService>()
+            //.AddTransient<IStatusChecker,StatusChecker>( )
+            //.AddTransient<IIdentityService, IdentityService>( )
+            .AddDependencies( typeof( Ron.Ido.BM.IAssemblyMarker ), typeof( Startup ) )
+            .AddAuthentication( JwtBearerDefaults.AuthenticationScheme )
+            .AddJwtBearer( options => {
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+        // указывает, будет ли валидироваться издатель при валидации токена
+        ValidateIssuer = false,
+        // строка, представляющая издателя
+        ValidIssuer = AuthOptions.ISSUER,
+        // будет ли валидироваться потребитель токена
+        ValidateAudience = false,
+        // установка потребителя токена
+        ValidAudience = AuthOptions.AUDIENCE,
+        // будет ли валидироваться время существования
+        ValidateLifetime = false,
+        // установка ключа безопасности
+        IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+        // валидация ключа безопасности
+        ValidateIssuerSigningKey = false,
+                };
+            } );
 
             services.AddControllers();
-            services.AddSwaggerGen(c =>
+            services.AddSwaggerGen( c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "RonIdo2021.Web", Version = "v1" });
-                c.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
+                c.SwaggerDoc( "v1", new OpenApiInfo { Title = "RonIdo2021.Web", Version = "v1" } );
+                c.AddSecurityDefinition( "bearer", new OpenApiSecurityScheme
                 {
                     Type = SecuritySchemeType.Http,
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header,
                     Scheme = "bearer"
-                });
+                } );
                 c.OperationFilter<SwaggerAuthorizationFilter>();
-            });
+            } );
 
-            services.Configure<ApiBehaviorOptions>(options =>
+            services.Configure<ApiBehaviorOptions>( options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
-            });
+            } );
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure( IApplicationBuilder app, IWebHostEnvironment env )
         {
-            if (env.IsDevelopment())
+            if ( env.IsDevelopment() )
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Ron Ido Web v1"));
+                app.UseSwaggerUI( c => c.SwaggerEndpoint( "/swagger/v1/swagger.json", "Ron Ido Web v1" ) );
             }
 
             //app.UseResponseCompression();
 
             //app.Use(async (context, next) => {
-            //    //  ���� ����� �������� ������ Request.Body ���-�� � ���� (��� �������), ����������������� ���� �����
-            //    context.Request.EnableBuffering();
-            //    await next();
+            // // ���� ����� �������� ������ Request.Body ���-�� � ���� (��� �������), ����������������� ���� �����
+            // context.Request.EnableBuffering();
+            // await next();
             //});
 
-            app.Use(async (context, next) =>
+            app.Use( async ( context, next ) =>
             {
                 await next();
-                //  это аналог endrequest
-                //  если в процессе обработки запроса создавался AppDbContext, то нужно закрыть транзакцию
-                if (context.Items.ContainsKey(DBCONTEXT_CREATED))
+                // это аналог endrequest
+                // если в процессе обработки запроса создавался AppDbContext, то нужно закрыть транзакцию
+                if ( context.Items.ContainsKey( DBCONTEXT_CREATED ) )
                 {
                     var dbcontext = context.RequestServices.GetService<AppDbContext>();
-                    if (context.Response.StatusCode == (int)HttpStatusCode.OK)
-                        //  при успешном результате коммитим изменения в БД
+                    if ( context.Response.StatusCode == (int)HttpStatusCode.OK )
+                        // при успешном результате коммитим изменения в БД
                         dbcontext?.Commit();
                     else
-                        //  иначе отменяем их
+                        // иначе отменяем их
                         dbcontext?.Rollback();
                 }
-            });
+            } );
 
-            app.Use(async (context, next) =>
+            app.Use( async ( context, next ) =>
             {
-                //  обработка ошибок при выполнении запросов
+                // обработка ошибок при выполнении запросов
                 try
                 {
                     await next();
                 }
-                catch(Exception error)
+                catch ( Exception error )
                 {
-                    if (error is AuthenticationException)
+                    if ( error is AuthenticationException )
                     {
                         context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                         context.Response.ContentType = "text/html";
-                        await context.Response.WriteAsync(error.Message);
+                        await context.Response.WriteAsync( error.Message );
                         return;
                     }
 
-                    if (error is UnauthorizedAccessException)
+                    if ( error is UnauthorizedAccessException )
                     {
                         context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
                         return;
                     }
 
-                    if (error is ODataValidationException)
+                    if ( error is ODataValidationException )
                     {
                         context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                         context.Response.ContentType = "application/json";
-                        await context.Response.WriteAsJsonAsync((error as ODataValidationException).Errors);
+                        await context.Response.WriteAsJsonAsync( (error as ODataValidationException).Errors );
                         return;
                     }
 
                     var factory = app.ApplicationServices.GetService<ILoggerFactory>();
-                    var logger = factory.CreateLogger("Web application");
+                    var logger = factory.CreateLogger( "Web application" );
                     var logItem = new WebApiErrorLogItem
                     {
                         Message = "Internal server error",
@@ -201,31 +204,31 @@ namespace ForeignDocsRec2020.Web
                     };
 
                     var uid = Guid.NewGuid();
-                    logger.LogError(uid, logItem, error);
+                    logger.LogError( uid, logItem, error );
 
                     context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                     context.Response.ContentType = "application/json";
-                    await context.Response.WriteAsJsonAsync(new { LogItemUid  = uid });
+                    await context.Response.WriteAsJsonAsync( new { LogItemUid = uid } );
                 }
-            });
+            } );
 
             app.UseAuthentication();
             app.UseRouting();
 
-            app.UseEndpoints(endpoints =>
+            app.UseEndpoints( endpoints =>
             {
                 endpoints.MapControllers();
-            });
+            } );
 
-            app.Use(async (context, next) =>
+            app.Use( async ( context, next ) =>
             {
-                if (string.IsNullOrEmpty(context.Request.Path.Value.Trim('/')))
+                if ( string.IsNullOrEmpty( context.Request.Path.Value.Trim( '/' ) ) )
                 {
                     context.Request.Path = "/index.html";
                 }
 
                 await next();
-            });
+            } );
             app.UseStaticFiles();
 
         }
@@ -233,7 +236,7 @@ namespace ForeignDocsRec2020.Web
 
     public class CustomExceptionFilterAttribute : Attribute, IExceptionFilter
     {
-        public void OnException(ExceptionContext context)
+        public void OnException( ExceptionContext context )
         {
             string actionName = context.ActionDescriptor.DisplayName;
             string exceptionStack = context.Exception.StackTrace;
@@ -246,9 +249,10 @@ namespace ForeignDocsRec2020.Web
         }
     }
 
-    public class WebApiErrorLogItem: LogItem
+    public class WebApiErrorLogItem : LogItem
     {
         public string Path { get; set; }
         public string Query { get; set; }
     }
 }
+
