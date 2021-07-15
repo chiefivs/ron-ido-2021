@@ -30,6 +30,7 @@ namespace Ron.Ido.BM.Services
             return GetPage(request, new Func<IQueryable<TEntity>, IQueryable<TEntity>>[] { }, memberConfigs);
         }
 
+        //TODO: старый вариант
         public ODataPage<TDto> GetPage<TEntity, TDto>(
             ODataRequest request,
             IEnumerable<Func<IQueryable<TEntity>, IQueryable<TEntity>>> customFilters = null,
@@ -65,6 +66,7 @@ namespace Ron.Ido.BM.Services
         public ODataPage<TDto> GetPage<TEntity, TDto>(
             ODataRequest request,
             IEnumerable<ODataCustomFilter<TEntity>> customFilters,// = null,
+            IEnumerable<ODataCustomOrder<TEntity>> customOrders,
             IEnumerable<ODataMapMemberConfig<TEntity, TDto>> memberConfigs = null) where TDto : class where TEntity : class
         {
             var mapperConfig = new MapperConfiguration(cfg =>
@@ -82,7 +84,7 @@ namespace Ron.Ido.BM.Services
 
             var query = AppDbContext.Set<TEntity>().AsQueryable();
             query = ApplyFilters(query, request.Filters, customFilters);
-            query = ApplyOrders(query, request.Orders);
+            query = ApplyOrders(query, request.Orders, customOrders);
             var items = query.Skip(request.Skip).Take(request.Take).ProjectTo<TDto>(mapperConfig);
 
             return new ODataPage<TDto>
@@ -94,6 +96,7 @@ namespace Ron.Ido.BM.Services
             };
         }
 
+        //TODO: старый вариант
         public ODataPage<TEntity> GetPage<TEntity>(
             ODataRequest request,
             IEnumerable<Func<IQueryable<TEntity>, IQueryable<TEntity>>> customFilters = null) where TEntity : class
@@ -359,6 +362,7 @@ namespace Ron.Ido.BM.Services
             return query;
         }
 
+        //  TODO: это новая функция. удалить старый вариант (выше) после рефакторинга
         private IQueryable<TEntity> ApplyFilters<TEntity>(
             IQueryable<TEntity> query,
             IEnumerable<ODataFilter> filters,
@@ -480,6 +484,52 @@ namespace Ron.Ido.BM.Services
                             query = query.ThenBy(order.Field.FromCamel());
                         else
                             query = query.ThenByDescending(order.Field.FromCamel());
+                    }
+                }
+            }
+
+            return query;
+        }
+
+        private IQueryable<TEntity> ApplyOrders<TEntity>(
+            IQueryable<TEntity> query,
+            IEnumerable<ODataOrder> orders,
+            IEnumerable<ODataCustomOrder<TEntity>> customOrders) where TEntity : class
+        {
+
+            if (orders != null && orders.Any())
+            {
+                var firstOrder = orders.First();
+                var customOrder = customOrders.FirstOrDefault(co => co.Field == firstOrder.Field);
+
+                if(customOrder != null)
+                {
+                    if (firstOrder.Direct == ODataOrderTypeEnum.Asc)
+                        query = customOrder.AscOrder(query);
+                    else
+                        query = customOrder.DescOrder(query);
+                }
+                else
+                {
+                    var isOrdered = false;
+                    foreach (var order in orders)
+                    {
+                        if (!isOrdered)
+                        {
+                            if (order.Direct == ODataOrderTypeEnum.Asc)
+                                query = query.OrderBy(order.Field.FromCamel());
+                            else
+                                query = query.OrderByDescending(order.Field.FromCamel());
+
+                            isOrdered = true;
+                        }
+                        else
+                        {
+                            if (order.Direct == ODataOrderTypeEnum.Asc)
+                                query = query.ThenBy(order.Field.FromCamel());
+                            else
+                                query = query.ThenByDescending(order.Field.FromCamel());
+                        }
                     }
                 }
             }

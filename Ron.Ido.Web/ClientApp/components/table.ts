@@ -25,7 +25,7 @@ export function init(){
                 <!-- ko template:{nodes:[], afterRender:function(){setParentContext.bind($data)($parent);}} --><!-- /ko -->
     
                 <div class="table-container">
-                    <table class="table js-table">
+                    <table class="table table-hover js-table">
                         <thead>
                             <tr>
                                 <th class="control" data-bind="visible:hasChildColumns()"></th>
@@ -146,7 +146,6 @@ export function init(){
             `
         });
 }
-
 
 export interface ITableParams {
     columns: ITableColumnParams[] | ko.ObservableArray<ITableColumnParams>;

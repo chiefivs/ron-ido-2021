@@ -41,6 +41,10 @@ export namespace AppliesAcceptanceApi {
         static learnLevelsFilterField = 'learnLevels';
         static entryFormsFilterField = 'entryForms';
         static stagesFilterField = 'stages';
+        static createDateOrderField = 'createDate';
+        static creatorFullNameOrderField = 'creatorFullName';
+        static ownerFullNameOrderField = 'ownerFullName';
+        static statusOrderField = 'status';
     }
 
     //  Ron.Ido.BM.Models.Applies.Acceptance.AcceptanceDictions
