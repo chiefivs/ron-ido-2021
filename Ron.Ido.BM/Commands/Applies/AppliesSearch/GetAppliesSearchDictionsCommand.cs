@@ -12,18 +12,18 @@ using System.Threading.Tasks;
 
 namespace Ron.Ido.BM.Commands.Applies.AppliesSearch
 {
-    public class GetAppliesSearchDictinsCommand : IRequest<AppliesSearchDictions>
+    public class GetAppliesSearchDictionsCommand : IRequest<AppliesSearchDictions>
     {
     }
-    public class GetAppliesSearchDictinsCommandHandler : IRequestHandler<GetAppliesSearchDictinsCommand, AppliesSearchDictions>
+    public class GetAppliesSearchDictionsCommandHandler : IRequestHandler<GetAppliesSearchDictionsCommand, AppliesSearchDictions>
     {
         private ODataService _odataService;
 
-        public GetAppliesSearchDictinsCommandHandler(ODataService service)
+        public GetAppliesSearchDictionsCommandHandler(ODataService service)
         {
             _odataService = service;
         }
-        public Task<AppliesSearchDictions> Handle(GetAppliesSearchDictinsCommand request, CancellationToken cancellationToken)
+        public Task<AppliesSearchDictions> Handle(GetAppliesSearchDictionsCommand request, CancellationToken cancellationToken)
         {
             return Task.Run(() =>
             {

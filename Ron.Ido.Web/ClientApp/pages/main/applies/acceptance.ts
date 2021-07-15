@@ -73,6 +73,8 @@ export default class AcceptanceMainPage extends MainPageBase {
 
 }
 
+const fields = AppliesAcceptanceApi.AcceptancePageItemDtoConstants;
+
 class AcceptanceSearchLeftPage extends LeftPageBase{
     filters: IFilterParams[];
     filterStates: ko.ObservableArray<IODataFilter> = ko.observableArray([]);
@@ -90,14 +92,14 @@ class AcceptanceSearchLeftPage extends LeftPageBase{
 
         this.owner = owner;
         this.filters = [
-            { title: 'ФИО заявителя', field:'creatorSurname', aliases:['creatorFirstname', 'creatorLastname'], valueType:'string', filterType: ODataFilterTypeEnum.Contains },
-            { title: 'ФИО владельца', field:'ownerSurname', aliases:['ownerFirstName', 'ownerLastName'], valueType:'string', filterType: ODataFilterTypeEnum.Contains },
-            { title: 'Номер заявления', field:'barCode', aliases:['primaryBarCode'], valueType:'string', filterType: ODataFilterTypeEnum.Contains },
-            { title: 'Дата создания', field:'createTime', valueType:'date', filterType: ODataFilterTypeEnum.BetweenLeft },
-            { title: 'Статусы', field: 'statuses', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.statusesOptions },
-            { title: 'Уровень образования', field: 'learnLevel', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.learnLevelOptions },
-            { title: 'Форма приема', field: 'entryForm', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.entryFormOptions },
-            { title: 'Этапы', field: 'stages', valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.stagesOptions }
+            { title: 'ФИО заявителя', field:fields.creatorSurnameFilterField, aliases:[fields.creatorFirstNameFilterField, fields.creatorLastNameFilterField], valueType:'string', filterType: ODataFilterTypeEnum.Contains },
+            { title: 'ФИО владельца', field:fields.ownerSurnameFilterField, aliases:[fields.ownerFirstNameFilterField, fields.ownerLastNameFilterField], valueType:'string', filterType: ODataFilterTypeEnum.Contains },
+            { title: 'Номер заявления', field:fields.barCodeFilterField, aliases:[fields.primaryBarCodeFilterField], valueType:'string', filterType: ODataFilterTypeEnum.Contains },
+            { title: 'Дата создания', field:fields.createTimeFilterField, valueType:'date', filterType: ODataFilterTypeEnum.BetweenLeft },
+            { title: 'Статусы', field: fields.stagesFilterField, valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.statusesOptions },
+            { title: 'Уровень образования', field: fields.learnLevelsFilterField, valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.learnLevelOptions },
+            { title: 'Форма приема', field: fields.entryFormsFilterField, valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.entryFormOptions },
+            { title: 'Этапы', field: fields.stagesFilterField, valueType: 'number', filterType: ODataFilterTypeEnum.In, options: this.stagesOptions }
         ];
 
         AppliesAcceptanceApi.getAcceptanceDictions().done(dictions => {

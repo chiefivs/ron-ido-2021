@@ -3,7 +3,7 @@ import { WebApi } from '../../modules/webapi';
 import { IODataRequest, IODataPage, IODataOption } from './odata';
 import { ApplyEntryFormEnum } from './enums';
 
-export namespace AppliesSearchtApi {
+export namespace AppliesSearchApi {
     export function getAppliesSearchPage(request:IODataRequest): JQueryPromise<IODataPage<IAppliesSearchPageItemDto>> {
         const segments = ['api', 'appliesSearch', 'getpage'];
         return WebApi.post(segments.join('/'), request);

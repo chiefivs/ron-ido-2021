@@ -36,45 +36,47 @@ namespace Ron.Ido.BM.Commands.Applies.Acceptance
             return Task.Run(() =>
             {
                 var request = cmd.Request;
-                request.ReplaceOrder(nameof(AcceptancePageItemDto.CreateDate), nameof(Apply.CreateTime));
-                request.ReplaceOrder(nameof(AcceptancePageItemDto.CreatorFullName), nameof(Apply.CreatorSurname), nameof(Apply.CreatorFirstName), nameof(Apply.CreatorLastName));
-                request.ReplaceOrder(nameof(AcceptancePageItemDto.OwnerFullName), nameof(Apply.OwnerSurname), nameof(Apply.OwnerFirstName), nameof(Apply.OwnerLastName));
-                request.ReplaceOrder(nameof(AcceptancePageItemDto.Status), nameof(Apply.StatusId));
+                //request.ReplaceOrder(nameof(AcceptancePageItemDto.CreateDate), nameof(Apply.CreateTime));
+                //request.ReplaceOrder(nameof(AcceptancePageItemDto.CreatorFullName), nameof(Apply.CreatorSurname), nameof(Apply.CreatorFirstName), nameof(Apply.CreatorLastName));
+                //request.ReplaceOrder(nameof(AcceptancePageItemDto.OwnerFullName), nameof(Apply.OwnerSurname), nameof(Apply.OwnerFirstName), nameof(Apply.OwnerLastName));
+                //request.ReplaceOrder(nameof(AcceptancePageItemDto.Status), nameof(Apply.StatusId));
 
                 var result = _odataService.GetPage(request,
                     new[]
                     {
-                        request.CreateCustomFilter<Apply>(query => {
-                            var statusFilter = request.GetFilter("statuses");
-                            var allowedStatuses = statusFilter != null
-                                ? ApplyAllowedStatuses.Acceptance.Intersect(statusFilter.GetIds()).ToArray()
+                        new ODataCustomFilter<Apply>(AcceptancePageItemDto.StatusesFilterField, (query, values) => {
+                            var allowedStatuses = values != null
+                                ? ApplyAllowedStatuses.Acceptance.Intersect(values.Parse<long>(0)).ToArray()
                                 : ApplyAllowedStatuses.Acceptance;
-                            query = query.Where(a => allowedStatuses.Contains(a.StatusId));
-
-                            var levelFilter = request.GetFilter("learnLevels");
-                            if(levelFilter != null)
-                            {
-                                var ids = levelFilter.GetIds();
-                                query = query.Where(a => a.DocTypeId != null && ids.Contains(a.DocType.LearnLevelId));
-                            }
-
-                            var entryFormFilter = request.GetFilter("entryForms");
-                            if(entryFormFilter != null)
-                            {
-                                var ids = entryFormFilter.GetIds();
-                                query = query.Where(a => ids.Contains(a.Id));
-                            }
-
-                            var stagesFilter = request.GetFilter("stages");
-                            if(stagesFilter != null)
-                            {
-                                var ids = stagesFilter.GetIds();
-                                query = query.Where(a => a.Status.EtapId != null && ids.Contains(a.Status.EtapId.Value));
-                            }
-
-
-                            return query;
-                        })
+                            return query.Where(a => allowedStatuses.Contains(a.StatusId));
+                        }, true),
+                        new ODataCustomFilter<Apply>(AcceptancePageItemDto.LearnLevelsFilterField, (query, values) => {
+                                var ids = values.Parse<long>(0);
+                                return query.Where(a => a.DocTypeId != null && ids.Contains(a.DocType.LearnLevelId));
+                        }),
+                        new ODataCustomFilter<Apply>(AcceptancePageItemDto.EntryFormsFilterField, (query, values) => {
+                                var ids = values.Parse<long>(0);
+                                return query.Where(a => a.EntryFormId != null && ids.Contains(a.EntryFormId.Value));
+                        }),
+                        new ODataCustomFilter<Apply>(AcceptancePageItemDto.StagesFilterField, (query, values) => {
+                                var ids = values.Parse<long>(0);
+                                return query.Where(a => a.Status.EtapId != null && ids.Contains(a.Status.EtapId.Value));
+                        }),
+                    },
+                    new[]
+                    {
+                        new ODataCustomOrder<Apply>(nameof(AcceptancePageItemDto.CreateDate).ToCamel(),
+                            query => query.OrderBy(a => a.CreateTime),
+                            query => query.OrderByDescending(a => a.CreateTime)),
+                        new ODataCustomOrder<Apply>(nameof(AcceptancePageItemDto.CreatorFullName).ToCamel(),
+                            query => query.OrderBy(a => a.CreatorSurname).ThenBy(a => a.CreatorFirstName).ThenBy(a => a.CreatorLastName),
+                            query => query.OrderByDescending(a => a.CreatorSurname).ThenByDescending(a => a.CreatorFirstName).ThenByDescending(a => a.CreatorLastName)),
+                        new ODataCustomOrder<Apply>(nameof(AcceptancePageItemDto.OwnerFullName).ToCamel(),
+                            query => query.OrderBy(a => a.OwnerSurname).ThenBy(a => a.OwnerFirstName).ThenBy(a => a.OwnerLastName),
+                            query => query.OrderByDescending(a => a.OwnerSurname).ThenByDescending(a => a.OwnerFirstName).ThenByDescending(a => a.OwnerLastName)),
+                        new ODataCustomOrder<Apply>(nameof(AcceptancePageItemDto.Status).ToCamel(),
+                            query => query.OrderBy(a => a.StatusId),
+                            query => query.OrderByDescending(a => a.StatusId)),
                     },
                     new[] {
                         new ODataMapMemberConfig<Apply, AcceptancePageItemDto>(

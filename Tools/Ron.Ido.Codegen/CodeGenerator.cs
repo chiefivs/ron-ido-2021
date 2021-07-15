@@ -311,21 +311,56 @@ namespace Codegen
             if (!module.Models.ContainsKey(type))
             {
                 module.Models.Add(type, "");
-                var builder = new StringBuilder();
-                builder.AppendLine($"\t//  {type.FullName}");
-                builder.AppendLine($"\texport interface {typeName}" + " {");
+                var propBuilder = new StringBuilder();
+                propBuilder.AppendLine($"\t//  {type.FullName}");
+                propBuilder.AppendLine($"\texport interface {typeName}" + " {");
 
                 var properties = type.GetProperties();
                 foreach (var pi in properties)
                 {
-                    builder.AppendLine($"\t\t{pi.Name.ToCamel()}:{module.GenerateType(pi.PropertyType)};");
+                    propBuilder.AppendLine($"\t\t{pi.Name.ToCamel()}:{module.GenerateType(pi.PropertyType)};");
                 }
-                builder.AppendLine("\t}");
+                propBuilder.AppendLine("\t}");
 
-                module.Models[type] = builder.ToString();
+                var staticFields = type.GetFields(BindingFlags.Static | BindingFlags.Public);
+                if (staticFields.Any())
+                {
+                    var list = new List<string>();
+
+                    foreach (var field in staticFields)
+                    {
+                        var value = field.GetValue(null);
+                        if (value == null)
+                            continue;
+
+                        if (StringTypes.Contains(field.FieldType))
+                        {
+                            list.Add($"\t\tstatic {field.Name.ToCamel()} = '{value}';");
+                        }
+                        else if(NumberTypes.Contains(field.FieldType) || BooleanType == field.FieldType)
+                        {
+                            list.Add($"\t\tstatic {field.Name.ToCamel()} = {value};");
+                        }
+                    }
+
+                    if(list.Any())
+                    {
+                        propBuilder.AppendLine();
+                        propBuilder.AppendLine($"\t//  {type.FullName} - статические поля");
+                        propBuilder.AppendLine($"\texport class {type.Name}Constants" + " {");
+                        foreach(var line in list)
+                        {
+                            propBuilder.AppendLine(line);
+                        }
+                        propBuilder.AppendLine("\t}");
+                    }
+                }
+
+                module.Models[type] = propBuilder.ToString();
             }
 
             AddImports(typeName, module);
+
             return typeName;
         }
 
